@@ -7,7 +7,11 @@ const CashRegister = sequelize.define('cash_registers', {
     primaryKey: true,
     autoIncrement: true,
   },
-  user_id: {
+  register_name: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+  },
+  opened_by: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
@@ -15,25 +19,37 @@ const CashRegister = sequelize.define('cash_registers', {
       key: 'id',
     },
   },
-  opening_amount: {
+  closed_by: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'users',
+      key: 'id',
+    },
+  },
+  opening_balance: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
   },
-  closing_amount: {
+  closing_balance: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: true,
   },
-  expected_cash: {
+  expected_balance: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: true,
   },
-  actual_cash: {
+  counted_cash: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: true,
   },
-  cash_difference: {
+  difference: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: true,
+  },
+  total_cash_collected: {
+    type: DataTypes.DECIMAL(10, 2),
+    defaultValue: 0,
   },
   total_sales: {
     type: DataTypes.DECIMAL(10, 2),
@@ -76,6 +92,10 @@ const CashRegister = sequelize.define('cash_registers', {
   },
   closed_at: {
     type: DataTypes.DATE,
+    allowNull: true,
+  },
+  notes: {
+    type: DataTypes.TEXT,
     allowNull: true,
   },
 }, {

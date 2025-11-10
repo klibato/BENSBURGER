@@ -16,8 +16,11 @@ User.hasMany(Sale, { foreignKey: 'user_id', as: 'sales' });
 Sale.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 
 // User <-> CashRegisters (Un utilisateur a plusieurs caisses)
-User.hasMany(CashRegister, { foreignKey: 'user_id', as: 'cash_registers' });
-CashRegister.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+User.hasMany(CashRegister, { foreignKey: 'opened_by', as: 'opened_cash_registers' });
+CashRegister.belongsTo(User, { foreignKey: 'opened_by', as: 'openedByUser' });
+
+User.hasMany(CashRegister, { foreignKey: 'closed_by', as: 'closed_cash_registers' });
+CashRegister.belongsTo(User, { foreignKey: 'closed_by', as: 'closedByUser' });
 
 // User <-> AuditLogs (Un utilisateur a plusieurs logs)
 User.hasMany(AuditLog, { foreignKey: 'user_id', as: 'audit_logs' });

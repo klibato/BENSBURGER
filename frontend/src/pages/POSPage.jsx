@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import { useProducts } from '../hooks/useProducts';
 import CategoryTabs from '../components/products/CategoryTabs';
 import ProductGrid from '../components/products/ProductGrid';
@@ -21,8 +22,17 @@ const POSPage = () => {
     refresh,
   } = useProducts();
 
-  // État du panier (sera géré par CartContext dans Phase 1.4)
-  const [cart, setCart] = useState([]);
+  // Utilisation du CartContext
+  const {
+    cart,
+    addToCart,
+    removeFromCart,
+    incrementQuantity,
+    decrementQuantity,
+    clearCart,
+    getTotal,
+    getItemCount,
+  } = useCart();
 
   // État du modal de paiement
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -42,34 +52,7 @@ const POSPage = () => {
   };
 
   const handleProductClick = (product) => {
-    // Ajouter au panier
-    setCart((prev) => {
-      const existingItem = prev.find((item) => item.id === product.id);
-      if (existingItem) {
-        return prev.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-      return [...prev, { ...product, quantity: 1 }];
-    });
-  };
-
-  const handleRemoveFromCart = (productId) => {
-    setCart((prev) => prev.filter((item) => item.id !== productId));
-  };
-
-  const handleUpdateQuantity = (productId, delta) => {
-    setCart((prev) =>
-      prev
-        .map((item) =>
-          item.id === productId
-            ? { ...item, quantity: Math.max(0, item.quantity + delta) }
-            : item
-        )
-        .filter((item) => item.quantity > 0)
-    );
+    addToCart(product);
   };
 
   const handleOpenPayment = () => {
@@ -79,7 +62,7 @@ const POSPage = () => {
 
   const handlePaymentSuccess = (sale) => {
     // Vider le panier
-    setCart([]);
+    clearCart();
 
     // Afficher message de succès
     setSuccessMessage({
@@ -94,10 +77,8 @@ const POSPage = () => {
     }, 5000);
   };
 
-  const cartTotal = cart.reduce(
-    (sum, item) => sum + parseFloat(item.price_ttc) * item.quantity,
-    0
-  );
+  const cartTotal = getTotal();
+  const itemCount = getItemCount();
 
   if (!user) {
     return null;
@@ -215,7 +196,7 @@ const POSPage = () => {
                         {item.name}
                       </h3>
                       <button
-                        onClick={() => handleRemoveFromCart(item.id)}
+                        onClick={() => removeFromCart(item.id)}
                         className="text-red-500 hover:text-red-700 ml-2"
                       >
                         ✕
@@ -226,7 +207,7 @@ const POSPage = () => {
                       {/* Contrôles quantité */}
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => handleUpdateQuantity(item.id, -1)}
+                          onClick={() => decrementQuantity(item.id)}
                           className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 active:scale-95 font-bold"
                         >
                           −
@@ -235,7 +216,7 @@ const POSPage = () => {
                           {item.quantity}
                         </span>
                         <button
-                          onClick={() => handleUpdateQuantity(item.id, 1)}
+                          onClick={() => incrementQuantity(item.id)}
                           className="w-8 h-8 rounded-full bg-primary-500 text-white hover:bg-primary-600 active:scale-95 font-bold"
                         >
                           +
@@ -274,7 +255,7 @@ const POSPage = () => {
               className="w-full"
               onClick={handleOpenPayment}
             >
-              Payer ({cart.length} {cart.length > 1 ? 'articles' : 'article'})
+              Payer ({itemCount} {itemCount > 1 ? 'articles' : 'article'})
             </Button>
           </div>
         </div>

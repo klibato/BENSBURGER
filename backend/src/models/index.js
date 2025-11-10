@@ -1,3 +1,4 @@
+const { sequelize } = require('../config/database');
 const User = require('./User');
 const Product = require('./Product');
 const MenuComposition = require('./MenuComposition');
@@ -49,6 +50,7 @@ Sale.belongsTo(User, { foreignKey: 'cancelled_by', as: 'canceller' });
 // ============================================
 
 module.exports = {
+  sequelize,
   User,
   Product,
   MenuComposition,

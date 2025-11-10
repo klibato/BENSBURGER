@@ -11,6 +11,7 @@ const Sale = sequelize.define('sales', {
     type: DataTypes.STRING(50),
     allowNull: false,
     unique: true,
+    defaultValue: '', // Sera généré par le hook
   },
   user_id: {
     type: DataTypes.INTEGER,
@@ -96,6 +97,17 @@ const Sale = sequelize.define('sales', {
   timestamps: true,
   createdAt: 'created_at',
   updatedAt: 'updated_at',
+  hooks: {
+    beforeValidate: async (sale) => {
+      // Générer le ticket_number si non fourni
+      if (!sale.ticket_number || sale.ticket_number === '') {
+        const [result] = await sequelize.query(
+          `SELECT TO_CHAR(CURRENT_DATE, 'YYYYMMDD') || '-' || LPAD(nextval('ticket_number_seq')::TEXT, 4, '0') AS ticket_number`
+        );
+        sale.ticket_number = result[0].ticket_number;
+      }
+    },
+  },
 });
 
 module.exports = Sale;

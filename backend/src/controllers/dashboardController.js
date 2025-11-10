@@ -39,10 +39,10 @@ const getDashboardStats = async (req, res, next) => {
         status: 'completed',
       },
       attributes: [
-        [sequelize.fn('COUNT', sequelize.col('id')), 'total_sales'],
-        [sequelize.fn('SUM', sequelize.col('total_ttc')), 'total_revenue'],
-        [sequelize.fn('AVG', sequelize.col('total_ttc')), 'average_ticket'],
-        [sequelize.fn('SUM', sequelize.col('total_ht')), 'total_ht'],
+        [sequelize.fn('COUNT', sequelize.col('sales.id')), 'total_sales'],
+        [sequelize.fn('SUM', sequelize.col('sales.total_ttc')), 'total_revenue'],
+        [sequelize.fn('AVG', sequelize.col('sales.total_ttc')), 'average_ticket'],
+        [sequelize.fn('SUM', sequelize.col('sales.total_ht')), 'total_ht'],
       ],
       raw: true,
     });
@@ -57,8 +57,8 @@ const getDashboardStats = async (req, res, next) => {
       },
       attributes: [
         'payment_method',
-        [sequelize.fn('COUNT', sequelize.col('id')), 'count'],
-        [sequelize.fn('SUM', sequelize.col('total_ttc')), 'total'],
+        [sequelize.fn('COUNT', sequelize.col('sales.id')), 'count'],
+        [sequelize.fn('SUM', sequelize.col('sales.total_ttc')), 'total'],
       ],
       group: ['payment_method'],
       raw: true,
@@ -69,8 +69,8 @@ const getDashboardStats = async (req, res, next) => {
       attributes: [
         'product_id',
         'product_name',
-        [sequelize.fn('SUM', sequelize.col('quantity')), 'total_quantity'],
-        [sequelize.fn('SUM', sequelize.col('total_ttc')), 'total_revenue'],
+        [sequelize.fn('SUM', sequelize.col('sale_items.quantity')), 'total_quantity'],
+        [sequelize.fn('SUM', sequelize.col('sale_items.total_ttc')), 'total_revenue'],
       ],
       include: [
         {
@@ -86,7 +86,7 @@ const getDashboardStats = async (req, res, next) => {
         },
       ],
       group: ['sale_items.product_id', 'sale_items.product_name'],
-      order: [[sequelize.fn('SUM', sequelize.col('quantity')), 'DESC']],
+      order: [[sequelize.fn('SUM', sequelize.col('sale_items.quantity')), 'DESC']],
       limit: 5,
       raw: true,
     });
@@ -100,12 +100,12 @@ const getDashboardStats = async (req, res, next) => {
         status: 'completed',
       },
       attributes: [
-        [sequelize.fn('DATE', sequelize.col('created_at')), 'date'],
-        [sequelize.fn('COUNT', sequelize.col('id')), 'count'],
-        [sequelize.fn('SUM', sequelize.col('total_ttc')), 'revenue'],
+        [sequelize.fn('DATE', sequelize.col('sales.created_at')), 'date'],
+        [sequelize.fn('COUNT', sequelize.col('sales.id')), 'count'],
+        [sequelize.fn('SUM', sequelize.col('sales.total_ttc')), 'revenue'],
       ],
-      group: [sequelize.fn('DATE', sequelize.col('created_at'))],
-      order: [[sequelize.fn('DATE', sequelize.col('created_at')), 'ASC']],
+      group: [sequelize.fn('DATE', sequelize.col('sales.created_at'))],
+      order: [[sequelize.fn('DATE', sequelize.col('sales.created_at')), 'ASC']],
       raw: true,
     });
 
@@ -168,8 +168,8 @@ const getSalesByCategory = async (req, res, next) => {
     // Ventes par catégorie via les produits
     const salesByCategory = await SaleItem.findAll({
       attributes: [
-        [sequelize.fn('SUM', sequelize.col('quantity')), 'total_quantity'],
-        [sequelize.fn('SUM', sequelize.col('total_ttc')), 'total_revenue'],
+        [sequelize.fn('SUM', sequelize.col('sale_items.quantity')), 'total_quantity'],
+        [sequelize.fn('SUM', sequelize.col('sale_items.total_ttc')), 'total_revenue'],
       ],
       include: [
         {

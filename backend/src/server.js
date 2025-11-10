@@ -1,0 +1,143 @@
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const compression = require('compression');
+const rateLimit = require('express-rate-limit');
+
+const config = require('./config/env');
+const { testConnection } = require('./config/database');
+const logger = require('./utils/logger');
+const { errorHandler, notFoundHandler } = require('./middlewares/errorHandler');
+
+// Initialiser les models (pour établir les relations)
+require('./models');
+
+// Créer l'application Express
+const app = express();
+
+// ============================================
+// MIDDLEWARES GLOBAUX
+// ============================================
+
+// Sécurité
+app.use(helmet());
+
+// CORS
+app.use(cors({
+  origin: config.NODE_ENV === 'production'
+    ? ['https://pos.bensburger.com']
+    : ['http://localhost:5173', 'http://localhost:3000'],
+  credentials: true,
+}));
+
+// Compression
+app.use(compression());
+
+// Body parsers
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Rate limiting (plus strict pour l'auth)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 tentatives
+  message: {
+    success: false,
+    error: {
+      code: 'TOO_MANY_REQUESTS',
+      message: 'Trop de tentatives de connexion, réessayez dans 15 minutes',
+    },
+  },
+});
+
+const apiLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 100, // 100 requêtes
+  message: {
+    success: false,
+    error: {
+      code: 'TOO_MANY_REQUESTS',
+      message: 'Trop de requêtes, ralentissez',
+    },
+  },
+});
+
+// Logger des requêtes en dev
+if (config.NODE_ENV === 'development') {
+  app.use((req, res, next) => {
+    logger.debug(`${req.method} ${req.path}`);
+    next();
+  });
+}
+
+// ============================================
+// ROUTES
+// ============================================
+
+// Health check
+app.get('/health', (req, res) => {
+  res.json({
+    success: true,
+    message: 'API is running',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Routes API
+app.use('/api/auth', authLimiter, require('./routes/auth'));
+app.use('/api/products', apiLimiter, require('./routes/products'));
+// app.use('/api/sales', apiLimiter, require('./routes/sales'));
+// app.use('/api/cash-register', apiLimiter, require('./routes/cashRegister'));
+// app.use('/api/dashboard', apiLimiter, require('./routes/dashboard'));
+
+// ============================================
+// GESTION DES ERREURS
+// ============================================
+
+// 404
+app.use(notFoundHandler);
+
+// Erreurs globales
+app.use(errorHandler);
+
+// ============================================
+// DÉMARRAGE DU SERVEUR
+// ============================================
+
+const startServer = async () => {
+  try {
+    // Tester la connexion à la base de données
+    const dbConnected = await testConnection();
+
+    if (!dbConnected) {
+      logger.error('Impossible de démarrer le serveur sans connexion à la base de données');
+      process.exit(1);
+    }
+
+    // Démarrer le serveur
+    app.listen(config.PORT, () => {
+      logger.info(`🚀 Serveur démarré sur le port ${config.PORT}`);
+      logger.info(`📝 Environnement: ${config.NODE_ENV}`);
+      logger.info(`🔗 API disponible sur: http://localhost:${config.PORT}`);
+    });
+  } catch (error) {
+    logger.error('Erreur lors du démarrage du serveur:', error);
+    process.exit(1);
+  }
+};
+
+// Gérer les erreurs non capturées
+process.on('uncaughtException', (error) => {
+  logger.error('Uncaught Exception:', error);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (error) => {
+  logger.error('Unhandled Rejection:', error);
+  process.exit(1);
+});
+
+// Démarrer le serveur
+startServer();
+
+module.exports = app;

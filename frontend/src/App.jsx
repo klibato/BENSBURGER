@@ -4,6 +4,7 @@ import { CartProvider } from './context/CartContext';
 import { CashRegisterProvider } from './context/CashRegisterContext';
 import LoginPage from './pages/LoginPage';
 import POSPage from './pages/POSPage';
+import SalesHistoryPage from './pages/SalesHistoryPage';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
             <Routes>
               <Route path="/login" element={<LoginPage />} />
               <Route path="/" element={<POSPage />} />
+              <Route path="/sales" element={<SalesHistoryPage />} />
             </Routes>
           </Router>
         </CartProvider>

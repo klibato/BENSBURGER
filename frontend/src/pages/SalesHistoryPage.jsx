@@ -1,0 +1,396 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { getAllSales } from '../services/saleService';
+import Button from '../components/ui/Button';
+import { ArrowLeft, Search, Filter, Eye } from 'lucide-react';
+import { formatPrice } from '../utils/constants';
+
+const SalesHistoryPage = () => {
+  const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  const [sales, setSales] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({ total: 0, limit: 20, offset: 0 });
+
+  // Filtres
+  const [filters, setFilters] = useState({
+    start_date: '',
+    end_date: '',
+    payment_method: '',
+    status: 'completed',
+  });
+
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedSale, setSelectedSale] = useState(null);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    fetchSales();
+  }, [filters, pagination.offset]);
+
+  const fetchSales = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await getAllSales({
+        ...filters,
+        limit: pagination.limit,
+        offset: pagination.offset,
+      });
+
+      setSales(response.data.sales);
+      setPagination(response.data.pagination);
+    } catch (err) {
+      setError(err.response?.data?.error?.message || 'Erreur lors du chargement des ventes');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+    setPagination((prev) => ({ ...prev, offset: 0 })); // Reset pagination
+  };
+
+  const handleNextPage = () => {
+    if (pagination.has_more) {
+      setPagination((prev) => ({ ...prev, offset: prev.offset + prev.limit }));
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (pagination.offset > 0) {
+      setPagination((prev) => ({
+        ...prev,
+        offset: Math.max(0, prev.offset - prev.limit),
+      }));
+    }
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const getPaymentMethodLabel = (method) => {
+    const labels = {
+      cash: 'Espèces',
+      card: 'Carte bancaire',
+      meal_voucher: 'Ticket restaurant',
+      mixed: 'Mixte',
+    };
+    return labels[method] || method;
+  };
+
+  if (!user) return null;
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      {/* Header */}
+      <header className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft size={20} />
+            Retour
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">Journal des ventes</h1>
+            <p className="text-sm text-gray-600">
+              {pagination.total} vente{pagination.total > 1 ? 's' : ''}
+            </p>
+          </div>
+        </div>
+        <Button
+          variant="secondary"
+          size="md"
+          onClick={() => setShowFilters(!showFilters)}
+          className="flex items-center gap-2"
+        >
+          <Filter size={20} />
+          {showFilters ? 'Masquer filtres' : 'Filtres'}
+        </Button>
+      </header>
+
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        {/* Filtres */}
+        {showFilters && (
+          <div className="bg-white rounded-lg shadow p-6 mb-6">
+            <h3 className="font-semibold text-gray-800 mb-4">Filtres</h3>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Date début
+                </label>
+                <input
+                  type="date"
+                  value={filters.start_date}
+                  onChange={(e) => handleFilterChange('start_date', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Date fin
+                </label>
+                <input
+                  type="date"
+                  value={filters.end_date}
+                  onChange={(e) => handleFilterChange('end_date', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Paiement
+                </label>
+                <select
+                  value={filters.payment_method}
+                  onChange={(e) => handleFilterChange('payment_method', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                >
+                  <option value="">Tous</option>
+                  <option value="cash">Espèces</option>
+                  <option value="card">Carte</option>
+                  <option value="meal_voucher">Ticket resto</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Statut
+                </label>
+                <select
+                  value={filters.status}
+                  onChange={(e) => handleFilterChange('status', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                >
+                  <option value="">Tous</option>
+                  <option value="completed">Complétée</option>
+                  <option value="cancelled">Annulée</option>
+                  <option value="refunded">Remboursée</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Error */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+            {error}
+          </div>
+        )}
+
+        {/* Liste des ventes */}
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          {loading ? (
+            <div className="p-8 text-center text-gray-500">Chargement...</div>
+          ) : sales.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">
+              Aucune vente trouvée
+            </div>
+          ) : (
+            <>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Ticket
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Date
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Paiement
+                      </th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Total TTC
+                      </th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Articles
+                      </th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {sales.map((sale) => (
+                      <tr key={sale.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="text-sm font-medium text-gray-900">
+                            {sale.ticket_number}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          {formatDate(sale.created_at)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="text-sm text-gray-900">
+                            {getPaymentMethodLabel(sale.payment_method)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right">
+                          <span className="text-sm font-semibold text-green-600">
+                            {formatPrice(sale.total_ttc)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-600">
+                          {sale.items?.length || 0}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                          <button
+                            onClick={() => setSelectedSale(sale)}
+                            className="text-primary-600 hover:text-primary-800"
+                            title="Voir détails"
+                          >
+                            <Eye size={20} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
+                <div className="text-sm text-gray-600">
+                  Affichage de {pagination.offset + 1} à{' '}
+                  {Math.min(pagination.offset + pagination.limit, pagination.total)} sur{' '}
+                  {pagination.total}
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={handlePrevPage}
+                    disabled={pagination.offset === 0}
+                  >
+                    Précédent
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={handleNextPage}
+                    disabled={!pagination.has_more}
+                  >
+                    Suivant
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Modal détail vente */}
+      {selectedSale && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          onClick={() => setSelectedSale(null)}
+        >
+          <div
+            className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="bg-primary-600 text-white px-6 py-4 rounded-t-lg">
+              <h2 className="text-xl font-bold">Détail de la vente</h2>
+              <p className="text-sm opacity-90">{selectedSale.ticket_number}</p>
+            </div>
+
+            <div className="p-6">
+              {/* Informations générales */}
+              <div className="mb-6">
+                <h3 className="font-semibold text-gray-800 mb-3">Informations</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-gray-600">Date:</span>
+                    <p className="font-medium">{formatDate(selectedSale.created_at)}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Paiement:</span>
+                    <p className="font-medium">
+                      {getPaymentMethodLabel(selectedSale.payment_method)}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Montant payé:</span>
+                    <p className="font-medium">{formatPrice(selectedSale.amount_paid)}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Monnaie rendue:</span>
+                    <p className="font-medium">{formatPrice(selectedSale.change_given)}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Articles */}
+              <div className="mb-6">
+                <h3 className="font-semibold text-gray-800 mb-3">Articles</h3>
+                <div className="space-y-2">
+                  {selectedSale.items?.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex justify-between items-center p-3 bg-gray-50 rounded"
+                    >
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-800">{item.product_name}</p>
+                        <p className="text-sm text-gray-600">
+                          {formatPrice(item.unit_price_ht)} HT × {item.quantity} (TVA {item.vat_rate}%)
+                        </p>
+                      </div>
+                      <p className="font-semibold text-gray-800">
+                        {formatPrice(item.total_ttc)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Totaux */}
+              <div className="border-t pt-4">
+                <div className="flex justify-between items-center text-sm mb-2">
+                  <span className="text-gray-600">Total HT:</span>
+                  <span className="font-medium">{formatPrice(selectedSale.total_ht)}</span>
+                </div>
+                <div className="flex justify-between items-center text-lg font-bold">
+                  <span>Total TTC:</span>
+                  <span className="text-green-600">
+                    {formatPrice(selectedSale.total_ttc)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end">
+                <Button variant="secondary" onClick={() => setSelectedSale(null)}>
+                  Fermer
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default SalesHistoryPage;

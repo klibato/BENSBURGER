@@ -12,4 +12,7 @@ router.post('/logout', authenticateToken, authController.logout);
 // GET /api/auth/me - Utilisateur connecté
 router.get('/me', authenticateToken, authController.getMe);
 
+// GET /api/auth/permissions - Permissions de l'utilisateur connecté
+router.get('/permissions', authenticateToken, authController.getPermissions);
+
 module.exports = router;

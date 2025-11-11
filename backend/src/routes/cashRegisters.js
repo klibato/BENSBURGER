@@ -7,7 +7,8 @@ const {
   closeCashRegister,
   getCashRegisterById,
 } = require('../controllers/cashRegisterController');
-const { authenticateToken } = require('../middlewares/auth');
+const { authenticateToken, requireAnyPermission } = require('../middlewares/auth');
+const { PERMISSIONS } = require('../config/permissions');
 
 // Toutes les routes nécessitent une authentification
 router.use(authenticateToken);
@@ -15,36 +16,36 @@ router.use(authenticateToken);
 /**
  * @route   GET /api/cash-registers
  * @desc    Récupérer toutes les caisses
- * @access  Authentifié
+ * @access  Authentifié avec permission
  */
-router.get('/', getAllCashRegisters);
+router.get('/', requireAnyPermission([PERMISSIONS.CASH_REGISTER_VIEW, PERMISSIONS.CASH_REGISTER_VIEW_ALL]), getAllCashRegisters);
 
 /**
  * @route   GET /api/cash-registers/active
  * @desc    Récupérer la caisse active de l'utilisateur
- * @access  Authentifié
+ * @access  Authentifié avec permission
  */
-router.get('/active', getActiveCashRegister);
+router.get('/active', requireAnyPermission([PERMISSIONS.CASH_REGISTER_VIEW, PERMISSIONS.CASH_REGISTER_VIEW_ALL]), getActiveCashRegister);
 
 /**
  * @route   POST /api/cash-registers/open
  * @desc    Ouvrir une nouvelle caisse
- * @access  Authentifié
+ * @access  Authentifié avec permission
  */
-router.post('/open', openCashRegister);
+router.post('/open', requireAnyPermission([PERMISSIONS.CASH_REGISTER_OPEN]), openCashRegister);
 
 /**
  * @route   POST /api/cash-registers/:id/close
  * @desc    Fermer une caisse
- * @access  Authentifié (propriétaire ou admin)
+ * @access  Authentifié avec permission (propriétaire ou admin)
  */
-router.post('/:id/close', closeCashRegister);
+router.post('/:id/close', requireAnyPermission([PERMISSIONS.CASH_REGISTER_CLOSE]), closeCashRegister);
 
 /**
  * @route   GET /api/cash-registers/:id
  * @desc    Récupérer une caisse par ID
- * @access  Authentifié (propriétaire ou admin)
+ * @access  Authentifié avec permission (propriétaire ou admin)
  */
-router.get('/:id', getCashRegisterById);
+router.get('/:id', requireAnyPermission([PERMISSIONS.CASH_REGISTER_VIEW, PERMISSIONS.CASH_REGISTER_VIEW_ALL]), getCashRegisterById);
 
 module.exports = router;

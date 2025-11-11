@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const productController = require('../controllers/productController');
-const { authenticateToken, optionalAuthenticate, requireAdmin } = require('../middlewares/auth');
+const { authenticateToken, optionalAuthenticate, requirePermission } = require('../middlewares/auth');
+const { PERMISSIONS } = require('../config/permissions');
 
 // GET /api/products - Récupérer tous les produits (avec auth optionnelle pour admins)
 router.get('/', optionalAuthenticate, productController.getAllProducts);
@@ -12,13 +13,13 @@ router.get('/category/:category', productController.getProductsByCategory);
 // GET /api/products/:id - Récupérer un produit
 router.get('/:id', productController.getProductById);
 
-// POST /api/products - Créer un produit (admin only)
-router.post('/', authenticateToken, requireAdmin, productController.createProduct);
+// POST /api/products - Créer un produit
+router.post('/', authenticateToken, requirePermission(PERMISSIONS.PRODUCTS_CREATE), productController.createProduct);
 
-// PUT /api/products/:id - Modifier un produit (admin only)
-router.put('/:id', authenticateToken, requireAdmin, productController.updateProduct);
+// PUT /api/products/:id - Modifier un produit
+router.put('/:id', authenticateToken, requirePermission(PERMISSIONS.PRODUCTS_UPDATE), productController.updateProduct);
 
-// DELETE /api/products/:id - Supprimer un produit (admin only)
-router.delete('/:id', authenticateToken, requireAdmin, productController.deleteProduct);
+// DELETE /api/products/:id - Supprimer un produit
+router.delete('/:id', authenticateToken, requirePermission(PERMISSIONS.PRODUCTS_DELETE), productController.deleteProduct);
 
 module.exports = router;

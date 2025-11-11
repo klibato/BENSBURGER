@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 const config = require('../config/env');
 const logger = require('../utils/logger');
+const { getRolePermissions } = require('../config/permissions');
 
 /**
  * Login avec username et PIN code
@@ -109,8 +110,28 @@ const getMe = async (req, res, next) => {
   }
 };
 
+/**
+ * Récupérer les permissions de l'utilisateur connecté
+ */
+const getPermissions = async (req, res, next) => {
+  try {
+    const permissions = getRolePermissions(req.user.role);
+
+    res.json({
+      success: true,
+      data: {
+        role: req.user.role,
+        permissions,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   login,
   logout,
   getMe,
+  getPermissions,
 };

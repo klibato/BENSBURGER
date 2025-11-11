@@ -10,7 +10,7 @@ import PaymentModal from '../components/payment/PaymentModal';
 import OpenCashRegisterModal from '../components/cashRegister/OpenCashRegisterModal';
 import CloseCashRegisterModal from '../components/cashRegister/CloseCashRegisterModal';
 import Button from '../components/ui/Button';
-import { LogOut, RefreshCw, CheckCircle, CreditCard, DollarSign, Receipt, BarChart3, Package } from 'lucide-react';
+import { LogOut, RefreshCw, CheckCircle, CreditCard, DollarSign, Receipt, BarChart3, Package, Users } from 'lucide-react';
 import { formatPrice } from '../utils/constants';
 
 const POSPage = () => {
@@ -170,15 +170,26 @@ const POSPage = () => {
             Dashboard
           </Button>
           {user.role === 'admin' && (
-            <Button
-              variant="secondary"
-              size="md"
-              onClick={() => navigate('/products')}
-              className="flex items-center gap-2"
-            >
-              <Package size={20} />
-              Produits
-            </Button>
+            <>
+              <Button
+                variant="secondary"
+                size="md"
+                onClick={() => navigate('/products')}
+                className="flex items-center gap-2"
+              >
+                <Package size={20} />
+                Produits
+              </Button>
+              <Button
+                variant="secondary"
+                size="md"
+                onClick={() => navigate('/users')}
+                className="flex items-center gap-2"
+              >
+                <Users size={20} />
+                Utilisateurs
+              </Button>
+            </>
           )}
           <Button
             variant="secondary"

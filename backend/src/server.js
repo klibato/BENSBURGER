@@ -89,6 +89,7 @@ app.use('/api/products', apiLimiter, require('./routes/products'));
 app.use('/api/sales', apiLimiter, require('./routes/sales'));
 app.use('/api/cash-registers', apiLimiter, require('./routes/cashRegisters'));
 app.use('/api/dashboard', apiLimiter, require('./routes/dashboard'));
+app.use('/api/users', apiLimiter, require('./routes/users'));
 
 // ============================================
 // GESTION DES ERREURS

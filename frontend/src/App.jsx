@@ -7,6 +7,7 @@ import POSPage from './pages/POSPage';
 import SalesHistoryPage from './pages/SalesHistoryPage';
 import DashboardPage from './pages/DashboardPage';
 import ProductsPage from './pages/ProductsPage';
+import UsersPage from './pages/UsersPage';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
               <Route path="/sales" element={<SalesHistoryPage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/products" element={<ProductsPage />} />
+              <Route path="/users" element={<UsersPage />} />
             </Routes>
           </Router>
         </CartProvider>

@@ -1,0 +1,350 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Button from '../components/ui/Button';
+import UserFormModal from '../components/users/UserFormModal';
+import {
+  getAllUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+} from '../services/userService';
+
+const ROLES_LABELS = {
+  admin: 'Administrateur',
+  cashier: 'Caissier',
+};
+
+const UsersPage = () => {
+  const navigate = useNavigate();
+  const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
+
+  // Filters
+  const [showInactive, setShowInactive] = useState(false);
+
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [modalLoading, setModalLoading] = useState(false);
+
+  // Delete confirmation
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+
+  // Fetch users
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const users = await getAllUsers({ include_inactive: true });
+      setUsers(users || []);
+    } catch (err) {
+      console.error('Erreur lors du chargement des utilisateurs:', err);
+      setError('Impossible de charger les utilisateurs');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  // Apply filters
+  useEffect(() => {
+    let filtered = [...users];
+
+    // Filter by active status
+    if (!showInactive) {
+      filtered = filtered.filter((u) => u.is_active);
+    }
+
+    setFilteredUsers(filtered);
+  }, [users, showInactive]);
+
+  // Handle create user
+  const handleCreateUser = async (formData) => {
+    try {
+      setModalLoading(true);
+      setError(null);
+      await createUser(formData);
+      setSuccessMessage('Utilisateur créé avec succès');
+      setIsModalOpen(false);
+      setEditingUser(null);
+      await fetchUsers();
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err) {
+      console.error('Erreur lors de la création:', err);
+      setError(err.response?.data?.error?.message || 'Erreur lors de la création de l\'utilisateur');
+    } finally {
+      setModalLoading(false);
+    }
+  };
+
+  // Handle update user
+  const handleUpdateUser = async (formData) => {
+    try {
+      setModalLoading(true);
+      setError(null);
+      await updateUser(editingUser.id, formData);
+      setSuccessMessage('Utilisateur modifié avec succès');
+      setIsModalOpen(false);
+      setEditingUser(null);
+      await fetchUsers();
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err) {
+      console.error('Erreur lors de la modification:', err);
+      setError(err.response?.data?.error?.message || 'Erreur lors de la modification de l\'utilisateur');
+    } finally {
+      setModalLoading(false);
+    }
+  };
+
+  // Handle delete user
+  const handleDeleteUser = async (userId) => {
+    try {
+      setError(null);
+      await deleteUser(userId);
+      setSuccessMessage('Utilisateur désactivé avec succès');
+      setDeleteConfirm(null);
+      await fetchUsers();
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err) {
+      console.error('Erreur lors de la suppression:', err);
+      setError(err.response?.data?.error?.message || 'Erreur lors de la suppression de l\'utilisateur');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      {/* Header */}
+      <div className="bg-primary-600 text-white shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold">Gestion des Utilisateurs</h1>
+              <p className="text-primary-100 mt-1">
+                {filteredUsers.length} utilisateur{filteredUsers.length > 1 ? 's' : ''}
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Button
+                variant="secondary"
+                onClick={() => navigate('/products')}
+              >
+                Produits
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => navigate('/dashboard')}
+              >
+                Dashboard
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => navigate('/')}
+              >
+                Retour POS
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Messages */}
+        {error && (
+          <div className="mb-4 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+            {error}
+          </div>
+        )}
+        {successMessage && (
+          <div className="mb-4 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
+            {successMessage}
+          </div>
+        )}
+
+        {/* Filters and Actions */}
+        <div className="bg-white rounded-lg shadow p-6 mb-6">
+          <div className="flex flex-wrap gap-4 items-center justify-between">
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="showInactive"
+                checked={showInactive}
+                onChange={(e) => setShowInactive(e.target.checked)}
+                className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+              />
+              <label htmlFor="showInactive" className="text-sm font-medium text-gray-700">
+                Afficher inactifs
+              </label>
+            </div>
+
+            {/* Add user button */}
+            <Button
+              variant="primary"
+              onClick={() => {
+                setEditingUser(null);
+                setIsModalOpen(true);
+              }}
+              className="whitespace-nowrap"
+            >
+              + Nouvel Utilisateur
+            </Button>
+          </div>
+        </div>
+
+        {/* Users Table */}
+        {loading ? (
+          <div className="bg-white rounded-lg shadow p-8 text-center">
+            <p className="text-gray-500">Chargement des utilisateurs...</p>
+          </div>
+        ) : filteredUsers.length === 0 ? (
+          <div className="bg-white rounded-lg shadow p-8 text-center">
+            <p className="text-gray-500">Aucun utilisateur trouvé</p>
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Utilisateur
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Nom complet
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Email
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Rôle
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Statut
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredUsers.map((user) => (
+                    <tr key={user.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">{user.username}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {user.first_name} {user.last_name}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-500">{user.email || '-'}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            user.role === 'admin'
+                              ? 'bg-purple-100 text-purple-800'
+                              : 'bg-blue-100 text-blue-800'
+                          }`}
+                        >
+                          {ROLES_LABELS[user.role] || user.role}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {user.is_active ? (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Actif
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            Inactif
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div className="flex justify-end gap-2">
+                          <button
+                            onClick={() => {
+                              setEditingUser(user);
+                              setIsModalOpen(true);
+                            }}
+                            className="text-primary-600 hover:text-primary-900"
+                          >
+                            Modifier
+                          </button>
+                          <button
+                            onClick={() => setDeleteConfirm(user)}
+                            className="text-red-600 hover:text-red-900"
+                            disabled={!user.is_active}
+                          >
+                            Désactiver
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* User Form Modal */}
+      <UserFormModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingUser(null);
+        }}
+        onSubmit={editingUser ? handleUpdateUser : handleCreateUser}
+        user={editingUser}
+        loading={modalLoading}
+      />
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div className="p-6">
+              <h3 className="text-lg font-bold text-gray-900 mb-2">
+                Confirmer la désactivation
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Êtes-vous sûr de vouloir désactiver l'utilisateur{' '}
+                <span className="font-semibold">
+                  {deleteConfirm.first_name} {deleteConfirm.last_name}
+                </span>{' '}
+                ? L'utilisateur ne pourra plus se connecter.
+              </p>
+              <div className="flex gap-3">
+                <Button
+                  variant="secondary"
+                  onClick={() => setDeleteConfirm(null)}
+                  className="flex-1"
+                >
+                  Annuler
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={() => handleDeleteUser(deleteConfirm.id)}
+                  className="flex-1 bg-red-600 hover:bg-red-700"
+                >
+                  Désactiver
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default UsersPage;

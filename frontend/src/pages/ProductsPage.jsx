@@ -43,8 +43,8 @@ const ProductsPage = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await getAllProducts({ include_inactive: true });
-      setProducts(response.data || []);
+      const products = await getAllProducts({ include_inactive: true });
+      setProducts(products || []);
     } catch (err) {
       console.error('Erreur lors du chargement des produits:', err);
       setError('Impossible de charger les produits');

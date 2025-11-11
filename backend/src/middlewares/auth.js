@@ -71,6 +71,28 @@ const authenticateToken = async (req, res, next) => {
   }
 };
 
+// Middleware d'authentification optionnelle (n'empêche pas l'accès)
+const optionalAuthenticate = async (req, res, next) => {
+  try {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (token) {
+      const decoded = jwt.verify(token, config.jwt.secret);
+      const user = await User.findByPk(decoded.userId);
+
+      if (user && user.is_active) {
+        req.user = user;
+      }
+    }
+  } catch (error) {
+    // Ignorer les erreurs et continuer sans utilisateur
+    logger.debug('Erreur d\'authentification optionnelle:', error.message);
+  }
+
+  next();
+};
+
 // Middleware pour vérifier le rôle (admin only)
 const requireAdmin = (req, res, next) => {
   if (req.user.role !== 'admin') {
@@ -87,5 +109,6 @@ const requireAdmin = (req, res, next) => {
 
 module.exports = {
   authenticateToken,
+  optionalAuthenticate,
   requireAdmin,
 };

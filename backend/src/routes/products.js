@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const productController = require('../controllers/productController');
-const { authenticateToken, requireAdmin } = require('../middlewares/auth');
+const { authenticateToken, optionalAuthenticate, requireAdmin } = require('../middlewares/auth');
 
-// GET /api/products - Récupérer tous les produits
-router.get('/', productController.getAllProducts);
+// GET /api/products - Récupérer tous les produits (avec auth optionnelle pour admins)
+router.get('/', optionalAuthenticate, productController.getAllProducts);
 
 // GET /api/products/category/:category - Produits par catégorie
 router.get('/category/:category', productController.getProductsByCategory);

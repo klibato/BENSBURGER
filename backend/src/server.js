@@ -91,6 +91,7 @@ app.use('/api/cash-registers', apiLimiter, require('./routes/cashRegisters'));
 app.use('/api/dashboard', apiLimiter, require('./routes/dashboard'));
 app.use('/api/users', apiLimiter, require('./routes/users'));
 app.use('/api/settings', apiLimiter, require('./routes/settings'));
+app.use('/api/printer', apiLimiter, require('./routes/printer'));
 
 // ============================================
 // GESTION DES ERREURS
@@ -122,6 +123,10 @@ const startServer = async () => {
 
     const migrateProductsDisplayOrder = require('./scripts/migrateProductsDisplayOrder');
     await migrateProductsDisplayOrder();
+
+    // Initialiser l'imprimante thermique
+    const printerService = require('./services/printerService');
+    await printerService.initialize();
 
     // Démarrer le serveur
     app.listen(config.PORT, () => {

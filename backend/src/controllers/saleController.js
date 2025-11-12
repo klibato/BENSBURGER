@@ -1,6 +1,7 @@
 const { Sale, SaleItem, CashRegister, User, StoreSettings, sequelize } = require('../models');
 const { calculateSaleTotals, calculateChange } = require('../services/vatService');
 const { generateTicketPDF } = require('../services/pdfService');
+const printerService = require('../services/printerService');
 const logger = require('../utils/logger');
 
 /**
@@ -204,12 +205,17 @@ const createSale = async (req, res, next) => {
     // Commit de la transaction
     await transaction.commit();
 
-    // Recharger la vente avec les items
+    // Recharger la vente avec les items et le user
     const completeSale = await Sale.findByPk(sale.id, {
       include: [
         {
           model: SaleItem,
           as: 'items',
+        },
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'username', 'first_name', 'last_name'],
         },
       ],
     });
@@ -217,6 +223,32 @@ const createSale = async (req, res, next) => {
     logger.info(
       `Vente créée: ${completeSale.ticket_number} - ${totalTTC}€ (${payment_method}) par ${req.user.username}`
     );
+
+    // Impression automatique du ticket (en arrière-plan, ne pas bloquer la réponse)
+    setImmediate(async () => {
+      try {
+        const settings = await StoreSettings.findOne();
+        const settingsData = settings ? settings.toJSON() : {};
+
+        // Ajouter unit_price_ttc aux items
+        const saleData = completeSale.toJSON();
+        saleData.items = saleData.items.map((item) => {
+          const unitPriceHt = parseFloat(item.unit_price_ht);
+          const vatRate = parseFloat(item.vat_rate);
+          const unit_price_ttc = unitPriceHt * (1 + vatRate / 100);
+
+          return {
+            ...item,
+            unit_price_ttc: unit_price_ttc.toFixed(2),
+          };
+        });
+
+        await printerService.printSaleTicket(saleData, settingsData);
+      } catch (printError) {
+        logger.error('Erreur lors de l\'impression automatique:', printError);
+        // Ne pas bloquer la vente même si l'impression échoue
+      }
+    });
 
     res.status(201).json({
       success: true,

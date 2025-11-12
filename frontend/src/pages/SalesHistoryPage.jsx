@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getAllSales } from '../services/saleService';
 import Button from '../components/ui/Button';
-import { ArrowLeft, Search, Filter, Eye, Download } from 'lucide-react';
+import { ArrowLeft, Search, Filter, Eye, Download, Printer } from 'lucide-react';
 import { formatPrice } from '../utils/constants';
 
 const SalesHistoryPage = () => {
@@ -121,6 +121,30 @@ const SalesHistoryPage = () => {
     } catch (error) {
       console.error('Erreur téléchargement PDF:', error);
       alert('Erreur lors du téléchargement du PDF');
+    }
+  };
+
+  const handlePrintTicket = async (saleId, ticketNumber) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/printer/sale/${saleId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error?.message || 'Erreur lors de l\'impression');
+      }
+
+      alert(`Ticket ${ticketNumber} envoyé à l'imprimante`);
+    } catch (error) {
+      console.error('Erreur impression:', error);
+      alert(error.message || 'Erreur lors de l\'impression. Vérifiez que l\'imprimante est connectée.');
     }
   };
 
@@ -293,6 +317,13 @@ const SalesHistoryPage = () => {
                               title="Voir détails"
                             >
                               <Eye size={20} />
+                            </button>
+                            <button
+                              onClick={() => handlePrintTicket(sale.id, sale.ticket_number)}
+                              className="text-blue-600 hover:text-blue-800"
+                              title="Réimprimer ticket"
+                            >
+                              <Printer size={20} />
                             </button>
                             <button
                               onClick={() => handleDownloadPDF(sale.id, sale.ticket_number)}

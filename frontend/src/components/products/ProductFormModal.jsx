@@ -22,6 +22,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
     price_ht: '',
     vat_rate: 10,
     category: 'burgers',
+    image_url: '',
     is_active: true,
     is_menu: false,
     display_order: 0,
@@ -35,6 +36,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
         price_ht: product.price_ht || '',
         vat_rate: product.vat_rate || 10,
         category: product.category || 'burgers',
+        image_url: product.image_url || '',
         is_active: product.is_active !== undefined ? product.is_active : true,
         is_menu: product.is_menu || false,
         display_order: product.display_order || 0,
@@ -46,6 +48,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
         price_ht: '',
         vat_rate: 10,
         category: 'burgers',
+        image_url: '',
         is_active: true,
         is_menu: false,
         display_order: 0,
@@ -108,6 +111,36 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none"
                 placeholder="Description du produit..."
               />
+            </div>
+
+            {/* Image URL */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                URL de l'image (optionnel)
+              </label>
+              <input
+                type="url"
+                name="image_url"
+                value={formData.image_url}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                placeholder="https://exemple.com/image.jpg"
+              />
+              {formData.image_url && (
+                <div className="mt-3">
+                  <p className="text-sm text-gray-600 mb-2">Prévisualisation :</p>
+                  <img
+                    src={formData.image_url}
+                    alt="Prévisualisation"
+                    className="w-32 h-32 object-cover rounded-lg border-2 border-gray-200"
+                    onError={(e) => {
+                      e.target.src = '';
+                      e.target.alt = 'Image non disponible';
+                      e.target.className = 'w-32 h-32 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-200 text-gray-400 text-sm';
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
             {/* Prix HT */}

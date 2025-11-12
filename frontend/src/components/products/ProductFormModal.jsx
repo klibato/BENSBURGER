@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Button from '../ui/Button';
 import { useStoreConfig } from '../../context/StoreConfigContext';
+import MenuComposer from './MenuComposer';
 
 const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
   const { config } = useStoreConfig();
@@ -23,6 +24,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
     is_active: true,
     is_menu: false,
     display_order: 0,
+    menu_items: [],
   });
 
   useEffect(() => {
@@ -37,6 +39,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
         is_active: product.is_active !== undefined ? product.is_active : true,
         is_menu: product.is_menu || false,
         display_order: product.display_order || 0,
+        menu_items: product.menu_composition || product.menu_items || [],
       });
     } else {
       setFormData({
@@ -49,6 +52,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
         is_active: true,
         is_menu: false,
         display_order: 0,
+        menu_items: [],
       });
     }
   }, [product, isOpen, defaultCategory, defaultVatRate]);
@@ -256,23 +260,14 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
               </label>
             </div>
 
-            {/* Menu Composition Info */}
+            {/* Menu Composition */}
             {formData.is_menu && (
               <div className="md:col-span-2 mt-4">
-                <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-purple-900 mb-2 flex items-center gap-2">
-                    📦 Composition du menu
-                  </h4>
-                  <p className="text-sm text-purple-700 mb-3">
-                    Ce produit est défini comme un menu/formule. La composition (produits inclus) sera gérée
-                    dans une prochaine version de l'interface.
-                  </p>
-                  <p className="text-xs text-purple-600">
-                    💡 Pour l'instant, les compositions de menus peuvent être gérées directement via l'API
-                    en envoyant le champ <code className="bg-purple-100 px-1 py-0.5 rounded">menu_items</code>
-                    avec un tableau de <code className="bg-purple-100 px-1 py-0.5 rounded">{'{ product_id, quantity }'}</code>.
-                  </p>
-                </div>
+                <MenuComposer
+                  menuItems={formData.menu_items}
+                  onChange={(items) => setFormData(prev => ({ ...prev, menu_items: items }))}
+                  disabled={loading}
+                />
               </div>
             )}
           </div>

@@ -310,9 +310,26 @@ const POSPage = () => {
                     className="bg-gray-50 rounded-lg p-3 border border-gray-200"
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-medium text-gray-800 flex-1">
-                        {item.name}
-                      </h3>
+                      <div className="flex-1">
+                        <h3 className="font-medium text-gray-800 flex items-center gap-2">
+                          {item.name}
+                          {item.is_menu && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                              📦 Menu
+                            </span>
+                          )}
+                        </h3>
+                        {/* Afficher la composition du menu */}
+                        {item.is_menu && item.menu_composition && item.menu_composition.length > 0 && (
+                          <div className="mt-1 text-xs text-gray-600 pl-2 border-l-2 border-purple-300">
+                            {item.menu_composition.map((comp, idx) => (
+                              <div key={idx} className="flex items-center gap-1">
+                                <span>• {comp.quantity}x {comp.product_name}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                       <button
                         onClick={() => removeFromCart(item.id)}
                         className="text-red-500 hover:text-red-700 ml-2"

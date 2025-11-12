@@ -91,6 +91,7 @@ const SalesHistoryPage = () => {
       card: 'Carte bancaire',
       meal_voucher: 'Ticket restaurant',
       mixed: 'Mixte',
+      sumup: 'SumUp',
     };
     return labels[method] || method;
   };
@@ -148,6 +149,46 @@ const SalesHistoryPage = () => {
     }
   };
 
+  const handleExportCSV = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const params = new URLSearchParams();
+
+      // Ajouter les filtres actifs
+      if (filters.start_date) params.append('start_date', filters.start_date);
+      if (filters.end_date) params.append('end_date', filters.end_date);
+      if (filters.payment_method) params.append('payment_method', filters.payment_method);
+      if (filters.status) params.append('status', filters.status);
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/sales/export/csv?${params.toString()}`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de l\'export CSV');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ventes_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Erreur export CSV:', error);
+      alert('Erreur lors de l\'export CSV');
+    }
+  };
+
   if (!user) return null;
 
   return (
@@ -171,15 +212,26 @@ const SalesHistoryPage = () => {
             </p>
           </div>
         </div>
-        <Button
-          variant="secondary"
-          size="md"
-          onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center gap-2"
-        >
-          <Filter size={20} />
-          {showFilters ? 'Masquer filtres' : 'Filtres'}
-        </Button>
+        <div className="flex gap-3">
+          <Button
+            variant="primary"
+            size="md"
+            onClick={handleExportCSV}
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+          >
+            <Download size={20} />
+            Exporter CSV
+          </Button>
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center gap-2"
+          >
+            <Filter size={20} />
+            {showFilters ? 'Masquer filtres' : 'Filtres'}
+          </Button>
+        </div>
       </header>
 
       <div className="max-w-7xl mx-auto px-6 py-6">
@@ -222,7 +274,9 @@ const SalesHistoryPage = () => {
                   <option value="">Tous</option>
                   <option value="cash">Espèces</option>
                   <option value="card">Carte</option>
+                  <option value="sumup">SumUp</option>
                   <option value="meal_voucher">Ticket resto</option>
+                  <option value="mixed">Mixte</option>
                 </select>
               </div>
               <div>

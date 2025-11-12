@@ -13,6 +13,9 @@ router.post('/', requirePermission(PERMISSIONS.SALES_CREATE), saleController.cre
 // GET /api/sales - Récupérer toutes les ventes
 router.get('/', requirePermission(PERMISSIONS.SALES_VIEW), saleController.getAllSales);
 
+// GET /api/sales/export/csv - Exporter les ventes en CSV
+router.get('/export/csv', requirePermission(PERMISSIONS.SALES_VIEW), saleController.exportSalesCSV);
+
 // GET /api/sales/:id - Récupérer une vente
 router.get('/:id', requirePermission(PERMISSIONS.SALES_VIEW), saleController.getSaleById);
 

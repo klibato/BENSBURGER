@@ -462,9 +462,161 @@ const generateTicketPDFEndpoint = async (req, res, next) => {
   }
 };
 
+/**
+ * Exporter les ventes en CSV
+ */
+const exportSalesCSV = async (req, res, next) => {
+  try {
+    const {
+      start_date,
+      end_date,
+      user_id,
+      payment_method,
+      status,
+    } = req.query;
+
+    const where = {};
+
+    // Filtres (mêmes que getAllSales)
+    if (start_date) {
+      where.created_at = {
+        ...where.created_at,
+        [sequelize.Op.gte]: new Date(start_date),
+      };
+    }
+
+    if (end_date) {
+      where.created_at = {
+        ...where.created_at,
+        [sequelize.Op.lte]: new Date(end_date),
+      };
+    }
+
+    if (user_id && req.user.role === 'admin') {
+      where.user_id = user_id;
+    } else if (req.user.role === 'cashier') {
+      where.user_id = req.user.id;
+    }
+
+    if (payment_method) {
+      where.payment_method = payment_method;
+    }
+
+    if (status) {
+      where.status = status;
+    }
+
+    // Récupérer toutes les ventes (pas de limit pour l'export)
+    const sales = await Sale.findAll({
+      where,
+      order: [['created_at', 'DESC']],
+      include: [
+        {
+          model: SaleItem,
+          as: 'items',
+        },
+        {
+          model: User,
+          as: 'user',
+          attributes: ['username', 'first_name', 'last_name'],
+        },
+      ],
+    });
+
+    // Formater en CSV
+    const csvRows = [];
+
+    // Header
+    csvRows.push([
+      'Date',
+      'Ticket',
+      'Vendeur',
+      'Paiement',
+      'Montant TTC (€)',
+      'Produits',
+      'Quantité totale',
+      'Statut',
+    ].join(';'));
+
+    // Lignes de données
+    sales.forEach((sale) => {
+      const date = new Date(sale.created_at).toLocaleString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      const vendeur = sale.user
+        ? `${sale.user.first_name || ''} ${sale.user.last_name || ''}`.trim() || sale.user.username
+        : 'N/A';
+
+      const paymentMethodLabels = {
+        cash: 'Espèces',
+        card: 'Carte bancaire',
+        meal_voucher: 'Ticket restaurant',
+        mixed: 'Mixte',
+        sumup: 'SumUp',
+      };
+      const paymentMethod = paymentMethodLabels[sale.payment_method] || sale.payment_method;
+
+      const totalTTC = parseFloat(sale.total_ttc).toFixed(2);
+
+      // Liste des produits
+      const products = sale.items
+        ? sale.items.map((item) => `${item.product_name} (x${item.quantity})`).join(', ')
+        : '';
+
+      // Quantité totale d'articles
+      const totalQuantity = sale.items
+        ? sale.items.reduce((sum, item) => sum + parseInt(item.quantity), 0)
+        : 0;
+
+      const statusLabels = {
+        completed: 'Complétée',
+        cancelled: 'Annulée',
+        refunded: 'Remboursée',
+      };
+      const status = statusLabels[sale.status] || sale.status;
+
+      csvRows.push([
+        date,
+        sale.ticket_number,
+        vendeur,
+        paymentMethod,
+        totalTTC,
+        `"${products}"`, // Encadrer avec guillemets pour gérer les virgules
+        totalQuantity,
+        status,
+      ].join(';'));
+    });
+
+    const csvContent = csvRows.join('\n');
+
+    // Générer le nom de fichier avec la date du jour
+    const today = new Date().toISOString().split('T')[0];
+    const filename = `ventes_${today}.csv`;
+
+    // Headers pour le téléchargement CSV
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+    // Ajouter le BOM UTF-8 pour Excel
+    res.write('\ufeff');
+    res.end(csvContent);
+
+    logger.info(`Export CSV généré par ${req.user.username}: ${sales.length} ventes`);
+  } catch (error) {
+    logger.error('Erreur lors de l\'export CSV:', error);
+    next(error);
+  }
+};
+
 module.exports = {
   createSale,
   getAllSales,
   getSaleById,
   generateTicketPDFEndpoint,
+  exportSalesCSV,
 };

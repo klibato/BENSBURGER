@@ -281,11 +281,52 @@ const getProductsByCategory = async (req, res, next) => {
   }
 };
 
+/**
+ * Mettre à jour l'ordre d'affichage des produits
+ * Permet de réorganiser plusieurs produits en une seule requête
+ */
+const updateProductsOrder = async (req, res, next) => {
+  try {
+    const { products } = req.body; // Array of {id, display_order}
+
+    if (!Array.isArray(products) || products.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'INVALID_INPUT',
+          message: 'Un tableau de produits avec {id, display_order} est requis',
+        },
+      });
+    }
+
+    // Mettre à jour chaque produit
+    const updatePromises = products.map((item) =>
+      Product.update(
+        { display_order: item.display_order },
+        { where: { id: item.id } }
+      )
+    );
+
+    await Promise.all(updatePromises);
+
+    logger.info(`Ordre des produits mis à jour par ${req.user.username} (${products.length} produits)`);
+
+    res.json({
+      success: true,
+      message: `Ordre de ${products.length} produit(s) mis à jour avec succès`,
+    });
+  } catch (error) {
+    logger.error('Erreur lors de la mise à jour de l\'ordre des produits:', error);
+    next(error);
+  }
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
   createProduct,
   updateProduct,
   deleteProduct,
+  updateProductsOrder,
   getProductsByCategory,
 };

@@ -116,9 +116,12 @@ const startServer = async () => {
       process.exit(1);
     }
 
-    // Exécuter la migration store_settings
+    // Exécuter les migrations
     const migrateStoreSettings = require('./scripts/migrateStoreSettings');
     await migrateStoreSettings();
+
+    const migrateProductsDisplayOrder = require('./scripts/migrateProductsDisplayOrder');
+    await migrateProductsDisplayOrder();
 
     // Démarrer le serveur
     app.listen(config.PORT, () => {

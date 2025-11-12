@@ -93,3 +93,13 @@ export const deleteProduct = async (id) => {
   const response = await api.delete(`/products/${id}`);
   return response.data;
 };
+
+/**
+ * Mettre à jour l'ordre d'affichage des produits
+ * @param {Array} products - Tableau d'objets {id, display_order}
+ * @returns {Promise<Object>} Confirmation
+ */
+export const updateProductsOrder = async (products) => {
+  const response = await api.put('/products/reorder', { products });
+  return response.data;
+};

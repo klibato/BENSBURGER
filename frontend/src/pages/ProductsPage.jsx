@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowUp, ArrowDown } from 'lucide-react';
 import Button from '../components/ui/Button';
 import ProductFormModal from '../components/products/ProductFormModal';
 import {
@@ -7,6 +8,7 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  updateProductsOrder,
 } from '../services/productService';
 
 const CATEGORIES = [
@@ -136,6 +138,45 @@ const ProductsPage = () => {
   const getCategoryLabel = (value) => {
     const cat = CATEGORIES.find((c) => c.value === value);
     return cat ? cat.label : value;
+  };
+
+  // Move product up or down in display order
+  const handleMoveProduct = async (index, direction) => {
+    try {
+      const newProducts = [...filteredProducts];
+      const targetIndex = direction === 'up' ? index - 1 : index + 1;
+
+      // Check bounds
+      if (targetIndex < 0 || targetIndex >= newProducts.length) {
+        return;
+      }
+
+      // Swap display_order values
+      const temp = newProducts[index].display_order;
+      newProducts[index].display_order = newProducts[targetIndex].display_order;
+      newProducts[targetIndex].display_order = temp;
+
+      // Swap positions in array
+      [newProducts[index], newProducts[targetIndex]] = [newProducts[targetIndex], newProducts[index]];
+
+      // Update state optimistically
+      setFilteredProducts(newProducts);
+
+      // Send update to backend
+      const updates = [
+        { id: newProducts[index].id, display_order: newProducts[index].display_order },
+        { id: newProducts[targetIndex].id, display_order: newProducts[targetIndex].display_order },
+      ];
+
+      await updateProductsOrder(updates);
+      setSuccessMessage('Ordre mis à jour avec succès');
+      setTimeout(() => setSuccessMessage(''), 2000);
+    } catch (err) {
+      console.error('Erreur lors de la réorganisation:', err);
+      setError('Erreur lors de la mise à jour de l\'ordre');
+      // Reload products to restore correct order
+      await fetchProducts();
+    }
   };
 
   return (
@@ -317,7 +358,27 @@ const ProductsPage = () => {
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-500">{product.display_order}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-gray-500">{product.display_order}</span>
+                          <div className="flex flex-col gap-0.5">
+                            <button
+                              onClick={() => handleMoveProduct(filteredProducts.indexOf(product), 'up')}
+                              disabled={filteredProducts.indexOf(product) === 0}
+                              className="p-0.5 text-gray-400 hover:text-primary-600 disabled:opacity-30 disabled:cursor-not-allowed"
+                              title="Monter"
+                            >
+                              <ArrowUp size={16} />
+                            </button>
+                            <button
+                              onClick={() => handleMoveProduct(filteredProducts.indexOf(product), 'down')}
+                              disabled={filteredProducts.indexOf(product) === filteredProducts.length - 1}
+                              className="p-0.5 text-gray-400 hover:text-primary-600 disabled:opacity-30 disabled:cursor-not-allowed"
+                              title="Descendre"
+                            >
+                              <ArrowDown size={16} />
+                            </button>
+                          </div>
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end gap-2">

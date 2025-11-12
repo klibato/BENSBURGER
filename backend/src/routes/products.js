@@ -16,6 +16,9 @@ router.get('/:id', productController.getProductById);
 // POST /api/products - Créer un produit
 router.post('/', authenticateToken, requirePermission(PERMISSIONS.PRODUCTS_CREATE), productController.createProduct);
 
+// PUT /api/products/reorder - Mettre à jour l'ordre d'affichage des produits
+router.put('/reorder', authenticateToken, requirePermission(PERMISSIONS.PRODUCTS_UPDATE), productController.updateProductsOrder);
+
 // PUT /api/products/:id - Modifier un produit
 router.put('/:id', authenticateToken, requirePermission(PERMISSIONS.PRODUCTS_UPDATE), productController.updateProduct);
 

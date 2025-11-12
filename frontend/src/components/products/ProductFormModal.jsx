@@ -1,21 +1,13 @@
 import { useState, useEffect } from 'react';
 import Button from '../ui/Button';
-
-const CATEGORIES = [
-  { value: 'burgers', label: 'Burgers' },
-  { value: 'sides', label: 'Accompagnements' },
-  { value: 'drinks', label: 'Boissons' },
-  { value: 'desserts', label: 'Desserts' },
-  { value: 'menus', label: 'Menus' },
-];
-
-const VAT_RATES = [
-  { value: 5.5, label: '5.5%' },
-  { value: 10, label: '10%' },
-  { value: 20, label: '20%' },
-];
+import { useStoreConfig } from '../../context/StoreConfigContext';
 
 const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
+  const { config } = useStoreConfig();
+
+  // Utiliser les catégories et taux de TVA de la configuration
+  const categories = config.categories || [];
+  const vatRates = config.vat_rates || [];
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -173,11 +165,19 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
               >
-                {VAT_RATES.map((rate) => (
-                  <option key={rate.value} value={rate.value}>
-                    {rate.label}
-                  </option>
-                ))}
+                {vatRates.length > 0 ? (
+                  vatRates.map((vat) => (
+                    <option key={vat.rate} value={vat.rate}>
+                      {vat.name} - {vat.description}
+                    </option>
+                  ))
+                ) : (
+                  <>
+                    <option value={5.5}>TVA 5.5%</option>
+                    <option value={10}>TVA 10%</option>
+                    <option value={20}>TVA 20%</option>
+                  </>
+                )}
               </select>
             </div>
 
@@ -193,11 +193,21 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
               >
-                {CATEGORIES.map((cat) => (
-                  <option key={cat.value} value={cat.value}>
-                    {cat.label}
-                  </option>
-                ))}
+                {categories.length > 0 ? (
+                  categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.icon} {cat.name}
+                    </option>
+                  ))
+                ) : (
+                  <>
+                    <option value="burgers">Burgers</option>
+                    <option value="sides">Accompagnements</option>
+                    <option value="drinks">Boissons</option>
+                    <option value="desserts">Desserts</option>
+                    <option value="menus">Menus</option>
+                  </>
+                )}
               </select>
             </div>
 

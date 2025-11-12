@@ -1,43 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Modal from '../ui/Modal';
 import Button from '../ui/Button';
 import CashPayment from './CashPayment';
 import { prepareSaleItems } from '../../utils/saleHelper';
 import { createSale } from '../../services/saleService';
 import { Banknote, CreditCard, Ticket, Shuffle } from 'lucide-react';
-
-const PAYMENT_METHODS = [
-  {
-    id: 'cash',
-    label: 'Espèces',
-    icon: Banknote,
-    color: 'bg-green-500',
-  },
-  {
-    id: 'card',
-    label: 'Carte Bancaire',
-    icon: CreditCard,
-    color: 'bg-blue-500',
-  },
-  {
-    id: 'meal_voucher',
-    label: 'Titres Restaurant',
-    icon: Ticket,
-    color: 'bg-orange-500',
-  },
-  {
-    id: 'mixed',
-    label: 'Paiement Mixte',
-    icon: Shuffle,
-    color: 'bg-purple-500',
-  },
-];
+import { useStoreConfig } from '../../context/StoreConfigContext';
 
 /**
  * Modal de paiement
  * Gère le processus complet de paiement avec choix du mode
+ * Les moyens de paiement sont chargés dynamiquement depuis la configuration
  */
 const PaymentModal = ({ isOpen, onClose, cart, onSuccess }) => {
+  const { config, isPaymentMethodEnabled } = useStoreConfig();
+
+  // Construire la liste des méthodes de paiement avec les icônes
+  const PAYMENT_METHODS_CONFIG = useMemo(() => {
+    const iconMap = {
+      cash: Banknote,
+      card: CreditCard,
+      meal_voucher: Ticket,
+      mixed: Shuffle,
+    };
+
+    const colorMap = {
+      cash: 'bg-green-500',
+      card: 'bg-blue-500',
+      meal_voucher: 'bg-orange-500',
+      mixed: 'bg-purple-500',
+    };
+
+    // Construire la liste à partir de la config
+    const methods = [];
+    const paymentMethods = config.payment_methods || {};
+
+    Object.keys(paymentMethods).forEach((methodId) => {
+      const method = paymentMethods[methodId];
+      if (method.enabled) {
+        methods.push({
+          id: methodId,
+          label: method.name,
+          icon: iconMap[methodId] || Banknote,
+          color: colorMap[methodId] || 'bg-gray-500',
+        });
+      }
+    });
+
+    // Si aucune méthode configurée, utiliser les valeurs par défaut
+    if (methods.length === 0) {
+      return [
+        { id: 'cash', label: 'Espèces', icon: Banknote, color: 'bg-green-500' },
+        { id: 'card', label: 'Carte Bancaire', icon: CreditCard, color: 'bg-blue-500' },
+        { id: 'meal_voucher', label: 'Titres Restaurant', icon: Ticket, color: 'bg-orange-500' },
+        { id: 'mixed', label: 'Paiement Mixte', icon: Shuffle, color: 'bg-purple-500' },
+      ];
+    }
+
+    return methods;
+  }, [config.payment_methods]);
   const [selectedMethod, setSelectedMethod] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -225,7 +246,7 @@ const PaymentModal = ({ isOpen, onClose, cart, onSuccess }) => {
               Sélectionnez le mode de paiement
             </h3>
             <div className="grid grid-cols-2 gap-4">
-              {PAYMENT_METHODS.map((method) => {
+              {PAYMENT_METHODS_CONFIG.map((method) => {
                 const Icon = method.icon;
                 return (
                   <button

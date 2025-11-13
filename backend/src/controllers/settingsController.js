@@ -1,5 +1,6 @@
 const { StoreSettings } = require('../models');
 const logger = require('../utils/logger');
+const settingsCache = require('../utils/settingsCache');
 
 /**
  * Récupérer les paramètres du commerce
@@ -55,6 +56,9 @@ const updateSettings = async (req, res, next) => {
       theme_color,
       language,
       timezone,
+      sumup_config,
+      printer_config,
+      email_config,
     } = req.body;
 
     let settings = await StoreSettings.findByPk(1);
@@ -85,6 +89,9 @@ const updateSettings = async (req, res, next) => {
       theme_color,
       language,
       timezone,
+      sumup_config,
+      printer_config,
+      email_config,
     };
 
     // Supprimer les valeurs undefined pour ne pas écraser avec null
@@ -103,6 +110,10 @@ const updateSettings = async (req, res, next) => {
     }
 
     logger.info(`Paramètres du commerce mis à jour par ${req.user.username}`);
+
+    // Invalider le cache pour que les services rechargent la config
+    settingsCache.invalidate();
+    logger.info('🔄 Cache des paramètres invalidé');
 
     res.json({
       success: true,

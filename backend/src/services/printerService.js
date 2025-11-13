@@ -1,38 +1,54 @@
 const { ThermalPrinter, PrinterTypes } = require('node-thermal-printer');
 const logger = require('../utils/logger');
 const { formatPrice } = require('../utils/helpers');
+const settingsCache = require('../utils/settingsCache');
 
 /**
  * Service d'impression ESC/POS pour tickets thermiques 80mm
  * Compatible avec imprimantes EPSON, Star, et génériques ESC/POS
+ * Lit la configuration depuis la BDD (store_settings.printer_config)
  */
 
 class PrinterService {
   constructor() {
     this.printer = null;
-    this.isEnabled = process.env.PRINTER_ENABLED === 'true';
-    this.printerType = process.env.PRINTER_TYPE || 'epson'; // epson, star, generic
-    this.printerInterface = process.env.PRINTER_INTERFACE || 'tcp'; // tcp, usb, printer
-    this.printerIp = process.env.PRINTER_IP;
-    this.printerPort = parseInt(process.env.PRINTER_PORT || '9100', 10);
-    this.printerPath = process.env.PRINTER_PATH; // For USB/printer interface
+    this.config = null;
+  }
+
+  /**
+   * Charger la configuration depuis la BDD
+   */
+  async loadConfig() {
+    const settings = await settingsCache.getSettings();
+    this.config = settings.printer_config || {
+      enabled: false,
+      type: 'epson',
+      interface: 'tcp',
+      ip: '',
+      port: 9100,
+      path: '',
+      auto_print: true,
+    };
+    return this.config;
   }
 
   /**
    * Initialiser la connexion à l'imprimante
    */
   async initialize() {
-    if (!this.isEnabled) {
-      logger.info('📄 Imprimante désactivée (PRINTER_ENABLED=false)');
+    await this.loadConfig();
+
+    if (!this.config.enabled) {
+      logger.info('📄 Imprimante désactivée (config BDD)');
       return false;
     }
 
     try {
       // Déterminer le type d'imprimante
       let printerType = PrinterTypes.EPSON;
-      if (this.printerType === 'star') {
+      if (this.config.type === 'star') {
         printerType = PrinterTypes.STAR;
-      } else if (this.printerType === 'tanca') {
+      } else if (this.config.type === 'tanca') {
         printerType = PrinterTypes.TANCA;
       }
 
@@ -46,20 +62,20 @@ class PrinterService {
       };
 
       // Ajouter la configuration d'interface
-      if (this.printerInterface === 'tcp') {
-        if (!this.printerIp) {
-          logger.warn('⚠️ PRINTER_IP non défini, impression désactivée');
-          this.isEnabled = false;
+      if (this.config.interface === 'tcp') {
+        if (!this.config.ip) {
+          logger.warn('⚠️ IP imprimante non définie, impression désactivée');
+          this.config.enabled = false;
           return false;
         }
-        config.interface = `tcp://${this.printerIp}:${this.printerPort}`;
-      } else if (this.printerInterface === 'usb' || this.printerInterface === 'printer') {
-        if (!this.printerPath) {
-          logger.warn('⚠️ PRINTER_PATH non défini, impression désactivée');
-          this.isEnabled = false;
+        config.interface = `tcp://${this.config.ip}:${this.config.port}`;
+      } else if (this.config.interface === 'usb' || this.config.interface === 'printer') {
+        if (!this.config.path) {
+          logger.warn('⚠️ Chemin imprimante non défini, impression désactivée');
+          this.config.enabled = false;
           return false;
         }
-        config.interface = `printer:${this.printerPath}`;
+        config.interface = `printer:${this.config.path}`;
       }
 
       this.printer = new ThermalPrinter(config);
@@ -67,16 +83,16 @@ class PrinterService {
       // Tester la connexion
       const isConnected = await this.testConnection();
       if (isConnected) {
-        logger.info(`🖨️ Imprimante initialisée (${this.printerType} via ${this.printerInterface})`);
+        logger.info(`🖨️ Imprimante initialisée (${this.config.type} via ${this.config.interface})`);
         return true;
       } else {
         logger.warn('⚠️ Impossible de se connecter à l\'imprimante, impression désactivée');
-        this.isEnabled = false;
+        this.config.enabled = false;
         return false;
       }
     } catch (error) {
       logger.error('❌ Erreur lors de l\'initialisation de l\'imprimante:', error);
-      this.isEnabled = false;
+      this.config.enabled = false;
       return false;
     }
   }
@@ -102,7 +118,9 @@ class PrinterService {
    * @param {Object} settings - Paramètres du commerce
    */
   async printSaleTicket(sale, settings) {
-    if (!this.isEnabled || !this.printer) {
+    await this.loadConfig();
+
+    if (!this.config.enabled || !this.printer) {
       logger.info('📄 Impression désactivée ou imprimante non initialisée');
       return { success: false, message: 'Imprimante non disponible' };
     }
@@ -253,7 +271,9 @@ class PrinterService {
    * @param {Object} settings - Paramètres du commerce
    */
   async printXReport(report, settings) {
-    if (!this.isEnabled || !this.printer) {
+    await this.loadConfig();
+
+    if (!this.config.enabled || !this.printer) {
       logger.info('📄 Impression désactivée ou imprimante non initialisée');
       return { success: false, message: 'Imprimante non disponible' };
     }
@@ -317,7 +337,9 @@ class PrinterService {
    * @param {Object} settings - Paramètres du commerce
    */
   async printZReport(cashRegister, settings) {
-    if (!this.isEnabled || !this.printer) {
+    await this.loadConfig();
+
+    if (!this.config.enabled || !this.printer) {
       logger.info('📄 Impression désactivée ou imprimante non initialisée');
       return { success: false, message: 'Imprimante non disponible' };
     }
@@ -399,7 +421,9 @@ class PrinterService {
    * Imprimer un ticket de test
    */
   async printTestTicket() {
-    if (!this.isEnabled || !this.printer) {
+    await this.loadConfig();
+
+    if (!this.config.enabled || !this.printer) {
       return { success: false, message: 'Imprimante non disponible' };
     }
 

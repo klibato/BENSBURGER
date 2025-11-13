@@ -1,5 +1,6 @@
 const axios = require('axios');
 const logger = require('../utils/logger');
+const settingsCache = require('../utils/settingsCache');
 
 /**
  * Service d'intégration SumUp pour paiements par carte
@@ -11,32 +12,43 @@ const logger = require('../utils/logger');
  * - Vérifier le statut d'un paiement
  * - Annuler un paiement
  *
- * Configuration requise:
- * - SUMUP_API_KEY: Clé API SumUp (from merchant dashboard)
- * - SUMUP_MERCHANT_CODE: Code marchand SumUp
- * - SUMUP_ENABLED: true/false pour activer/désactiver
+ * Configuration:
+ * Lit depuis store_settings.sumup_config (BDD)
  */
 
 class SumUpService {
   constructor() {
-    this.isEnabled = process.env.SUMUP_ENABLED === 'true';
-    this.apiKey = process.env.SUMUP_API_KEY;
-    this.merchantCode = process.env.SUMUP_MERCHANT_CODE;
-    this.baseURL = process.env.SUMUP_API_URL || 'https://api.sumup.com/v0.1';
-    this.checkoutURL = `${this.baseURL}/checkouts`;
+    this.config = null;
+    this.baseURL = 'https://api.sumup.com/v0.1';
+  }
+
+  /**
+   * Charger la configuration depuis la BDD
+   */
+  async loadConfig() {
+    const settings = await settingsCache.getSettings();
+    this.config = settings.sumup_config || {
+      enabled: false,
+      api_key: '',
+      merchant_code: '',
+      affiliate_key: '',
+    };
+    return this.config;
   }
 
   /**
    * Vérifier que SumUp est configuré
    */
-  isConfigured() {
-    if (!this.isEnabled) {
-      logger.info('💳 SumUp désactivé (SUMUP_ENABLED=false)');
+  async isConfigured() {
+    await this.loadConfig();
+
+    if (!this.config.enabled) {
+      logger.info('💳 SumUp désactivé (config BDD)');
       return false;
     }
 
-    if (!this.apiKey || !this.merchantCode) {
-      logger.warn('⚠️ Configuration SumUp incomplète (SUMUP_API_KEY ou SUMUP_MERCHANT_CODE manquant)');
+    if (!this.config.api_key || !this.config.merchant_code) {
+      logger.warn('⚠️ Configuration SumUp incomplète (api_key ou merchant_code manquant)');
       return false;
     }
 
@@ -54,7 +66,8 @@ class SumUpService {
    * @returns {Promise<Object>} - Résultat avec checkout_id et status
    */
   async createCheckout({ amount, currency = 'EUR', reference, description }) {
-    if (!this.isConfigured()) {
+    const configured = await this.isConfigured();
+    if (!configured) {
       return {
         success: false,
         error: 'SumUp n\'est pas configuré',
@@ -69,16 +82,16 @@ class SumUpService {
         checkout_reference: reference,
         amount: amountInCents / 100, // SumUp API accepts decimal amounts
         currency,
-        merchant_code: this.merchantCode,
+        merchant_code: this.config.merchant_code,
         description: description || `Ticket ${reference}`,
-        pay_to_email: process.env.SUMUP_MERCHANT_EMAIL || '',
       };
 
       logger.info(`📡 Création checkout SumUp: ${reference} - ${amount}€`);
 
-      const response = await axios.post(this.checkoutURL, payload, {
+      const checkoutURL = `${this.baseURL}/checkouts`;
+      const response = await axios.post(checkoutURL, payload, {
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
+          'Authorization': `Bearer ${this.config.api_key}`,
           'Content-Type': 'application/json',
         },
         timeout: 10000, // 10 secondes
@@ -112,7 +125,8 @@ class SumUpService {
    * @returns {Promise<Object>} - Statut du paiement
    */
   async getCheckoutStatus(checkoutId) {
-    if (!this.isConfigured()) {
+    const configured = await this.isConfigured();
+    if (!configured) {
       return {
         success: false,
         error: 'SumUp n\'est pas configuré',
@@ -120,9 +134,10 @@ class SumUpService {
     }
 
     try {
-      const response = await axios.get(`${this.checkoutURL}/${checkoutId}`, {
+      const checkoutURL = `${this.baseURL}/checkouts`;
+      const response = await axios.get(`${checkoutURL}/${checkoutId}`, {
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
+          'Authorization': `Bearer ${this.config.api_key}`,
         },
         timeout: 5000,
       });
@@ -158,7 +173,8 @@ class SumUpService {
    * @returns {Promise<Object>} - Résultat du paiement
    */
   async processPayment({ amount, reference }) {
-    if (!this.isConfigured()) {
+    const configured = await this.isConfigured();
+    if (!configured) {
       return {
         success: false,
         error: 'SumUp n\'est pas configuré',
@@ -210,7 +226,8 @@ class SumUpService {
    * (utile pour vérifier la configuration)
    */
   async getMerchantInfo() {
-    if (!this.isConfigured()) {
+    const configured = await this.isConfigured();
+    if (!configured) {
       return {
         success: false,
         error: 'SumUp n\'est pas configuré',
@@ -220,7 +237,7 @@ class SumUpService {
     try {
       const response = await axios.get(`${this.baseURL}/me`, {
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
+          'Authorization': `Bearer ${this.config.api_key}`,
         },
         timeout: 5000,
       });

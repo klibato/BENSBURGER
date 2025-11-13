@@ -3,6 +3,17 @@ import { getPublicConfig } from '../services/settingsService';
 
 const StoreConfigContext = createContext();
 
+// Helper pour ajuster la luminosité d'une couleur hexadécimale
+const adjustBrightness = (hex, percent) => {
+  // Convertir hex en RGB
+  const num = parseInt(hex.replace('#', ''), 16);
+  const r = Math.min(255, Math.max(0, (num >> 16) + percent));
+  const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + percent));
+  const b = Math.min(255, Math.max(0, (num & 0x0000FF) + percent));
+
+  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+};
+
 export const useStoreConfig = () => {
   const context = useContext(StoreConfigContext);
   if (!context) {
@@ -44,6 +55,16 @@ export const StoreConfigProvider = ({ children }) => {
   useEffect(() => {
     fetchConfig();
   }, []);
+
+  // Appliquer le theme_color dynamiquement au DOM
+  useEffect(() => {
+    if (config.theme_color) {
+      document.documentElement.style.setProperty('--color-primary', config.theme_color);
+      // Générer des variations de la couleur pour hover, etc.
+      document.documentElement.style.setProperty('--color-primary-hover', adjustBrightness(config.theme_color, -10));
+      document.documentElement.style.setProperty('--color-primary-light', adjustBrightness(config.theme_color, 30));
+    }
+  }, [config.theme_color]);
 
   // Fonction helper pour obtenir une catégorie par ID
   const getCategoryById = (categoryId) => {

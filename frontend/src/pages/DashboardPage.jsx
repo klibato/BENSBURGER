@@ -5,22 +5,21 @@ import { getDashboardStats } from '../services/dashboardService';
 import Button from '../components/ui/Button';
 import { ArrowLeft, TrendingUp, ShoppingCart, DollarSign, CreditCard, RefreshCw } from 'lucide-react';
 import { formatPrice } from '../utils/constants';
-// TEMPORAIRE: Import recharts commenté - à réactiver après installation dans Docker
-// import {
-//   LineChart,
-//   Line,
-//   BarChart,
-//   Bar,
-//   PieChart,
-//   Pie,
-//   Cell,
-//   XAxis,
-//   YAxis,
-//   CartesianGrid,
-//   Tooltip,
-//   Legend,
-//   ResponsiveContainer,
-// } from 'recharts';
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 
 const DashboardPage = () => {
   const { user, isAuthenticated } = useAuth();
@@ -73,6 +72,25 @@ const DashboardPage = () => {
       sumup: 'SumUp',
     };
     return labels[method] || method;
+  };
+
+  // Couleurs pour les graphiques
+  const CHART_COLORS = {
+    primary: '#10b981',    // green
+    secondary: '#3b82f6',  // blue
+    accent: '#f59e0b',     // orange
+    purple: '#8b5cf6',     // purple
+    indigo: '#6366f1',     // indigo
+    pink: '#ec4899',       // pink
+    teal: '#14b8a6',       // teal
+  };
+
+  const PAYMENT_COLORS = {
+    cash: CHART_COLORS.primary,
+    card: CHART_COLORS.secondary,
+    meal_voucher: CHART_COLORS.accent,
+    mixed: CHART_COLORS.purple,
+    sumup: CHART_COLORS.indigo,
   };
 
   if (!user) return null;
@@ -198,40 +216,47 @@ const DashboardPage = () => {
               <div className="bg-white rounded-lg shadow">
                 <div className="px-6 py-4 border-b border-gray-200">
                   <h3 className="text-lg font-semibold text-gray-800">
-                    Top 5 Produits
+                    🏆 Top 5 Produits
                   </h3>
                 </div>
                 <div className="p-6">
                   {stats.top_products.length === 0 ? (
                     <p className="text-gray-500 text-center py-4">Aucune vente</p>
                   ) : (
-                    <div className="space-y-3">
-                      {stats.top_products.map((product, index) => (
-                        <div
-                          key={product.product_id}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                              <span className="text-primary-600 font-bold">
-                                #{index + 1}
-                              </span>
-                            </div>
-                            <div>
-                              <p className="font-medium text-gray-900">
-                                {product.product_name}
-                              </p>
-                              <p className="text-sm text-gray-600">
-                                {product.total_quantity} vendus
-                              </p>
-                            </div>
-                          </div>
-                          <p className="font-semibold text-green-600">
-                            {formatPrice(product.total_revenue)}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart
+                        data={stats.top_products.map((product, index) => ({
+                          name: product.product_name.length > 15
+                            ? product.product_name.substring(0, 15) + '...'
+                            : product.product_name,
+                          'CA (€)': parseFloat(product.total_revenue),
+                          'Quantité': parseInt(product.total_quantity),
+                        }))}
+                        layout="vertical"
+                        margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                        <XAxis type="number" />
+                        <YAxis
+                          dataKey="name"
+                          type="category"
+                          width={95}
+                          style={{ fontSize: '12px' }}
+                        />
+                        <Tooltip
+                          contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                          formatter={(value, name) => {
+                            if (name === 'CA (€)') {
+                              return [formatPrice(value), name];
+                            }
+                            return [value, name];
+                          }}
+                        />
+                        <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                        <Bar dataKey="CA (€)" fill={CHART_COLORS.primary} radius={[0, 8, 8, 0]} />
+                        <Bar dataKey="Quantité" fill={CHART_COLORS.secondary} radius={[0, 8, 8, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
                   )}
                 </div>
               </div>
@@ -240,33 +265,48 @@ const DashboardPage = () => {
               <div className="bg-white rounded-lg shadow">
                 <div className="px-6 py-4 border-b border-gray-200">
                   <h3 className="text-lg font-semibold text-gray-800">
-                    Modes de paiement
+                    💳 Modes de paiement
                   </h3>
                 </div>
                 <div className="p-6">
                   {stats.sales_by_payment_method.length === 0 ? (
                     <p className="text-gray-500 text-center py-4">Aucune vente</p>
                   ) : (
-                    <div className="space-y-3">
-                      {stats.sales_by_payment_method.map((payment) => (
-                        <div
-                          key={payment.payment_method}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                    <ResponsiveContainer width="100%" height={300}>
+                      <PieChart>
+                        <Pie
+                          data={stats.sales_by_payment_method.map((payment) => ({
+                            name: getPaymentMethodLabel(payment.payment_method),
+                            value: parseFloat(payment.total),
+                            count: payment.count,
+                            method: payment.payment_method,
+                          }))}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                          outerRadius={90}
+                          dataKey="value"
                         >
-                          <div>
-                            <p className="font-medium text-gray-900">
-                              {getPaymentMethodLabel(payment.payment_method)}
-                            </p>
-                            <p className="text-sm text-gray-600">
-                              {payment.count} transaction{payment.count > 1 ? 's' : ''}
-                            </p>
-                          </div>
-                          <p className="font-semibold text-gray-900">
-                            {formatPrice(payment.total)}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
+                          {stats.sales_by_payment_method.map((payment, index) => (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={PAYMENT_COLORS[payment.payment_method] || CHART_COLORS.accent}
+                            />
+                          ))}
+                        </Pie>
+                        <Tooltip
+                          contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                          formatter={(value, name, props) => {
+                            return [
+                              `${formatPrice(value)} (${props.payload.count} transaction${props.payload.count > 1 ? 's' : ''})`,
+                              name
+                            ];
+                          }}
+                        />
+                        <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                      </PieChart>
+                    </ResponsiveContainer>
                   )}
                 </div>
               </div>
@@ -277,34 +317,70 @@ const DashboardPage = () => {
               <div className="bg-white rounded-lg shadow mt-6">
                 <div className="px-6 py-4 border-b border-gray-200">
                   <h3 className="text-lg font-semibold text-gray-800">
-                    Ventes par jour
+                    📈 Évolution des ventes
                   </h3>
                 </div>
                 <div className="p-6">
-                  <div className="space-y-2">
-                    {stats.sales_by_day.map((day) => (
-                      <div
-                        key={day.date}
-                        className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg"
-                      >
-                        <div>
-                          <p className="font-medium text-gray-900">
-                            {new Date(day.date).toLocaleDateString('fr-FR', {
-                              weekday: 'long',
-                              day: 'numeric',
-                              month: 'long',
-                            })}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            {day.count} vente{day.count > 1 ? 's' : ''}
-                          </p>
-                        </div>
-                        <p className="font-semibold text-green-600">
-                          {formatPrice(day.revenue)}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
+                  <ResponsiveContainer width="100%" height={350}>
+                    <LineChart
+                      data={stats.sales_by_day.map((day) => ({
+                        date: new Date(day.date).toLocaleDateString('fr-FR', {
+                          day: 'numeric',
+                          month: 'short',
+                        }),
+                        'CA (€)': parseFloat(day.revenue),
+                        'Ventes': day.count,
+                      }))}
+                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis
+                        dataKey="date"
+                        style={{ fontSize: '12px' }}
+                        tick={{ fill: '#6b7280' }}
+                      />
+                      <YAxis
+                        yAxisId="left"
+                        style={{ fontSize: '12px' }}
+                        tick={{ fill: '#6b7280' }}
+                      />
+                      <YAxis
+                        yAxisId="right"
+                        orientation="right"
+                        style={{ fontSize: '12px' }}
+                        tick={{ fill: '#6b7280' }}
+                      />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                        formatter={(value, name) => {
+                          if (name === 'CA (€)') {
+                            return [formatPrice(value), name];
+                          }
+                          return [value, name];
+                        }}
+                      />
+                      <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                      <Line
+                        yAxisId="left"
+                        type="monotone"
+                        dataKey="CA (€)"
+                        stroke={CHART_COLORS.primary}
+                        strokeWidth={3}
+                        dot={{ fill: CHART_COLORS.primary, r: 4 }}
+                        activeDot={{ r: 6 }}
+                      />
+                      <Line
+                        yAxisId="right"
+                        type="monotone"
+                        dataKey="Ventes"
+                        stroke={CHART_COLORS.secondary}
+                        strokeWidth={2}
+                        strokeDasharray="5 5"
+                        dot={{ fill: CHART_COLORS.secondary, r: 3 }}
+                        activeDot={{ r: 5 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
                 </div>
               </div>
             )}

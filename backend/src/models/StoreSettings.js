@@ -133,6 +133,46 @@ const StoreSettings = sequelize.define('store_settings', {
     allowNull: true,
     defaultValue: 'Europe/Paris',
   },
+  // Configuration SumUp
+  sumup_config: {
+    type: DataTypes.JSONB,
+    allowNull: true,
+    defaultValue: {
+      enabled: false,
+      api_key: '',
+      merchant_code: '',
+      affiliate_key: '',
+    },
+  },
+  // Configuration imprimante ESC/POS
+  printer_config: {
+    type: DataTypes.JSONB,
+    allowNull: true,
+    defaultValue: {
+      enabled: false,
+      type: 'epson', // epson, star, tanca
+      interface: 'tcp', // tcp, usb, printer
+      ip: '',
+      port: 9100,
+      path: '', // Pour USB/printer
+      auto_print: true,
+    },
+  },
+  // Configuration email/SMTP
+  email_config: {
+    type: DataTypes.JSONB,
+    allowNull: true,
+    defaultValue: {
+      enabled: false,
+      smtp_host: '',
+      smtp_port: 587,
+      smtp_secure: false, // true pour port 465
+      smtp_user: '',
+      smtp_password: '',
+      from_email: '',
+      from_name: '',
+    },
+  },
   created_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,

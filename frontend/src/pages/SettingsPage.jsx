@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useStoreConfig } from '../context/StoreConfigContext';
 import { getSettings, updateSettings } from '../services/settingsService';
 import Button from '../components/ui/Button';
-import { ArrowLeft, Save, Store, Package, Percent, CreditCard, Palette, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, Store, Package, Percent, CreditCard, Palette, Plus, Trash2, Smartphone, Printer, Mail } from 'lucide-react';
 
 const SettingsPage = () => {
   const { user, isAuthenticated } = useAuth();
@@ -37,6 +37,31 @@ const SettingsPage = () => {
     categories: [],
     vat_rates: [],
     payment_methods: {},
+    sumup_config: {
+      enabled: false,
+      api_key: '',
+      merchant_code: '',
+      affiliate_key: '',
+    },
+    printer_config: {
+      enabled: false,
+      type: 'epson',
+      interface: 'tcp',
+      ip: '',
+      port: 9100,
+      path: '',
+      auto_print: true,
+    },
+    email_config: {
+      enabled: false,
+      smtp_host: '',
+      smtp_port: 587,
+      smtp_secure: false,
+      smtp_user: '',
+      smtp_password: '',
+      from_email: '',
+      from_name: '',
+    },
   });
 
   const [loading, setLoading] = useState(true);
@@ -74,6 +99,31 @@ const SettingsPage = () => {
         currency_symbol: response.data.currency_symbol || '€',
         language: response.data.language || 'fr-FR',
         timezone: response.data.timezone || 'Europe/Paris',
+        sumup_config: response.data.sumup_config || {
+          enabled: false,
+          api_key: '',
+          merchant_code: '',
+          affiliate_key: '',
+        },
+        printer_config: response.data.printer_config || {
+          enabled: false,
+          type: 'epson',
+          interface: 'tcp',
+          ip: '',
+          port: 9100,
+          path: '',
+          auto_print: true,
+        },
+        email_config: response.data.email_config || {
+          enabled: false,
+          smtp_host: '',
+          smtp_port: 587,
+          smtp_secure: false,
+          smtp_user: '',
+          smtp_password: '',
+          from_email: '',
+          from_name: '',
+        },
       };
 
       setSettings(normalizedSettings);
@@ -219,11 +269,47 @@ const SettingsPage = () => {
     });
   };
 
+  // Gestion configuration SumUp
+  const updateSumUpConfig = (field, value) => {
+    setSettings((prev) => ({
+      ...prev,
+      sumup_config: {
+        ...(prev.sumup_config || {}),
+        [field]: value,
+      },
+    }));
+  };
+
+  // Gestion configuration imprimante
+  const updatePrinterConfig = (field, value) => {
+    setSettings((prev) => ({
+      ...prev,
+      printer_config: {
+        ...(prev.printer_config || {}),
+        [field]: value,
+      },
+    }));
+  };
+
+  // Gestion configuration email
+  const updateEmailConfig = (field, value) => {
+    setSettings((prev) => ({
+      ...prev,
+      email_config: {
+        ...(prev.email_config || {}),
+        [field]: value,
+      },
+    }));
+  };
+
   const tabs = [
     { id: 'general', label: 'Informations générales', icon: Store },
     { id: 'categories', label: 'Catégories', icon: Package },
     { id: 'vat', label: 'Taux de TVA', icon: Percent },
     { id: 'payment', label: 'Moyens de paiement', icon: CreditCard },
+    { id: 'sumup', label: 'SumUp', icon: Smartphone },
+    { id: 'printer', label: 'Imprimante', icon: Printer },
+    { id: 'email', label: 'Email / SMTP', icon: Mail },
     { id: 'appearance', label: 'Apparence', icon: Palette },
   ];
 
@@ -719,6 +805,372 @@ const SettingsPage = () => {
                         </div>
                       );
                     })}
+                  </div>
+                </div>
+              )}
+
+              {/* Tab: SumUp */}
+              {activeTab === 'sumup' && (
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-800">
+                        Configuration SumUp
+                      </h2>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Configurez votre intégration avec SumUp pour les paiements par carte
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => updateSumUpConfig('enabled', !settings.sumup_config?.enabled)}
+                      className={`relative w-14 h-7 rounded-full transition-colors ${
+                        settings.sumup_config?.enabled ? 'bg-green-500' : 'bg-gray-300'
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full transition-transform ${
+                          settings.sumup_config?.enabled ? 'transform translate-x-7' : ''
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        API Key *
+                      </label>
+                      <input
+                        type="password"
+                        value={settings.sumup_config?.api_key || ''}
+                        onChange={(e) => updateSumUpConfig('api_key', e.target.value)}
+                        placeholder="Votre clé API SumUp"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Disponible dans votre espace développeur SumUp
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Merchant Code
+                      </label>
+                      <input
+                        type="text"
+                        value={settings.sumup_config?.merchant_code || ''}
+                        onChange={(e) => updateSumUpConfig('merchant_code', e.target.value)}
+                        placeholder="Code marchand SumUp"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Affiliate Key (optionnel)
+                      </label>
+                      <input
+                        type="text"
+                        value={settings.sumup_config?.affiliate_key || ''}
+                        onChange={(e) => updateSumUpConfig('affiliate_key', e.target.value)}
+                        placeholder="Clé affilié SumUp"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                      />
+                    </div>
+
+                    <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                      <h4 className="font-semibold text-indigo-900 mb-2">📱 Obtenir vos identifiants SumUp</h4>
+                      <ol className="text-sm text-indigo-700 space-y-1 list-decimal list-inside">
+                        <li>Connectez-vous à votre compte SumUp</li>
+                        <li>Accédez à "Développeurs" {'>'} "API Keys"</li>
+                        <li>Créez une nouvelle clé API ou copiez votre clé existante</li>
+                        <li>Collez la clé ci-dessus et sauvegardez</li>
+                      </ol>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab: Imprimante */}
+              {activeTab === 'printer' && (
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-800">
+                        Configuration Imprimante
+                      </h2>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Configurez votre imprimante thermique ESC/POS
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => updatePrinterConfig('enabled', !settings.printer_config?.enabled)}
+                      className={`relative w-14 h-7 rounded-full transition-colors ${
+                        settings.printer_config?.enabled ? 'bg-green-500' : 'bg-gray-300'
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full transition-transform ${
+                          settings.printer_config?.enabled ? 'transform translate-x-7' : ''
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Type d'imprimante
+                        </label>
+                        <select
+                          value={settings.printer_config?.type || 'epson'}
+                          onChange={(e) => updatePrinterConfig('type', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                        >
+                          <option value="epson">EPSON</option>
+                          <option value="star">Star</option>
+                          <option value="tanca">Tanca</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Interface
+                        </label>
+                        <select
+                          value={settings.printer_config?.interface || 'tcp'}
+                          onChange={(e) => updatePrinterConfig('interface', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                        >
+                          <option value="tcp">Réseau (TCP/IP)</option>
+                          <option value="usb">USB</option>
+                          <option value="printer">Imprimante système</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {settings.printer_config?.interface === 'tcp' && (
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Adresse IP *
+                          </label>
+                          <input
+                            type="text"
+                            value={settings.printer_config?.ip || ''}
+                            onChange={(e) => updatePrinterConfig('ip', e.target.value)}
+                            placeholder="192.168.1.100"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Port
+                          </label>
+                          <input
+                            type="number"
+                            value={settings.printer_config?.port || 9100}
+                            onChange={(e) => updatePrinterConfig('port', parseInt(e.target.value))}
+                            placeholder="9100"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {(settings.printer_config?.interface === 'usb' || settings.printer_config?.interface === 'printer') && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Chemin / Nom de l'imprimante *
+                        </label>
+                        <input
+                          type="text"
+                          value={settings.printer_config?.path || ''}
+                          onChange={(e) => updatePrinterConfig('path', e.target.value)}
+                          placeholder="/dev/usb/lp0 ou nom de l'imprimante"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                        />
+                      </div>
+                    )}
+
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="auto_print"
+                        checked={settings.printer_config?.auto_print ?? true}
+                        onChange={(e) => updatePrinterConfig('auto_print', e.target.checked)}
+                        className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                      />
+                      <label htmlFor="auto_print" className="text-sm font-medium text-gray-700">
+                        Impression automatique après paiement
+                      </label>
+                    </div>
+
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <h4 className="font-semibold text-blue-900 mb-2">🖨️ Configuration réseau</h4>
+                      <p className="text-sm text-blue-700 mb-2">
+                        Pour une imprimante réseau (TCP/IP):
+                      </p>
+                      <ol className="text-sm text-blue-700 space-y-1 list-decimal list-inside">
+                        <li>Connectez l'imprimante à votre réseau</li>
+                        <li>Notez son adresse IP (généralement sur l'imprimante)</li>
+                        <li>Le port par défaut est 9100</li>
+                        <li>Testez la connexion après sauvegarde</li>
+                      </ol>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab: Email / SMTP */}
+              {activeTab === 'email' && (
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-800">
+                        Configuration Email / SMTP
+                      </h2>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Configurez l'envoi d'emails (tickets, notifications)
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => updateEmailConfig('enabled', !settings.email_config?.enabled)}
+                      className={`relative w-14 h-7 rounded-full transition-colors ${
+                        settings.email_config?.enabled ? 'bg-green-500' : 'bg-gray-300'
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full transition-transform ${
+                          settings.email_config?.enabled ? 'transform translate-x-7' : ''
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Serveur SMTP *
+                        </label>
+                        <input
+                          type="text"
+                          value={settings.email_config?.smtp_host || ''}
+                          onChange={(e) => updateEmailConfig('smtp_host', e.target.value)}
+                          placeholder="smtp.gmail.com"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Port *
+                        </label>
+                        <input
+                          type="number"
+                          value={settings.email_config?.smtp_port || 587}
+                          onChange={(e) => updateEmailConfig('smtp_port', parseInt(e.target.value))}
+                          placeholder="587"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="smtp_secure"
+                        checked={settings.email_config?.smtp_secure ?? false}
+                        onChange={(e) => updateEmailConfig('smtp_secure', e.target.checked)}
+                        className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                      />
+                      <label htmlFor="smtp_secure" className="text-sm font-medium text-gray-700">
+                        Connexion sécurisée SSL/TLS (port 465)
+                      </label>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Utilisateur SMTP *
+                        </label>
+                        <input
+                          type="text"
+                          value={settings.email_config?.smtp_user || ''}
+                          onChange={(e) => updateEmailConfig('smtp_user', e.target.value)}
+                          placeholder="votre@email.com"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Mot de passe SMTP *
+                        </label>
+                        <input
+                          type="password"
+                          value={settings.email_config?.smtp_password || ''}
+                          onChange={(e) => updateEmailConfig('smtp_password', e.target.value)}
+                          placeholder="Mot de passe"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Email expéditeur *
+                        </label>
+                        <input
+                          type="email"
+                          value={settings.email_config?.from_email || ''}
+                          onChange={(e) => updateEmailConfig('from_email', e.target.value)}
+                          placeholder="noreply@votrecommerce.com"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Nom expéditeur
+                        </label>
+                        <input
+                          type="text"
+                          value={settings.email_config?.from_name || ''}
+                          onChange={(e) => updateEmailConfig('from_name', e.target.value)}
+                          placeholder="BensBurger"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <h4 className="font-semibold text-yellow-900 mb-2">📧 Exemples de configuration</h4>
+                      <div className="text-sm text-yellow-700 space-y-2">
+                        <div>
+                          <strong>Gmail:</strong>
+                          <ul className="list-disc list-inside ml-2">
+                            <li>Serveur: smtp.gmail.com</li>
+                            <li>Port: 587 (TLS) ou 465 (SSL)</li>
+                            <li>Utilisez un mot de passe d'application si 2FA activé</li>
+                          </ul>
+                        </div>
+                        <div>
+                          <strong>Outlook/Office365:</strong>
+                          <ul className="list-disc list-inside ml-2">
+                            <li>Serveur: smtp.office365.com</li>
+                            <li>Port: 587</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}

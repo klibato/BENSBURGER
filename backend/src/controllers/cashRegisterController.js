@@ -411,15 +411,15 @@ const exportCashRegistersCSV = async (req, res, next) => {
 
     // Filtres de dates
     if (start_date) {
-      where.created_at = {
-        ...where.created_at,
+      where.opened_at = {
+        ...where.opened_at,
         [Op.gte]: new Date(start_date),
       };
     }
 
     if (end_date) {
-      where.created_at = {
-        ...where.created_at,
+      where.opened_at = {
+        ...where.opened_at,
         [Op.lte]: new Date(end_date),
       };
     }
@@ -427,7 +427,7 @@ const exportCashRegistersCSV = async (req, res, next) => {
     // Récupérer toutes les caisses
     const cashRegisters = await CashRegister.findAll({
       where,
-      order: [['created_at', 'DESC']],
+      order: [['opened_at', 'DESC']],
       include: [
         {
           model: User,

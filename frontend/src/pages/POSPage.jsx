@@ -53,6 +53,7 @@ const POSPage = () => {
 
   // État de la modal de changement de caissier
   const [isSwitchCashierModalOpen, setIsSwitchCashierModalOpen] = useState(false);
+  const [isSwitchingCashier, setIsSwitchingCashier] = useState(false);
 
   // Notification de succès
   const [successMessage, setSuccessMessage] = useState(null);
@@ -63,10 +64,11 @@ const POSPage = () => {
   const [discountValue, setDiscountValue] = useState('');
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    // Ne pas rediriger si on est en train de changer de caissier
+    if (!isAuthenticated && !isSwitchingCashier) {
       navigate('/login');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, isSwitchingCashier]);
 
   // Ouvrir automatiquement le modal de caisse si aucune caisse n'est ouverte
   useEffect(() => {
@@ -81,12 +83,17 @@ const POSPage = () => {
   };
 
   const handleSwitchCashier = async (username, pin) => {
-    const result = await login(username, pin);
-    if (!result.success) {
-      throw new Error(result.error);
+    setIsSwitchingCashier(true);
+    try {
+      const result = await login(username, pin);
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+      // Succès : le contexte Auth a été mis à jour automatiquement
+      // La caisse reste ouverte
+    } finally {
+      setIsSwitchingCashier(false);
     }
-    // Succès : le contexte Auth a été mis à jour automatiquement
-    // La caisse reste ouverte
   };
 
   const handleProductClick = (product) => {

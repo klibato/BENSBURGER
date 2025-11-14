@@ -9,12 +9,13 @@ import ProductGrid from '../components/products/ProductGrid';
 import PaymentModal from '../components/payment/PaymentModal';
 import OpenCashRegisterModal from '../components/cashRegister/OpenCashRegisterModal';
 import CloseCashRegisterModal from '../components/cashRegister/CloseCashRegisterModal';
+import QuickSwitchCashierModal from '../components/auth/QuickSwitchCashierModal';
 import Button from '../components/ui/Button';
-import { LogOut, RefreshCw, CheckCircle, CreditCard, DollarSign, Receipt, BarChart3, Package, Users, Settings, Percent, Tag, X } from 'lucide-react';
+import { LogOut, RefreshCw, CheckCircle, CreditCard, DollarSign, Receipt, BarChart3, Package, Users, Settings, Percent, Tag, X, UserCircle } from 'lucide-react';
 import { formatPrice } from '../utils/constants';
 
 const POSPage = () => {
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout, login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const {
     products,
@@ -50,6 +51,9 @@ const POSPage = () => {
   const [isOpenCashRegisterModalOpen, setIsOpenCashRegisterModalOpen] = useState(false);
   const [isCloseCashRegisterModalOpen, setIsCloseCashRegisterModalOpen] = useState(false);
 
+  // État de la modal de changement de caissier
+  const [isSwitchCashierModalOpen, setIsSwitchCashierModalOpen] = useState(false);
+
   // Notification de succès
   const [successMessage, setSuccessMessage] = useState(null);
 
@@ -74,6 +78,15 @@ const POSPage = () => {
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handleSwitchCashier = async (username, pin) => {
+    const result = await login(username, pin);
+    if (!result.success) {
+      throw new Error(result.error);
+    }
+    // Succès : le contexte Auth a été mis à jour automatiquement
+    // La caisse reste ouverte
   };
 
   const handleProductClick = (product) => {
@@ -238,6 +251,15 @@ const POSPage = () => {
           >
             <RefreshCw size={20} />
             Actualiser
+          </Button>
+          <Button
+            variant="primary"
+            size="md"
+            onClick={() => setIsSwitchCashierModalOpen(true)}
+            className="flex items-center gap-2"
+          >
+            <UserCircle size={20} />
+            Changer caissier
           </Button>
           <Button
             variant="secondary"
@@ -532,6 +554,13 @@ const POSPage = () => {
         isOpen={isCloseCashRegisterModalOpen}
         onClose={() => setIsCloseCashRegisterModalOpen(false)}
         cashRegister={activeCashRegister}
+      />
+
+      {/* Modal changement de caissier */}
+      <QuickSwitchCashierModal
+        isOpen={isSwitchCashierModalOpen}
+        onClose={() => setIsSwitchCashierModalOpen(false)}
+        onSwitch={handleSwitchCashier}
       />
     </div>
   );

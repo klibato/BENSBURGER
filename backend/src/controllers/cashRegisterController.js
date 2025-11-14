@@ -393,10 +393,170 @@ const getCashRegisterById = async (req, res, next) => {
   }
 };
 
+/**
+ * Exporter les clôtures de caisse en CSV
+ */
+const exportCashRegistersCSV = async (req, res, next) => {
+  try {
+    const { status, start_date, end_date } = req.query;
+
+    const where = {};
+
+    // Filtrer par statut (par défaut, uniquement les caisses fermées)
+    if (status) {
+      where.status = status;
+    } else {
+      where.status = 'closed'; // Par défaut, exporter seulement les fermées
+    }
+
+    // Filtres de dates
+    if (start_date) {
+      where.created_at = {
+        ...where.created_at,
+        [Op.gte]: new Date(start_date),
+      };
+    }
+
+    if (end_date) {
+      where.created_at = {
+        ...where.created_at,
+        [Op.lte]: new Date(end_date),
+      };
+    }
+
+    // Récupérer toutes les caisses
+    const cashRegisters = await CashRegister.findAll({
+      where,
+      order: [['created_at', 'DESC']],
+      include: [
+        {
+          model: User,
+          as: 'openedByUser',
+          attributes: ['username', 'first_name', 'last_name'],
+        },
+        {
+          model: User,
+          as: 'closedByUser',
+          attributes: ['username', 'first_name', 'last_name'],
+        },
+      ],
+    });
+
+    // Formater en CSV
+    const csvRows = [];
+
+    // Header
+    csvRows.push([
+      'ID',
+      'Date ouverture',
+      'Date clôture',
+      'Ouvert par',
+      'Fermé par',
+      'Statut',
+      'Fond de caisse (€)',
+      'Total ventes (€)',
+      'Espèces (€)',
+      'Carte bancaire (€)',
+      'Tickets restaurant (€)',
+      'Espèces collectées (€)',
+      'Montant compté (€)',
+      'Différence (€)',
+      'Nb tickets',
+      'Notes',
+    ].join(';'));
+
+    // Lignes de données
+    cashRegisters.forEach((register) => {
+      const dateOpened = new Date(register.opened_at).toLocaleString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      const dateClosed = register.closed_at
+        ? new Date(register.closed_at).toLocaleString('fr-FR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          })
+        : '';
+
+      const openedBy = register.openedByUser
+        ? `${register.openedByUser.first_name || ''} ${register.openedByUser.last_name || ''}`.trim() ||
+          register.openedByUser.username
+        : 'N/A';
+
+      const closedBy = register.closedByUser
+        ? `${register.closedByUser.first_name || ''} ${register.closedByUser.last_name || ''}`.trim() ||
+          register.closedByUser.username
+        : '';
+
+      const statusLabels = {
+        open: 'Ouverte',
+        closed: 'Fermée',
+      };
+      const status = statusLabels[register.status] || register.status;
+
+      const openingBalance = parseFloat(register.opening_balance || 0).toFixed(2);
+      const totalSales = parseFloat(register.total_sales || 0).toFixed(2);
+      const totalCash = parseFloat(register.total_cash || 0).toFixed(2);
+      const totalCard = parseFloat(register.total_card || 0).toFixed(2);
+      const totalMealVoucher = parseFloat(register.total_meal_voucher || 0).toFixed(2);
+      const totalCashCollected = parseFloat(register.total_cash_collected || 0).toFixed(2);
+      const closingBalance = parseFloat(register.closing_balance || 0).toFixed(2);
+      const difference = parseFloat(register.difference || 0).toFixed(2);
+      const ticketCount = register.ticket_count || 0;
+
+      csvRows.push([
+        register.id,
+        dateOpened,
+        dateClosed,
+        openedBy,
+        closedBy,
+        status,
+        openingBalance,
+        totalSales,
+        totalCash,
+        totalCard,
+        totalMealVoucher,
+        totalCashCollected,
+        closingBalance,
+        difference,
+        ticketCount,
+        `"${register.notes || ''}"`,
+      ].join(';'));
+    });
+
+    const csvContent = csvRows.join('\n');
+
+    // Générer le nom de fichier avec la date du jour
+    const today = new Date().toISOString().split('T')[0];
+    const filename = `clotures_caisse_${today}.csv`;
+
+    // Headers pour le téléchargement CSV
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+    // Ajouter le BOM UTF-8 pour Excel
+    res.write('\ufeff');
+    res.end(csvContent);
+
+    logger.info(`Export CSV clôtures généré par ${req.user.username}: ${cashRegisters.length} clôtures`);
+  } catch (error) {
+    logger.error('Erreur lors de l\'export CSV clôtures:', error);
+    next(error);
+  }
+};
+
 module.exports = {
   getAllCashRegisters,
   getActiveCashRegister,
   openCashRegister,
   closeCashRegister,
   getCashRegisterById,
+  exportCashRegistersCSV,
 };

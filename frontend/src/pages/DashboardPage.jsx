@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getDashboardStats } from '../services/dashboardService';
 import Button from '../components/ui/Button';
-import { ArrowLeft, TrendingUp, ShoppingCart, DollarSign, CreditCard, RefreshCw } from 'lucide-react';
+import { ArrowLeft, TrendingUp, ShoppingCart, DollarSign, CreditCard, RefreshCw, Download } from 'lucide-react';
 import { formatPrice } from '../utils/constants';
 import {
   LineChart,
@@ -61,6 +61,39 @@ const DashboardPage = () => {
       year: 'Cette année',
     };
     return labels[period] || 'Aujourd\'hui';
+  };
+
+  // Export cash register closures to CSV
+  const handleExportCashRegistersCSV = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/cash-registers/export/csv`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de l\'export CSV');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `clotures_caisse_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Erreur export CSV clôtures:', error);
+      alert('Erreur lors de l\'export CSV des clôtures de caisse');
+    }
   };
 
   const getPaymentMethodLabel = (method) => {
@@ -134,6 +167,17 @@ const DashboardPage = () => {
             <RefreshCw size={20} />
             Actualiser
           </Button>
+          {user?.role === 'admin' && (
+            <Button
+              variant="primary"
+              size="md"
+              onClick={handleExportCashRegistersCSV}
+              className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+            >
+              <Download size={20} />
+              Export Clôtures
+            </Button>
+          )}
         </div>
       </header>
 

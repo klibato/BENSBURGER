@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowUp, ArrowDown } from 'lucide-react';
+import { ArrowUp, ArrowDown, Download } from 'lucide-react';
 import Button from '../components/ui/Button';
 import ProductFormModal from '../components/products/ProductFormModal';
 import { useStoreConfig } from '../context/StoreConfigContext';
@@ -11,6 +11,7 @@ import {
   deleteProduct,
   updateProductsOrder,
 } from '../services/productService';
+import api from '../services/api';
 
 const ProductsPage = () => {
   const navigate = useNavigate();
@@ -76,6 +77,36 @@ const ProductsPage = () => {
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  // Export products to CSV
+  const handleExportCSV = async () => {
+    try {
+      const response = await api.get('/products/export/csv', {
+        params: {
+          category: selectedCategory || undefined,
+          include_inactive: showInactive,
+        },
+        responseType: 'blob', // Important pour télécharger le fichier
+      });
+
+      // Créer un lien de téléchargement
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      const today = new Date().toISOString().split('T')[0];
+      link.setAttribute('download', `produits_${today}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      setSuccessMessage('Export CSV réussi !');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err) {
+      console.error('Erreur lors de l\'export CSV:', err);
+      setError('Impossible d\'exporter les produits en CSV');
+      setTimeout(() => setError(null), 5000);
+    }
+  };
 
   // Apply filters
   useEffect(() => {
@@ -286,17 +317,27 @@ const ProductsPage = () => {
               </div>
             </div>
 
-            {/* Add product button */}
-            <Button
-              variant="primary"
-              onClick={() => {
-                setEditingProduct(null);
-                setIsModalOpen(true);
-              }}
-              className="whitespace-nowrap"
-            >
-              + Nouveau Produit
-            </Button>
+            {/* Action buttons */}
+            <div className="flex gap-3">
+              <Button
+                variant="secondary"
+                onClick={handleExportCSV}
+                className="whitespace-nowrap flex items-center gap-2"
+              >
+                <Download size={18} />
+                Exporter CSV
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  setEditingProduct(null);
+                  setIsModalOpen(true);
+                }}
+                className="whitespace-nowrap"
+              >
+                + Nouveau Produit
+              </Button>
+            </div>
           </div>
         </div>
 

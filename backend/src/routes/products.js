@@ -7,6 +7,9 @@ const { PERMISSIONS } = require('../config/permissions');
 // GET /api/products - Récupérer tous les produits (avec auth optionnelle pour admins)
 router.get('/', optionalAuthenticate, productController.getAllProducts);
 
+// GET /api/products/export/csv - Exporter les produits en CSV
+router.get('/export/csv', authenticateToken, requirePermission(PERMISSIONS.PRODUCTS_VIEW), productController.exportProductsCSV);
+
 // GET /api/products/category/:category - Produits par catégorie
 router.get('/category/:category', productController.getProductsByCategory);
 

@@ -321,6 +321,102 @@ const updateProductsOrder = async (req, res, next) => {
   }
 };
 
+/**
+ * Exporter les produits en CSV
+ */
+const exportProductsCSV = async (req, res, next) => {
+  try {
+    const { category, is_menu, include_inactive = 'true' } = req.query;
+
+    // Construire les filtres
+    const where = {};
+
+    if (category) {
+      where.category = category;
+    }
+
+    if (is_menu !== undefined) {
+      where.is_menu = is_menu === 'true';
+    }
+
+    // Inclure les produits inactifs si demandé (admin uniquement)
+    if (include_inactive !== 'true' || req.user?.role !== 'admin') {
+      where.is_active = true;
+    }
+
+    // Récupérer tous les produits
+    const products = await Product.findAll({
+      where,
+      order: [
+        ['category', 'ASC'],
+        ['display_order', 'ASC'],
+        ['name', 'ASC'],
+      ],
+      paranoid: include_inactive !== 'true', // Si on veut les supprimés
+    });
+
+    // Formater en CSV
+    const csvRows = [];
+
+    // Header
+    csvRows.push([
+      'ID',
+      'Nom',
+      'Description',
+      'Catégorie',
+      'Prix HT (€)',
+      'Prix TTC (€)',
+      'TVA (%)',
+      'Type',
+      'Actif',
+      'Ordre',
+      'Image URL',
+    ].join(';'));
+
+    // Lignes de données
+    products.forEach((product) => {
+      const priceHT = parseFloat(product.price_ht).toFixed(2);
+      const priceTTC = parseFloat(product.price_ttc).toFixed(2);
+      const vatRate = parseFloat(product.vat_rate).toFixed(2);
+      const type = product.is_menu ? 'Menu' : 'Produit';
+      const isActive = product.is_active ? 'Oui' : 'Non';
+
+      csvRows.push([
+        product.id,
+        `"${product.name}"`,
+        `"${product.description || ''}"`,
+        product.category,
+        priceHT,
+        priceTTC,
+        vatRate,
+        type,
+        isActive,
+        product.display_order,
+        `"${product.image_url || ''}"`,
+      ].join(';'));
+    });
+
+    const csvContent = csvRows.join('\n');
+
+    // Générer le nom de fichier avec la date du jour
+    const today = new Date().toISOString().split('T')[0];
+    const filename = `produits_${today}.csv`;
+
+    // Headers pour le téléchargement CSV
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+    // Ajouter le BOM UTF-8 pour Excel
+    res.write('\ufeff');
+    res.end(csvContent);
+
+    logger.info(`Export CSV produits généré par ${req.user.username}: ${products.length} produits`);
+  } catch (error) {
+    logger.error('Erreur lors de l\'export CSV produits:', error);
+    next(error);
+  }
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
@@ -329,4 +425,5 @@ module.exports = {
   deleteProduct,
   updateProductsOrder,
   getProductsByCategory,
+  exportProductsCSV,
 };

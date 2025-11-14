@@ -6,6 +6,7 @@ const {
   openCashRegister,
   closeCashRegister,
   getCashRegisterById,
+  exportCashRegistersCSV,
 } = require('../controllers/cashRegisterController');
 const { authenticateToken, requireAnyPermission } = require('../middlewares/auth');
 const { PERMISSIONS } = require('../config/permissions');
@@ -26,6 +27,13 @@ router.get('/', requireAnyPermission([PERMISSIONS.CASH_REGISTER_VIEW, PERMISSION
  * @access  Authentifié avec permission
  */
 router.get('/active', requireAnyPermission([PERMISSIONS.CASH_REGISTER_VIEW, PERMISSIONS.CASH_REGISTER_VIEW_ALL]), getActiveCashRegister);
+
+/**
+ * @route   GET /api/cash-registers/export/csv
+ * @desc    Exporter les clôtures de caisse en CSV
+ * @access  Authentifié avec permission
+ */
+router.get('/export/csv', requireAnyPermission([PERMISSIONS.CASH_REGISTER_VIEW_ALL]), exportCashRegistersCSV);
 
 /**
  * @route   POST /api/cash-registers/open

@@ -396,12 +396,12 @@ const SettingsPage = () => {
                 <>
                   <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                     <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
-                      Informations du commerce
+                      {t('settings.storeInfo')}
                     </h2>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="col-span-2">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Nom du commerce *
+                          {t('settings.storeName')} *
                         </label>
                         <input
                           type="text"
@@ -415,7 +415,7 @@ const SettingsPage = () => {
 
                       <div className="col-span-2">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Description
+                          {t('settings.description')}
                         </label>
                         <input
                           type="text"
@@ -428,7 +428,7 @@ const SettingsPage = () => {
 
                       <div className="col-span-2">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Adresse ligne 1
+                          {t('settings.addressLine1')}
                         </label>
                         <input
                           type="text"
@@ -441,7 +441,7 @@ const SettingsPage = () => {
 
                       <div className="col-span-2">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Adresse ligne 2
+                          {t('settings.addressLine2')}
                         </label>
                         <input
                           type="text"
@@ -454,7 +454,7 @@ const SettingsPage = () => {
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Code postal
+                          {t('settings.postalCode')}
                         </label>
                         <input
                           type="text"
@@ -467,7 +467,7 @@ const SettingsPage = () => {
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Ville
+                          {t('settings.city')}
                         </label>
                         <input
                           type="text"
@@ -480,7 +480,7 @@ const SettingsPage = () => {
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Pays
+                          {t('settings.country')}
                         </label>
                         <input
                           type="text"
@@ -493,7 +493,7 @@ const SettingsPage = () => {
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Téléphone
+                          {t('settings.phone')}
                         </label>
                         <input
                           type="tel"
@@ -519,7 +519,7 @@ const SettingsPage = () => {
 
                       <div className="col-span-2">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Site web
+                          {t('settings.website')}
                         </label>
                         <input
                           type="url"
@@ -534,12 +534,12 @@ const SettingsPage = () => {
 
                   <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                     <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
-                      Informations légales
+                      {t('settings.legalInfo')}
                     </h2>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Forme juridique
+                          {t('settings.legalForm')}
                         </label>
                         <select
                           name="legal_form"
@@ -558,7 +558,7 @@ const SettingsPage = () => {
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Capital social (€)
+                          {t('settings.capital')}
                         </label>
                         <input
                           type="number"
@@ -572,7 +572,7 @@ const SettingsPage = () => {
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          SIRET (14 chiffres)
+                          {t('settings.siret')}
                         </label>
                         <input
                           type="text"
@@ -586,7 +586,7 @@ const SettingsPage = () => {
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Numéro TVA
+                          {t('settings.vatNumber')}
                         </label>
                         <input
                           type="text"
@@ -599,7 +599,7 @@ const SettingsPage = () => {
 
                       <div className="col-span-2">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          RCS (Registre du Commerce et des Sociétés)
+                          {t('settings.rcs')}
                         </label>
                         <input
                           type="text"
@@ -623,7 +623,7 @@ const SettingsPage = () => {
                         Catégories de produits
                       </h2>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        Gérez les catégories affichées dans votre caisse
+                        {t('settings.manageCategoriesDesc')}
                       </p>
                     </div>
                     <Button
@@ -696,7 +696,7 @@ const SettingsPage = () => {
                         Taux de TVA
                       </h2>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        Configurez les différents taux de TVA applicables
+                        {t('settings.configureVatRatesDesc')}
                       </p>
                     </div>
                     <Button
@@ -733,7 +733,7 @@ const SettingsPage = () => {
                           type="text"
                           value={vat.description}
                           onChange={(e) => updateVatRate(index, 'description', e.target.value)}
-                          placeholder="Description"
+                          placeholder="{t('settings.description')}"
                           className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg"
                         />
                         <button
@@ -762,7 +762,7 @@ const SettingsPage = () => {
                     Moyens de paiement
                   </h2>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                    Activez ou désactivez les moyens de paiement disponibles dans votre caisse
+                    {t('settings.paymentMethodsDesc')}
                   </p>
 
                   <div className="space-y-3">
@@ -802,7 +802,7 @@ const SettingsPage = () => {
                           />
 
                           <span className={`text-sm font-medium ${isEnabled ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500'}`}>
-                            {isEnabled ? 'Activé' : 'Désactivé'}
+                            {isEnabled ? '{t('settings.enabled')}' : '{t('settings.disabled')}'}
                           </span>
                         </div>
                       );
@@ -820,7 +820,7 @@ const SettingsPage = () => {
                         Configuration SumUp
                       </h2>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        Configurez votre intégration avec SumUp pour les paiements par carte
+                        {t('settings.sumupConfigDesc')}
                       </p>
                     </div>
                     <button
@@ -841,7 +841,7 @@ const SettingsPage = () => {
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                        API Key *
+                        {t('settings.apiKey')} *
                       </label>
                       <input
                         type="password"
@@ -857,7 +857,7 @@ const SettingsPage = () => {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                        Merchant Code
+                        {t('settings.merchantCode')}
                       </label>
                       <input
                         type="text"
@@ -870,7 +870,7 @@ const SettingsPage = () => {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                        Affiliate Key (optionnel)
+                        {t('settings.affiliateKey')}
                       </label>
                       <input
                         type="text"
@@ -903,7 +903,7 @@ const SettingsPage = () => {
                         Configuration Imprimante
                       </h2>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        Configurez votre imprimante thermique ESC/POS
+                        {t('settings.printerConfigDesc')}
                       </p>
                     </div>
                     <button
@@ -925,7 +925,7 @@ const SettingsPage = () => {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Type d'imprimante
+                          {t('settings.printerType')}
                         </label>
                         <select
                           value={settings.printer_config?.type || 'epson'}
@@ -940,7 +940,7 @@ const SettingsPage = () => {
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Interface
+                          {t('settings.interface')}
                         </label>
                         <select
                           value={settings.printer_config?.interface || 'tcp'}
@@ -958,7 +958,7 @@ const SettingsPage = () => {
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                            Adresse IP *
+                            {t('settings.ipAddress')} *
                           </label>
                           <input
                             type="text"
@@ -971,7 +971,7 @@ const SettingsPage = () => {
 
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                            Port
+                            {t('settings.port')}
                           </label>
                           <input
                             type="number"
@@ -987,7 +987,7 @@ const SettingsPage = () => {
                     {(settings.printer_config?.interface === 'usb' || settings.printer_config?.interface === 'printer') && (
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Chemin / Nom de l'imprimante *
+                          {t('settings.path')} *
                         </label>
                         <input
                           type="text"
@@ -1008,7 +1008,7 @@ const SettingsPage = () => {
                         className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                       />
                       <label htmlFor="auto_print" className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                        Impression automatique après paiement
+                        {t('settings.autoPrint')}
                       </label>
                     </div>
 
@@ -1037,7 +1037,7 @@ const SettingsPage = () => {
                         Configuration Email / SMTP
                       </h2>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        Configurez l'envoi d'emails (tickets, notifications)
+                        {t('settings.emailConfigDesc')}
                       </p>
                     </div>
                     <button
@@ -1059,7 +1059,7 @@ const SettingsPage = () => {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Serveur SMTP *
+                          {t('settings.smtpHost')} *
                         </label>
                         <input
                           type="text"
@@ -1072,7 +1072,7 @@ const SettingsPage = () => {
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Port *
+                          {t('settings.port')} *
                         </label>
                         <input
                           type="number"
@@ -1093,14 +1093,14 @@ const SettingsPage = () => {
                         className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                       />
                       <label htmlFor="smtp_secure" className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                        Connexion sécurisée SSL/TLS (port 465)
+                        {t('settings.smtpSecure')}
                       </label>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Utilisateur SMTP *
+                          {t('settings.smtpUser')} *
                         </label>
                         <input
                           type="text"
@@ -1113,7 +1113,7 @@ const SettingsPage = () => {
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Mot de passe SMTP *
+                          {t('settings.smtpPassword')} *
                         </label>
                         <input
                           type="password"
@@ -1128,7 +1128,7 @@ const SettingsPage = () => {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Email expéditeur *
+                          {t('settings.fromEmail')} *
                         </label>
                         <input
                           type="email"
@@ -1141,7 +1141,7 @@ const SettingsPage = () => {
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Nom expéditeur
+                          {t('settings.fromName')}
                         </label>
                         <input
                           type="text"
@@ -1160,7 +1160,7 @@ const SettingsPage = () => {
                           <strong>Gmail:</strong>
                           <ul className="list-disc list-inside ml-2">
                             <li>Serveur: smtp.gmail.com</li>
-                            <li>Port: 587 (TLS) ou 465 (SSL)</li>
+                            <li>{t('settings.port')}: 587 (TLS) ou 465 (SSL)</li>
                             <li>Utilisez un mot de passe d'application si 2FA activé</li>
                           </ul>
                         </div>
@@ -1168,7 +1168,7 @@ const SettingsPage = () => {
                           <strong>Outlook/Office365:</strong>
                           <ul className="list-disc list-inside ml-2">
                             <li>Serveur: smtp.office365.com</li>
-                            <li>Port: 587</li>
+                            <li>{t('settings.port')}: 587</li>
                           </ul>
                         </div>
                       </div>
@@ -1187,7 +1187,7 @@ const SettingsPage = () => {
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                        Couleur du thème
+                        {t('settings.themeColor')}
                       </label>
                       <div className="flex gap-3 items-center">
                         <input
@@ -1207,13 +1207,13 @@ const SettingsPage = () => {
                         />
                       </div>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        Cette couleur sera utilisée pour les boutons et les éléments actifs
+                        {t('settings.themeColorDesc')}
                       </p>
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                        URL du logo
+                        {t('settings.logoUrl')}
                       </label>
                       <input
                         type="url"
@@ -1224,14 +1224,14 @@ const SettingsPage = () => {
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg"
                       />
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        Lien vers votre logo (affiché sur les tickets et l'interface)
+                        {t('settings.logoUrlDesc')}
                       </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Devise
+                          {t('settings.currency')}
                         </label>
                         <select
                           name="currency"
@@ -1248,7 +1248,7 @@ const SettingsPage = () => {
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                          Symbole
+                          {t('settings.currencySymbol')}
                         </label>
                         <input
                           type="text"
@@ -1262,7 +1262,7 @@ const SettingsPage = () => {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                        Fuseau horaire
+                        {t('settings.timezone')}
                       </label>
                       <select
                         name="timezone"
@@ -1276,7 +1276,7 @@ const SettingsPage = () => {
                         <option value="America/Los_Angeles">America/Los_Angeles</option>
                       </select>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        Note: La langue et le thème se configurent depuis le menu burger
+                        {t('settings.languageThemeNote')}
                       </p>
                     </div>
                   </div>

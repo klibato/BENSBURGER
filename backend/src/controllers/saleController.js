@@ -3,6 +3,7 @@ const { calculateSaleTotals, calculateChange } = require('../services/vatService
 const { generateTicketPDF } = require('../services/pdfService');
 const printerService = require('../services/printerService');
 const logger = require('../utils/logger');
+const { logAction } = require('../middleware/audit');
 
 /**
  * Créer une nouvelle vente
@@ -273,6 +274,16 @@ const createSale = async (req, res, next) => {
     logger.info(
       `Vente créée: ${completeSale.ticket_number} - ${totalTTC}€ (${payment_method}) par ${req.user.username}`
     );
+
+    // Logger l'action dans audit_logs
+    setImmediate(() => {
+      logAction(req, 'SALE', 'sale', completeSale.id, {
+        ticket_number: completeSale.ticket_number,
+        total_ttc: totalTTC,
+        payment_method,
+        items_count: items.length,
+      });
+    });
 
     // Impression automatique du ticket (en arrière-plan, ne pas bloquer la réponse)
     setImmediate(async () => {

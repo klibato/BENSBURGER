@@ -11,6 +11,7 @@ import DashboardPage from './pages/DashboardPage';
 import ProductsPage from './pages/ProductsPage';
 import UsersPage from './pages/UsersPage';
 import SettingsPage from './pages/SettingsPage';
+import LogsPage from './pages/LogsPage';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
                   <Route path="/products" element={<ProductsPage />} />
                   <Route path="/users" element={<UsersPage />} />
                   <Route path="/settings" element={<SettingsPage />} />
+                  <Route path="/logs" element={<LogsPage />} />
                 </Routes>
               </Router>
             </CartProvider>

@@ -3,6 +3,7 @@ const { User } = require('../models');
 const config = require('../config/env');
 const logger = require('../utils/logger');
 const { getRolePermissions } = require('../config/permissions');
+const { logAction } = require('../middleware/audit');
 
 /**
  * Login avec username et PIN code
@@ -68,6 +69,14 @@ const login = async (req, res, next) => {
 
     logger.info(`Utilisateur ${username} connecté`);
 
+    // Logger l'action dans audit_logs
+    setImmediate(() => {
+      logAction(req, 'LOGIN', 'user', user.id, {
+        username: user.username,
+        role: user.role,
+      });
+    });
+
     res.json({
       success: true,
       data: {
@@ -86,6 +95,13 @@ const login = async (req, res, next) => {
 const logout = async (req, res, next) => {
   try {
     logger.info(`Utilisateur ${req.user.username} déconnecté`);
+
+    // Logger l'action dans audit_logs
+    setImmediate(() => {
+      logAction(req, 'LOGOUT', 'user', req.user.id, {
+        username: req.user.username,
+      });
+    });
 
     res.json({
       success: true,
@@ -193,6 +209,14 @@ const switchCashier = async (req, res, next) => {
     );
 
     logger.info(`Changement de caissier: ${req.user.username} -> ${newUser.username}`);
+
+    // Logger l'action dans audit_logs
+    setImmediate(() => {
+      logAction(req, 'SWITCH_CASHIER', 'user', newUser.id, {
+        old_user: req.user.username,
+        new_user: newUser.username,
+      });
+    });
 
     res.json({
       success: true,

@@ -27,8 +27,18 @@ async function main() {
     await sequelize.authenticate();
     logger.info('✅ Connexion à la base de données établie');
 
-    // Exécuter la migration d'ajout des colonnes stock
-    await runMigration('006_add_stock_to_products.sql');
+    // Lister tous les fichiers de migration
+    const migrationsDir = path.join(__dirname, '../../migrations');
+    const migrationFiles = fs.readdirSync(migrationsDir)
+      .filter(file => file.endsWith('.sql'))
+      .sort(); // Tri alphabétique pour exécuter dans l'ordre
+
+    logger.info(`📝 ${migrationFiles.length} migration(s) trouvée(s)`);
+
+    // Exécuter chaque migration
+    for (const file of migrationFiles) {
+      await runMigration(file);
+    }
 
     logger.info('✅ Toutes les migrations ont été exécutées');
     process.exit(0);

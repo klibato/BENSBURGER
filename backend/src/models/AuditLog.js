@@ -16,15 +16,14 @@ const AuditLog = sequelize.define('audit_logs', {
     },
   },
   action: {
-    type: DataTypes.STRING(20),
+    type: DataTypes.STRING(50),
     allowNull: false,
-    validate: {
-      isIn: [['CREATE', 'UPDATE', 'DELETE', 'LOGIN', 'LOGOUT']],
-    },
+    comment: 'Type d\'action: LOGIN, LOGOUT, CREATE, UPDATE, DELETE, OPEN_REGISTER, CLOSE_REGISTER, SALE, etc.',
   },
   entity_type: {
     type: DataTypes.STRING(50),
-    allowNull: false,
+    allowNull: true,
+    comment: 'Type d\'entité: sale, product, user, cash_register, etc.',
   },
   entity_id: {
     type: DataTypes.INTEGER,
@@ -56,5 +55,35 @@ const AuditLog = sequelize.define('audit_logs', {
   createdAt: 'created_at',
   updatedAt: false,
 });
+
+/**
+ * Méthode helper pour créer un log facilement
+ * @param {Object} data - Données du log
+ * @param {number} data.userId - ID de l'utilisateur
+ * @param {string} data.action - Action effectuée
+ * @param {string} data.entityType - Type d'entité
+ * @param {number} data.entityId - ID de l'entité
+ * @param {Object} data.details - Détails (old_values, new_values, etc.)
+ * @param {string} data.ipAddress - Adresse IP
+ * @param {string} data.userAgent - User agent
+ */
+AuditLog.log = async function (data) {
+  try {
+    return await AuditLog.create({
+      user_id: data.userId || null,
+      action: data.action,
+      entity_type: data.entityType || null,
+      entity_id: data.entityId || null,
+      old_values: data.details?.oldValues || null,
+      new_values: data.details?.newValues || data.details || null,
+      ip_address: data.ipAddress || null,
+      user_agent: data.userAgent || null,
+    });
+  } catch (error) {
+    console.error('Erreur lors de la création du log d\'audit:', error);
+    // Ne pas bloquer l'application si le logging échoue
+    return null;
+  }
+};
 
 module.exports = AuditLog;

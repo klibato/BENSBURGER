@@ -93,6 +93,7 @@ app.use('/api/users', apiLimiter, require('./routes/users'));
 app.use('/api/settings', apiLimiter, require('./routes/settings'));
 app.use('/api/printer', apiLimiter, require('./routes/printer'));
 app.use('/api/sumup', apiLimiter, require('./routes/sumup'));
+app.use('/api/logs', apiLimiter, require('./routes/logs'));
 
 // ============================================
 // GESTION DES ERREURS

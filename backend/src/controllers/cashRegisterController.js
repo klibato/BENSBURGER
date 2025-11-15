@@ -1,6 +1,7 @@
 const { CashRegister, Sale, SaleItem, User, sequelize } = require('../models');
 const { Op } = require('sequelize');
 const logger = require('../utils/logger');
+const { logAction } = require('../middleware/audit');
 
 /**
  * Récupérer toutes les caisses
@@ -174,6 +175,14 @@ const openCashRegister = async (req, res, next) => {
       `Caisse ouverte: ${register_name} par ${req.user.username} - Fond: ${opening_balance}€`
     );
 
+    // Logger l'action dans audit_logs
+    setImmediate(() => {
+      logAction(req, 'OPEN_REGISTER', 'cash_register', completeCashRegister.id, {
+        register_name,
+        opening_balance,
+      });
+    });
+
     res.status(201).json({
       success: true,
       data: completeCashRegister,
@@ -325,6 +334,15 @@ const closeCashRegister = async (req, res, next) => {
     logger.info(
       `Caisse fermée: ${cashRegister.register_name} par ${req.user.username} - Différence: ${difference}€`
     );
+
+    // Logger l'action dans audit_logs
+    setImmediate(() => {
+      logAction(req, 'CLOSE_REGISTER', 'cash_register', closedCashRegister.id, {
+        register_name: cashRegister.register_name,
+        difference,
+        total_sales: cashRegister.total_sales,
+      });
+    });
 
     res.json({
       success: true,

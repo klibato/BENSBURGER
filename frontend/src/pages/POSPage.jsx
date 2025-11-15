@@ -11,7 +11,7 @@ import OpenCashRegisterModal from '../components/cashRegister/OpenCashRegisterMo
 import CloseCashRegisterModal from '../components/cashRegister/CloseCashRegisterModal';
 import QuickSwitchCashierModal from '../components/auth/QuickSwitchCashierModal';
 import Button from '../components/ui/Button';
-import { LogOut, RefreshCw, CheckCircle, CreditCard, DollarSign, Receipt, BarChart3, Package, Users, Settings, Percent, Tag, X, UserCircle } from 'lucide-react';
+import { LogOut, RefreshCw, CheckCircle, CreditCard, DollarSign, Receipt, BarChart3, Package, Users, Settings, Percent, Tag, X, UserCircle, FileText } from 'lucide-react';
 import { formatPrice } from '../utils/constants';
 
 const POSPage = () => {
@@ -250,6 +250,15 @@ const POSPage = () => {
               >
                 <Settings size={20} />
                 Paramètres
+              </Button>
+              <Button
+                variant="secondary"
+                size="md"
+                onClick={() => navigate('/logs')}
+                className="flex items-center gap-2"
+              >
+                <FileText size={20} />
+                Logs
               </Button>
             </>
           )}

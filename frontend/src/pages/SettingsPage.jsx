@@ -759,7 +759,7 @@ const SettingsPage = () => {
                   <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
                     Moyens de paiement
                   </h2>
-                  <p className="text-sm text-gray-600 mb-6">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
                     Activez ou désactivez les moyens de paiement disponibles dans votre caisse
                   </p>
 
@@ -776,12 +776,12 @@ const SettingsPage = () => {
                       const currentName = settings.payment_methods?.[method]?.name || methodNames[method];
 
                       return (
-                        <div key={method} className="flex gap-3 items-center p-4 bg-gray-50 rounded-lg">
+                        <div key={method} className="flex gap-3 items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                           <button
                             type="button"
                             onClick={() => togglePaymentMethod(method)}
                             className={`relative w-12 h-6 rounded-full transition-colors ${
-                              isEnabled ? 'bg-green-500' : 'bg-gray-300'
+                              isEnabled ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
                             }`}
                           >
                             <span
@@ -799,7 +799,7 @@ const SettingsPage = () => {
                             className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg"
                           />
 
-                          <span className={`text-sm font-medium ${isEnabled ? 'text-green-600' : 'text-gray-400'}`}>
+                          <span className={`text-sm font-medium ${isEnabled ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500'}`}>
                             {isEnabled ? 'Activé' : 'Désactivé'}
                           </span>
                         </div>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Users as UsersIcon, Edit2, Trash2 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import UserFormModal from '../components/users/UserFormModal';
+import { useLanguage } from '../context/LanguageContext';
 import {
   getAllUsers,
   createUser,
@@ -17,6 +18,7 @@ const ROLES_LABELS = {
 
 const UsersPage = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(true);

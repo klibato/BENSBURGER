@@ -239,8 +239,8 @@ const SalesHistoryPage = () => {
       <div className="max-w-7xl mx-auto px-6 py-6">
         {/* Filtres */}
         {showFilters && (
-          <div className="bg-white rounded-lg shadow p-6 mb-6">
-            <h3 className="font-semibold text-gray-800 mb-4">Filtres</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+            <h3 className="font-semibold text-gray-800 dark:text-gray-100 mb-4">Filtres</h3>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
@@ -308,7 +308,7 @@ const SalesHistoryPage = () => {
         )}
 
         {/* Liste des ventes */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
           {loading ? (
             <div className="p-8 text-center text-gray-500 dark:text-gray-400">  {t('common.loading')}</div>
           ) : sales.length === 0 ? (
@@ -319,7 +319,7 @@ const SalesHistoryPage = () => {
             <>
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200 dark:border-gray-700">
+                  <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-700">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Ticket
@@ -341,9 +341,9 @@ const SalesHistoryPage = () => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700">
+                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     {sales.map((sale) => (
-                      <tr key={sale.id} className="hover:bg-gray-50 dark:bg-gray-700">
+                      <tr key={sale.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                             {sale.ticket_number}
@@ -397,8 +397,8 @@ const SalesHistoryPage = () => {
               </div>
 
               {/* Pagination */}
-              <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200 dark:border-gray-700">
-                <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex items-center justify-between border-t border-gray-200 dark:border-gray-700">
+                <div className="text-sm text-gray-600 dark:text-gray-300">
                   Affichage de {pagination.offset + 1} à{' '}
                   {Math.min(pagination.offset + pagination.limit, pagination.total)} sur{' '}
                   {pagination.total}

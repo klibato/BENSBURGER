@@ -6,7 +6,7 @@ import { formatPrice } from '../../utils/constants';
  * Utilise React.memo pour optimiser les performances
  */
 const ProductCard = React.memo(({ product, onClick }) => {
-  const { name, price_ttc, category, image_url, is_menu } = product;
+  const { name, price_ttc, category, image_url, is_menu, is_out_of_stock, is_low_stock, quantity } = product;
 
   // Icône par défaut selon la catégorie
   const getCategoryIcon = () => {
@@ -20,12 +20,33 @@ const ProductCard = React.memo(({ product, onClick }) => {
     return icons[category] || '🍽️';
   };
 
+  // Désactiver le clic si rupture de stock
+  const handleClick = () => {
+    if (is_out_of_stock && !is_menu) {
+      alert(`⚠️ ${name} est en rupture de stock !`);
+      return;
+    }
+    onClick(product);
+  };
+
   return (
     <div
-      onClick={() => onClick(product)}
-      className="product-card group relative"
+      onClick={handleClick}
+      className={`product-card group relative ${is_out_of_stock && !is_menu ? 'opacity-60 cursor-not-allowed' : ''}`}
     >
-      {/* Badge menu */}
+      {/* Badge stock (en haut à gauche) */}
+      {!is_menu && is_out_of_stock && (
+        <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg z-10">
+          RUPTURE
+        </div>
+      )}
+      {!is_menu && !is_out_of_stock && is_low_stock && (
+        <div className="absolute top-2 left-2 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg z-10">
+          ⚡ {quantity}
+        </div>
+      )}
+
+      {/* Badge menu (en haut à droite) */}
       {is_menu && (
         <div className="absolute top-2 right-2 bg-primary-500 text-white text-xs font-bold px-2 py-1 rounded-full">
           MENU

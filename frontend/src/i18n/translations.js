@@ -123,6 +123,9 @@ export const translations = {
       topProducts: 'Produits les plus vendus',
       paymentMethods: 'Moyens de paiement',
       exportClosures: 'Export Clôtures',
+      salesEvolution: 'Évolution des ventes',
+      salesHistory: 'Historique des ventes',
+      noData: 'Aucune donnée disponible',
     },
 
     // Sales
@@ -154,6 +157,8 @@ export const translations = {
       allActions: 'Toutes les actions',
       entityType: 'Type d\'entité',
       allTypes: 'Tous les types',
+      entity: 'Entité',
+      date: 'Date',
       ip: 'IP',
       noLogs: 'Aucun log trouvé',
       loading: 'Chargement des logs...',
@@ -164,6 +169,8 @@ export const translations = {
       previous: 'Précédent',
       next: 'Suivant',
       system: 'Système',
+      exportCSV: 'Exporter CSV',
+      refreshLogs: 'Actualiser',
     },
 
     // Settings
@@ -178,14 +185,92 @@ export const translations = {
       printer: 'Imprimante',
       email: 'Email / SMTP',
       appearance: 'Apparence',
+
+      // General info
+      storeInfo: 'Informations du commerce',
       storeName: 'Nom du commerce',
+      description: 'Description',
       address: 'Adresse',
+      addressLine1: 'Adresse ligne 1',
+      addressLine2: 'Adresse ligne 2',
+      postalCode: 'Code postal',
+      city: 'Ville',
+      country: 'Pays',
       phone: 'Téléphone',
-      email: 'Email',
+      emailAddress: 'Email',
+      website: 'Site web',
+
+      // Legal info
+      legalInfo: 'Informations légales',
+      legalForm: 'Forme juridique',
+      capital: 'Capital social (€)',
+      siret: 'SIRET (14 chiffres)',
+      vatNumber: 'Numéro TVA',
+      rcs: 'RCS (Registre du Commerce et des Sociétés)',
+
+      // Categories
+      productCategories: 'Catégories de produits',
+      manageCategoriesDesc: 'Gérez les catégories affichées dans votre caisse',
+      noCategoriesConfigured: 'Aucune catégorie configurée. Cliquez sur "Ajouter" pour créer une catégorie.',
+      emoji: 'Emoji',
+      categoryName: 'Nom de la catégorie',
+      categoryId: 'ID (unique)',
+      color: 'Couleur',
+
+      // VAT
+      vatRates: 'Taux de TVA',
+      configureVatRatesDesc: 'Configurez les différents taux de TVA applicables',
+      noVatConfigured: 'Aucun taux de TVA configuré. Cliquez sur "Ajouter" pour créer un taux.',
+      vatRate: 'Taux (%)',
+      vatName: 'Nom (ex: TVA réduite)',
+      vatDescription: 'Description',
+
+      // Payment methods
+      paymentMethods: 'Moyens de paiement',
+      paymentMethodsDesc: 'Activez ou désactivez les moyens de paiement disponibles dans votre caisse',
+      enabled: 'Activé',
+      disabled: 'Désactivé',
+
+      // SumUp
+      sumupConfig: 'Configuration SumUp',
+      sumupConfigDesc: 'Configurez votre intégration avec SumUp pour les paiements par carte',
+      apiKey: 'API Key',
+      merchantCode: 'Merchant Code',
+      affiliateKey: 'Affiliate Key (optionnel)',
+
+      // Printer
+      printerConfig: 'Configuration Imprimante',
+      printerConfigDesc: 'Configurez votre imprimante thermique ESC/POS',
+      printerType: 'Type d\'imprimante',
+      interface: 'Interface',
+      ipAddress: 'Adresse IP',
+      port: 'Port',
+      path: 'Chemin / Nom de l\'imprimante',
+      autoPrint: 'Impression automatique après paiement',
+
+      // Email
+      emailConfig: 'Configuration Email / SMTP',
+      emailConfigDesc: 'Configurez l\'envoi d\'emails (tickets, notifications)',
+      smtpHost: 'Serveur SMTP',
+      smtpPort: 'Port',
+      smtpSecure: 'Connexion sécurisée SSL/TLS (port 465)',
+      smtpUser: 'Utilisateur SMTP',
+      smtpPassword: 'Mot de passe SMTP',
+      fromEmail: 'Email expéditeur',
+      fromName: 'Nom expéditeur',
+
+      // Appearance
+      appearanceBranding: 'Apparence et branding',
+      themeColor: 'Couleur du thème',
+      themeColorDesc: 'Cette couleur sera utilisée pour les boutons et les éléments actifs',
+      logoUrl: 'URL du logo',
+      logoUrlDesc: 'Lien vers votre logo (affiché sur les tickets et l\'interface)',
       currency: 'Devise',
-      currencySymbol: 'Symbole de devise',
-      language: 'Langue',
+      currencySymbol: 'Symbole',
       timezone: 'Fuseau horaire',
+      languageThemeNote: 'Note: La langue et le thème se configurent depuis le menu burger',
+
+      language: 'Langue',
       theme: 'Thème',
       lightMode: 'Mode clair',
       darkMode: 'Mode sombre',
@@ -344,6 +429,9 @@ export const translations = {
       topProducts: 'Top Products',
       paymentMethods: 'Payment Methods',
       exportClosures: 'Export Closures',
+      salesEvolution: 'Sales Evolution',
+      salesHistory: 'Sales History',
+      noData: 'No data available',
     },
 
     // Sales
@@ -375,6 +463,8 @@ export const translations = {
       allActions: 'All actions',
       entityType: 'Entity type',
       allTypes: 'All types',
+      entity: 'Entity',
+      date: 'Date',
       ip: 'IP',
       noLogs: 'No logs found',
       loading: 'Loading logs...',
@@ -385,6 +475,8 @@ export const translations = {
       previous: 'Previous',
       next: 'Next',
       system: 'System',
+      exportCSV: 'Export CSV',
+      refreshLogs: 'Refresh',
     },
 
     // Settings
@@ -399,14 +491,92 @@ export const translations = {
       printer: 'Printer',
       email: 'Email / SMTP',
       appearance: 'Appearance',
+
+      // General info
+      storeInfo: 'Store Information',
       storeName: 'Store name',
+      description: 'Description',
       address: 'Address',
+      addressLine1: 'Address line 1',
+      addressLine2: 'Address line 2',
+      postalCode: 'Postal code',
+      city: 'City',
+      country: 'Country',
       phone: 'Phone',
-      email: 'Email',
+      emailAddress: 'Email',
+      website: 'Website',
+
+      // Legal info
+      legalInfo: 'Legal Information',
+      legalForm: 'Legal form',
+      capital: 'Share capital (€)',
+      siret: 'SIRET (14 digits)',
+      vatNumber: 'VAT number',
+      rcs: 'Company registration number (RCS)',
+
+      // Categories
+      productCategories: 'Product Categories',
+      manageCategoriesDesc: 'Manage categories displayed in your POS',
+      noCategoriesConfigured: 'No categories configured. Click "Add" to create a category.',
+      emoji: 'Emoji',
+      categoryName: 'Category name',
+      categoryId: 'ID (unique)',
+      color: 'Color',
+
+      // VAT
+      vatRates: 'VAT Rates',
+      configureVatRatesDesc: 'Configure applicable VAT rates',
+      noVatConfigured: 'No VAT rate configured. Click "Add" to create a rate.',
+      vatRate: 'Rate (%)',
+      vatName: 'Name (e.g.: Reduced VAT)',
+      vatDescription: 'Description',
+
+      // Payment methods
+      paymentMethods: 'Payment Methods',
+      paymentMethodsDesc: 'Enable or disable payment methods available in your POS',
+      enabled: 'Enabled',
+      disabled: 'Disabled',
+
+      // SumUp
+      sumupConfig: 'SumUp Configuration',
+      sumupConfigDesc: 'Configure your SumUp integration for card payments',
+      apiKey: 'API Key',
+      merchantCode: 'Merchant Code',
+      affiliateKey: 'Affiliate Key (optional)',
+
+      // Printer
+      printerConfig: 'Printer Configuration',
+      printerConfigDesc: 'Configure your ESC/POS thermal printer',
+      printerType: 'Printer type',
+      interface: 'Interface',
+      ipAddress: 'IP address',
+      port: 'Port',
+      path: 'Path / Printer name',
+      autoPrint: 'Auto-print after payment',
+
+      // Email
+      emailConfig: 'Email / SMTP Configuration',
+      emailConfigDesc: 'Configure email sending (receipts, notifications)',
+      smtpHost: 'SMTP server',
+      smtpPort: 'Port',
+      smtpSecure: 'Secure SSL/TLS connection (port 465)',
+      smtpUser: 'SMTP user',
+      smtpPassword: 'SMTP password',
+      fromEmail: 'Sender email',
+      fromName: 'Sender name',
+
+      // Appearance
+      appearanceBranding: 'Appearance and branding',
+      themeColor: 'Theme color',
+      themeColorDesc: 'This color will be used for buttons and active elements',
+      logoUrl: 'Logo URL',
+      logoUrlDesc: 'Link to your logo (displayed on receipts and interface)',
       currency: 'Currency',
-      currencySymbol: 'Currency symbol',
-      language: 'Language',
+      currencySymbol: 'Symbol',
       timezone: 'Timezone',
+      languageThemeNote: 'Note: Language and theme can be configured from the burger menu',
+
+      language: 'Language',
       theme: 'Theme',
       lightMode: 'Light mode',
       darkMode: 'Dark mode',

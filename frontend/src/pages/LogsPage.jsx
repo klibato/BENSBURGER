@@ -246,7 +246,7 @@ const LogsPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  Date début
+                  {t('logs.startDate')}
                 </label>
                 <input
                   type="date"
@@ -259,7 +259,7 @@ const LogsPage = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  Date fin
+                  {t('logs.endDate')}
                 </label>
                 <input
                   type="date"
@@ -272,7 +272,7 @@ const LogsPage = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  Utilisateur
+                  {t('logs.user')}
                 </label>
                 <select
                   name="user_id"
@@ -280,7 +280,7 @@ const LogsPage = () => {
                   onChange={handleFilterChange}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="">Tous les utilisateurs</option>
+                  <option value="">{t('logs.allUsers')}</option>
                   {users.map(u => (
                     <option key={u.id} value={u.id}>
                       {u.first_name} {u.last_name} ({u.username})
@@ -291,7 +291,7 @@ const LogsPage = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  Action
+                  {t('logs.action')}
                 </label>
                 <select
                   name="action"
@@ -299,7 +299,7 @@ const LogsPage = () => {
                   onChange={handleFilterChange}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="">Toutes les actions</option>
+                  <option value="">{t('logs.allActions')}</option>
                   {actionTypes.map(action => (
                     <option key={action} value={action}>
                       {action}
@@ -310,7 +310,7 @@ const LogsPage = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  Type d'entité
+                  {t('logs.entityType')}
                 </label>
                 <select
                   name="entity_type"
@@ -318,7 +318,7 @@ const LogsPage = () => {
                   onChange={handleFilterChange}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="">Tous les types</option>
+                  <option value="">{t('logs.allTypes')}</option>
                   {entityTypes.map(type => (
                     <option key={type} value={type}>
                       {type}
@@ -333,14 +333,14 @@ const LogsPage = () => {
                 onClick={applyFilters}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
               >
-                Appliquer les filtres
+                {t('logs.applyFilters')}
               </button>
               <button
                 onClick={clearFilters}
                 className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-200 rounded-lg transition-colors"
               >
                 <X className="w-4 h-4" />
-                Réinitialiser
+                {t('logs.resetFilters')}
               </button>
             </div>
           </div>
@@ -358,7 +358,7 @@ const LogsPage = () => {
           {loading ? (
             <div className="text-center py-12">
               <RefreshCw className="w-12 h-12 animate-spin mx-auto text-gray-400" />
-              <p className="text-gray-600 mt-4">Chargement des logs...</p>
+              <p className="text-gray-600 dark:text-gray-400 mt-4">{t('logs.loading')}</p>
             </div>
           ) : logs.length === 0 ? (
             <div className="text-center py-12">
@@ -369,20 +369,20 @@ const LogsPage = () => {
               <table className="w-full">
                 <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-700">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Date
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      {t('logs.date')}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Utilisateur
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      {t('logs.user')}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Action
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      {t('logs.action')}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Entité
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      {t('logs.entity')}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      IP
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      {t('logs.ip')}
                     </th>
                   </tr>
                 </thead>
@@ -403,7 +403,7 @@ const LogsPage = () => {
                             </div>
                           </div>
                         ) : (
-                          <span className="text-gray-500 dark:text-gray-400">Système</span>
+                          <span className="text-gray-500 dark:text-gray-400">{t('logs.system')}</span>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -430,9 +430,9 @@ const LogsPage = () => {
               {/* Pagination */}
               <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex items-center justify-between border-t border-gray-200 dark:border-gray-700">
                 <div className="text-sm text-gray-700 dark:text-gray-300">
-                  Affichage de {pagination.offset + 1} à{' '}
-                  {Math.min(pagination.offset + pagination.limit, pagination.total)} sur{' '}
-                  {pagination.total} logs
+                  {t('logs.showing')} {pagination.offset + 1} {t('logs.to')}{' '}
+                  {Math.min(pagination.offset + pagination.limit, pagination.total)} {t('logs.of')}{' '}
+                  {pagination.total} {t('logs.logs')}
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -440,14 +440,14 @@ const LogsPage = () => {
                     disabled={pagination.offset === 0}
                     className="px-4 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 text-gray-700 dark:text-gray-100 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    Précédent
+                    {t('logs.previous')}
                   </button>
                   <button
                     onClick={handleNextPage}
                     disabled={!pagination.has_more}
                     className="px-4 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 text-gray-700 dark:text-gray-100 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    Suivant
+                    {t('logs.next')}
                   </button>
                 </div>
               </div>

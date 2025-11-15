@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useStoreConfig } from '../context/StoreConfigContext';
+import { useLanguage } from '../context/LanguageContext';
 import { getSettings, updateSettings } from '../services/settingsService';
 import Button from '../components/ui/Button';
 import { ArrowLeft, Save, Store, Package, Percent, CreditCard, Palette, Plus, Trash2, Smartphone, Printer, Mail } from 'lucide-react';
@@ -9,6 +10,7 @@ import { ArrowLeft, Save, Store, Package, Percent, CreditCard, Palette, Plus, Tr
 const SettingsPage = () => {
   const { user, isAuthenticated } = useAuth();
   const { refreshConfig } = useStoreConfig();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('general');

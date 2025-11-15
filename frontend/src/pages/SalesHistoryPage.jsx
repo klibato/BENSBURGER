@@ -321,23 +321,23 @@ const SalesHistoryPage = () => {
                 <table className="w-full">
                   <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-700">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Ticket
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        {t('sales.ticket')}
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Date
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        {t('sales.date')}
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Paiement
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        {t('sales.paymentMethod')}
                       </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Total TTC
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        {t('sales.totalIncl')}
                       </th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Articles
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        {t('sales.items')}
                       </th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Actions
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        {t('sales.actions')}
                       </th>
                     </tr>
                   </thead>
@@ -370,21 +370,21 @@ const SalesHistoryPage = () => {
                             <button
                               onClick={() => setSelectedSale(sale)}
                               className="text-primary-600 hover:text-primary-800"
-                              title="Voir détails"
+                              title={t("sales.saleDetails")}
                             >
                               <Eye size={20} />
                             </button>
                             <button
                               onClick={() => handlePrintTicket(sale.id, sale.ticket_number)}
                               className="text-blue-600 hover:text-blue-800"
-                              title="{t("sales.reprint")}"
+                              title={t("sales.reprint")}
                             >
                               <Printer size={20} />
                             </button>
                             <button
                               onClick={() => handleDownloadPDF(sale.id, sale.ticket_number)}
                               className="text-green-600 hover:text-green-800"
-                              title="{t("sales.downloadPDF")}"
+                              title={t("sales.downloadPDF")}
                             >
                               <Download size={20} />
                             </button>
@@ -434,48 +434,48 @@ const SalesHistoryPage = () => {
           onClick={() => setSelectedSale(null)}
         >
           <div
-            className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto"
+            className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="bg-primary-600 text-white px-6 py-4 rounded-t-lg">
-              <h2 className="text-xl font-bold">Détail de la vente</h2>
+              <h2 className="text-xl font-bold">{t('sales.saleDetails')}</h2>
               <p className="text-sm opacity-90">{selectedSale.ticket_number}</p>
             </div>
 
             <div className="p-6">
               {/* Informations générales */}
               <div className="mb-6">
-                <h3 className="font-semibold text-gray-800 mb-3">Informations</h3>
+                <h3 className="font-semibold text-gray-800 dark:text-gray-100 mb-3">{t('sales.information')}</h3>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-gray-600 dark:text-gray-400">Date:</span>
-                    <p className="font-medium">{formatDate(selectedSale.created_at)}</p>
+                    <span className="text-gray-600 dark:text-gray-400">{t('sales.date')}:</span>
+                    <p className="font-medium dark:text-gray-100">{formatDate(selectedSale.created_at)}</p>
                   </div>
                   <div>
-                    <span className="text-gray-600 dark:text-gray-400">Paiement:</span>
-                    <p className="font-medium">
+                    <span className="text-gray-600 dark:text-gray-400">{t('sales.payment')}:</span>
+                    <p className="font-medium dark:text-gray-100">
                       {getPaymentMethodLabel(selectedSale.payment_method)}
                     </p>
                   </div>
                   <div>
-                    <span className="text-gray-600 dark:text-gray-400">Montant payé:</span>
-                    <p className="font-medium">{formatPrice(selectedSale.amount_paid)}</p>
+                    <span className="text-gray-600 dark:text-gray-400">{t('sales.amountPaid')}:</span>
+                    <p className="font-medium dark:text-gray-100">{formatPrice(selectedSale.amount_paid)}</p>
                   </div>
                   <div>
-                    <span className="text-gray-600 dark:text-gray-400">Monnaie rendue:</span>
-                    <p className="font-medium">{formatPrice(selectedSale.change_given)}</p>
+                    <span className="text-gray-600 dark:text-gray-400">{t('sales.changeGiven')}:</span>
+                    <p className="font-medium dark:text-gray-100">{formatPrice(selectedSale.change_given)}</p>
                   </div>
                 </div>
               </div>
 
               {/* Articles */}
               <div className="mb-6">
-                <h3 className="font-semibold text-gray-800 mb-3">Articles</h3>
+                <h3 className="font-semibold text-gray-800 dark:text-gray-100 mb-3">{t('sales.items')}</h3>
                 <div className="space-y-2">
                   {selectedSale.items?.map((item) => (
                     <div
                       key={item.id}
-                      className="flex justify-between items-center p-3 bg-gray-50 rounded"
+                      className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded"
                     >
                       <div className="flex-1">
                         <p className="font-medium text-gray-800 dark:text-gray-100">{item.product_name}</p>
@@ -492,14 +492,14 @@ const SalesHistoryPage = () => {
               </div>
 
               {/* Totaux */}
-              <div className="border-t pt-4">
+              <div className="border-t dark:border-gray-700 pt-4">
                 <div className="flex justify-between items-center text-sm mb-2">
-                  <span className="text-gray-600 dark:text-gray-400">Total HT:</span>
-                  <span className="font-medium">{formatPrice(selectedSale.total_ht)}</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('sales.totalExcl')}:</span>
+                  <span className="font-medium dark:text-gray-100">{formatPrice(selectedSale.total_ht)}</span>
                 </div>
                 <div className="flex justify-between items-center text-lg font-bold">
-                  <span>Total TTC:</span>
-                  <span className="text-green-600">
+                  <span className="dark:text-gray-100">{t('sales.totalIncl')}:</span>
+                  <span className="text-green-600 dark:text-green-400">
                     {formatPrice(selectedSale.total_ttc)}
                   </span>
                 </div>
@@ -507,7 +507,7 @@ const SalesHistoryPage = () => {
 
               <div className="mt-6 flex justify-end">
                 <Button variant="secondary" onClick={() => setSelectedSale(null)}>
-                  Fermer
+                  {t('common.close')}
                 </Button>
               </div>
             </div>

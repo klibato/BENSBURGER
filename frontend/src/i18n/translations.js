@@ -192,7 +192,13 @@ export const translations = {
       exportError: 'Erreur lors de l\'export CSV',
       reprint: 'Réimprimer ticket',
       downloadPDF: 'Télécharger PDF',
-      saleDetails: 'Détails de la vente',
+      saleDetails: 'Détail de la vente',
+      totalIncl: 'Total TTC',
+      totalExcl: 'Total HT',
+      actions: 'Actions',
+      information: 'Informations',
+      payment: 'Paiement',
+      changeGiven: 'Monnaie rendue',
     },
 
     // Logs
@@ -558,6 +564,12 @@ export const translations = {
       reprint: 'Reprint ticket',
       downloadPDF: 'Download PDF',
       saleDetails: 'Sale details',
+      totalIncl: 'Total (incl. tax)',
+      totalExcl: 'Total (excl. tax)',
+      actions: 'Actions',
+      information: 'Information',
+      payment: 'Payment',
+      changeGiven: 'Change given',
     },
 
     // Logs

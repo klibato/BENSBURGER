@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowUp, ArrowDown, Download, Edit2, Trash2 } from 'lucide-react';
+import { ArrowUp, ArrowDown, Download, Edit2, Trash2, ArrowLeft, Package } from 'lucide-react';
 import Button from '../components/ui/Button';
 import ProductFormModal from '../components/products/ProductFormModal';
 import { useStoreConfig } from '../context/StoreConfigContext';
@@ -240,32 +240,49 @@ const ProductsPage = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
-      <div className="bg-primary-600 text-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold">Gestion des Produits</h1>
-              <p className="text-primary-100 mt-1">
-                {filteredProducts.length} produit{filteredProducts.length > 1 ? 's' : ''}
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <Button
-                variant="secondary"
-                onClick={() => navigate('/dashboard')}
-              >
-                Dashboard
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={() => navigate('/')}
-              >
-                Retour POS
-              </Button>
-            </div>
+      <header className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft size={20} />
+            Retour
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+              <Package size={28} />
+              Gestion des Produits
+            </h1>
+            <p className="text-sm text-gray-600">
+              {filteredProducts.length} produit{filteredProducts.length > 1 ? 's' : ''}
+            </p>
           </div>
         </div>
-      </div>
+        <div className="flex gap-3">
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={handleExportCSV}
+            className="flex items-center gap-2"
+          >
+            <Download size={20} />
+            Exporter CSV
+          </Button>
+          <Button
+            variant="primary"
+            size="md"
+            onClick={() => {
+              setEditingProduct(null);
+              setIsModalOpen(true);
+            }}
+          >
+            + Nouveau Produit
+          </Button>
+        </div>
+      </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Messages */}
@@ -280,63 +297,39 @@ const ProductsPage = () => {
           </div>
         )}
 
-        {/* Filters and Actions */}
+        {/* Filters */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="flex flex-wrap gap-4 items-center justify-between">
-            <div className="flex flex-wrap gap-4 items-center">
-              {/* Category filter */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Catégorie
-                </label>
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                >
-                  {CATEGORIES.map((cat) => (
-                    <option key={cat.value} value={cat.value}>
-                      {cat.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Show inactive toggle */}
-              <div className="flex items-center gap-2 pt-6">
-                <input
-                  type="checkbox"
-                  id="showInactive"
-                  checked={showInactive}
-                  onChange={(e) => setShowInactive(e.target.checked)}
-                  className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-                />
-                <label htmlFor="showInactive" className="text-sm font-medium text-gray-700">
-                  Afficher inactifs
-                </label>
-              </div>
+          <div className="flex flex-wrap gap-4 items-center">
+            {/* Category filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Catégorie
+              </label>
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+              >
+                {CATEGORIES.map((cat) => (
+                  <option key={cat.value} value={cat.value}>
+                    {cat.label}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            {/* Action buttons */}
-            <div className="flex gap-3">
-              <Button
-                variant="secondary"
-                onClick={handleExportCSV}
-                className="whitespace-nowrap flex items-center gap-2"
-              >
-                <Download size={18} />
-                Exporter CSV
-              </Button>
-              <Button
-                variant="primary"
-                onClick={() => {
-                  setEditingProduct(null);
-                  setIsModalOpen(true);
-                }}
-                className="whitespace-nowrap"
-              >
-                + Nouveau Produit
-              </Button>
+            {/* Show inactive toggle */}
+            <div className="flex items-center gap-2 pt-6">
+              <input
+                type="checkbox"
+                id="showInactive"
+                checked={showInactive}
+                onChange={(e) => setShowInactive(e.target.checked)}
+                className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+              />
+              <label htmlFor="showInactive" className="text-sm font-medium text-gray-700">
+                Afficher inactifs
+              </label>
             </div>
           </div>
         </div>

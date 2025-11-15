@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getLogs, exportLogsCSV } from '../services/logsService';
 import { getAllUsers } from '../services/userService';
-import { Download, RefreshCw, Filter, X, ArrowLeft } from 'lucide-react';
+import { Download, RefreshCw, Filter, X, ArrowLeft, FileText } from 'lucide-react';
+import Button from '../components/ui/Button';
 
 const LogsPage = () => {
   const { user } = useAuth();
@@ -183,44 +184,61 @@ const LogsPage = () => {
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-100">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800">Logs & Audit</h1>
-          <p className="text-gray-600 mt-1">Journal de toutes les actions du système</p>
+      <header className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft size={20} />
+            Retour
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+              <FileText size={28} />
+              Logs & Audit
+            </h1>
+            <p className="text-sm text-gray-600">
+              Journal de toutes les actions du système
+            </p>
+          </div>
         </div>
         <div className="flex gap-3">
-          <button
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Retour
-          </button>
-          <button
+          <Button
+            variant="secondary"
+            size="md"
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            className="flex items-center gap-2"
           >
-            <Filter className="w-5 h-5" />
+            <Filter size={20} />
             Filtres
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="secondary"
+            size="md"
             onClick={handleExportCSV}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
           >
-            <Download className="w-5 h-5" />
-            Export CSV
-          </button>
-          <button
+            <Download size={20} />
+            Exporter CSV
+          </Button>
+          <Button
+            variant="secondary"
+            size="md"
             onClick={() => fetchLogs(0)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            className="flex items-center gap-2"
           >
-            <RefreshCw className="w-5 h-5" />
+            <RefreshCw size={20} />
             Actualiser
-          </button>
+          </Button>
         </div>
-      </div>
+      </header>
+
+      <div className="max-w-7xl mx-auto px-6 py-6">
 
       {/* Filtres */}
       {showFilters && (

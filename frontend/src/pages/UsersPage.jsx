@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Users as UsersIcon, Edit2, Trash2 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import UserFormModal from '../components/users/UserFormModal';
 import {
@@ -120,38 +121,40 @@ const UsersPage = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
-      <div className="bg-primary-600 text-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold">Gestion des Utilisateurs</h1>
-              <p className="text-primary-100 mt-1">
-                {filteredUsers.length} utilisateur{filteredUsers.length > 1 ? 's' : ''}
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <Button
-                variant="secondary"
-                onClick={() => navigate('/products')}
-              >
-                Produits
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={() => navigate('/dashboard')}
-              >
-                Dashboard
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={() => navigate('/')}
-              >
-                Retour POS
-              </Button>
-            </div>
+      <header className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft size={20} />
+            Retour
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+              <UsersIcon size={28} />
+              Gestion des Utilisateurs
+            </h1>
+            <p className="text-sm text-gray-600">
+              {filteredUsers.length} utilisateur{filteredUsers.length > 1 ? 's' : ''}
+            </p>
           </div>
         </div>
-      </div>
+        <div className="flex gap-3">
+          <Button
+            variant="primary"
+            size="md"
+            onClick={() => {
+              setEditingUser(null);
+              setIsModalOpen(true);
+            }}
+          >
+            + Nouvel Utilisateur
+          </Button>
+        </div>
+      </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Messages */}
@@ -166,33 +169,19 @@ const UsersPage = () => {
           </div>
         )}
 
-        {/* Filters and Actions */}
+        {/* Filters */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="flex flex-wrap gap-4 items-center justify-between">
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="showInactive"
-                checked={showInactive}
-                onChange={(e) => setShowInactive(e.target.checked)}
-                className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-              />
-              <label htmlFor="showInactive" className="text-sm font-medium text-gray-700">
-                Afficher inactifs
-              </label>
-            </div>
-
-            {/* Add user button */}
-            <Button
-              variant="primary"
-              onClick={() => {
-                setEditingUser(null);
-                setIsModalOpen(true);
-              }}
-              className="whitespace-nowrap"
-            >
-              + Nouvel Utilisateur
-            </Button>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="showInactive"
+              checked={showInactive}
+              onChange={(e) => setShowInactive(e.target.checked)}
+              className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+            />
+            <label htmlFor="showInactive" className="text-sm font-medium text-gray-700">
+              Afficher inactifs
+            </label>
           </div>
         </div>
 
@@ -267,23 +256,25 @@ const UsersPage = () => {
                           </span>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex justify-end gap-2">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex justify-center gap-2">
                           <button
                             onClick={() => {
                               setEditingUser(user);
                               setIsModalOpen(true);
                             }}
-                            className="text-primary-600 hover:text-primary-900"
+                            className="p-1.5 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                            title="Modifier"
                           >
-                            Modifier
+                            <Edit2 size={16} />
                           </button>
                           <button
                             onClick={() => setDeleteConfirm(user)}
-                            className="text-red-600 hover:text-red-900"
+                            className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             disabled={!user.is_active}
+                            title="Désactiver"
                           >
-                            Désactiver
+                            <Trash2 size={16} />
                           </button>
                         </div>
                       </td>

@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS audit_logs (
   action VARCHAR(50) NOT NULL,
   entity_type VARCHAR(50),
   entity_id INTEGER,
-  details JSONB,
+  old_values JSONB,
+  new_values JSONB,
   ip_address VARCHAR(45),
   user_agent TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -25,4 +26,5 @@ COMMENT ON TABLE audit_logs IS 'Journal d''audit de toutes les actions du systè
 COMMENT ON COLUMN audit_logs.action IS 'Type d''action: LOGIN, LOGOUT, CREATE, UPDATE, DELETE, OPEN_REGISTER, CLOSE_REGISTER, etc.';
 COMMENT ON COLUMN audit_logs.entity_type IS 'Type d''entité: sale, product, user, cash_register, etc.';
 COMMENT ON COLUMN audit_logs.entity_id IS 'ID de l''entité affectée';
-COMMENT ON COLUMN audit_logs.details IS 'Détails JSON de l''action (anciennes valeurs, nouvelles valeurs, etc.)';
+COMMENT ON COLUMN audit_logs.old_values IS 'Anciennes valeurs JSON (pour UPDATE)';
+COMMENT ON COLUMN audit_logs.new_values IS 'Nouvelles valeurs JSON';

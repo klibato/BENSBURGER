@@ -96,6 +96,16 @@ const optionalAuthenticate = async (req, res, next) => {
 
 // Middleware pour vérifier le rôle (admin only)
 const requireAdmin = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({
+      success: false,
+      error: {
+        code: 'UNAUTHORIZED',
+        message: 'Authentification requise',
+      },
+    });
+  }
+
   if (req.user.role !== 'admin') {
     return res.status(403).json({
       success: false,

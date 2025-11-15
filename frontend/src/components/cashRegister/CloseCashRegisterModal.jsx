@@ -83,11 +83,11 @@ const CloseCashRegisterModal = ({ isOpen, onClose, cashRegister }) => {
                 <span className="font-medium">{parseFloat(cashRegister.opening_balance).toFixed(2)} €</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Espèces encaissées:</span>
+                <span className="text-gray-600 dark:text-gray-400">{t("cashRegister.cashCollected")}:</span>
                 <span className="font-medium">{parseFloat(cashRegister.total_cash_collected || 0).toFixed(2)} €</span>
               </div>
-              <div className="flex justify-between pt-2 border-t border-gray-200">
-                <span className="text-gray-700 font-medium">Attendu théorique:</span>
+              <div className="flex justify-between pt-2 border-t border-gray-200 dark:border-gray-600">
+                <span className="text-gray-700 dark:text-gray-200 font-medium">{t("cashRegister.expectedBalance")}:</span>
                 <span className="font-bold text-lg">{expectedBalance.toFixed(2)} €</span>
               </div>
               <div className="flex justify-between">
@@ -99,8 +99,8 @@ const CloseCashRegisterModal = ({ isOpen, onClose, cashRegister }) => {
 
           {/* Montant compté */}
           <div className="mb-4">
-            <label className="block text-gray-700 font-medium mb-2">
-              Montant compté (€) *
+            <label className="block text-gray-700 dark:text-gray-200 font-medium mb-2">
+              {t("cashRegister.countedCash")} *
             </label>
             <input
               type="number"
@@ -112,31 +112,31 @@ const CloseCashRegisterModal = ({ isOpen, onClose, cashRegister }) => {
               required
               placeholder="0.00"
             />
-            <p className="text-sm text-gray-500 mt-1">
-              Espèces réellement comptées en caisse
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              {t("cashRegister.countedCashDesc")}
             </p>
           </div>
 
           {/* Différence */}
           {countedCash && (
             <div className={`mb-4 p-4 rounded-lg ${
-              difference === 0 ? 'bg-green-50 border border-green-200' :
-              difference > 0 ? 'bg-blue-50 border border-blue-200' :
-              'bg-orange-50 border border-orange-200'
+              difference === 0 ? 'bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800' :
+              difference > 0 ? 'bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800' :
+              'bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800'
             }`}>
               <div className="flex justify-between items-center">
-                <span className="font-medium text-gray-700">Différence:</span>
+                <span className="font-medium text-gray-700 dark:text-gray-200">{t("cashRegister.difference")}:</span>
                 <span className={`text-xl font-bold ${
-                  difference === 0 ? 'text-green-700' :
-                  difference > 0 ? 'text-blue-700' :
-                  'text-orange-700'
+                  difference === 0 ? 'text-green-700 dark:text-green-400' :
+                  difference > 0 ? 'text-blue-700 dark:text-blue-400' :
+                  'text-orange-700 dark:text-orange-400'
                 }`}>
                   {difference > 0 ? '+' : ''}{difference.toFixed(2)} €
                 </span>
               </div>
               {difference !== 0 && (
-                <p className="text-sm text-gray-600 mt-1">
-                  {difference > 0 ? 'Excédent' : 'Manquant'}
+                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                  {difference > 0 ? t("cashRegister.surplus") : t("cashRegister.missing")}
                 </p>
               )}
             </div>
@@ -144,8 +144,8 @@ const CloseCashRegisterModal = ({ isOpen, onClose, cashRegister }) => {
 
           {/* Solde de fermeture */}
           <div className="mb-4">
-            <label className="block text-gray-700 font-medium mb-2">
-              Solde de fermeture (€) *
+            <label className="block text-gray-700 dark:text-gray-200 font-medium mb-2">
+              {t("cashRegister.closingBalance")} *
             </label>
             <input
               type="number"
@@ -161,15 +161,15 @@ const CloseCashRegisterModal = ({ isOpen, onClose, cashRegister }) => {
 
           {/* Notes */}
           <div className="mb-6">
-            <label className="block text-gray-700 font-medium mb-2">
-              Notes (optionnel)
+            <label className="block text-gray-700 dark:text-gray-200 font-medium mb-2">
+              {t("cashRegister.notes")}
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
               rows="3"
-              placeholder="Remarques sur la clôture..."
+              placeholder={t("cashRegister.closingNotesPlaceholder")}
             />
           </div>
 
@@ -179,7 +179,7 @@ const CloseCashRegisterModal = ({ isOpen, onClose, cashRegister }) => {
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="flex-1 px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {t("common.cancel")}
             </button>
@@ -188,7 +188,7 @@ const CloseCashRegisterModal = ({ isOpen, onClose, cashRegister }) => {
               disabled={loading}
               className="flex-1 px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {loading ? '{t("cashRegister.closing")}' : '{t("cashRegister.closeButton")}'}
+              {loading ? t("cashRegister.closing") : t("cashRegister.closeButton")}
             </button>
           </div>
         </form>

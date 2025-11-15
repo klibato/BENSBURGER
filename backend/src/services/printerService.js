@@ -133,7 +133,7 @@ class PrinterService {
       this.printer.alignCenter();
       this.printer.setTextDoubleHeight();
       this.printer.bold(true);
-      this.printer.println(settings.commerce_name || 'BensBurger');
+      this.printer.println(settings.store_name || 'BensBurger');
       this.printer.bold(false);
       this.printer.setTextNormal();
       this.printer.newLine();
@@ -385,10 +385,10 @@ class PrinterService {
       this.printer.println('CAISSE');
       this.printer.bold(false);
       this.printer.println(`Fond de caisse:    ${formatPrice(cashRegister.opening_balance || 0)}`);
-      this.printer.println(`Especes attendues: ${formatPrice(cashRegister.expected_cash || 0)}`);
-      this.printer.println(`Especes comptees:  ${formatPrice(cashRegister.actual_cash || 0)}`);
+      this.printer.println(`Especes attendues: ${formatPrice(cashRegister.expected_balance || 0)}`);
+      this.printer.println(`Especes comptees:  ${formatPrice(cashRegister.counted_cash || 0)}`);
 
-      const diff = parseFloat(cashRegister.cash_difference || 0);
+      const diff = parseFloat(cashRegister.difference || 0);
       this.printer.newLine();
       if (diff !== 0) {
         this.printer.bold(true);

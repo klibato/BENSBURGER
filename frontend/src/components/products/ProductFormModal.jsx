@@ -94,8 +94,8 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
         <div className="bg-primary-600 text-white px-6 py-4 rounded-t-lg sticky top-0">
           <h2 className="text-xl font-bold">
             {product ? 'Modifier le produit' : 'Nouveau produit'}
@@ -106,7 +106,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Nom */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Nom du produit *
               </label>
               <input
@@ -115,14 +115,14 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                 placeholder="Ex: Burger Classic"
               />
             </div>
 
             {/* Description */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Description
               </label>
               <textarea
@@ -130,14 +130,14 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
                 value={formData.description}
                 onChange={handleChange}
                 rows="3"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none"
                 placeholder="Description du produit..."
               />
             </div>
 
             {/* Image URL */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 URL de l'image (optionnel)
               </label>
               <input
@@ -145,16 +145,16 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
                 name="image_url"
                 value={formData.image_url}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                 placeholder="https://exemple.com/image.jpg"
               />
               {formData.image_url && (
                 <div className="mt-3">
-                  <p className="text-sm text-gray-600 mb-2">Prévisualisation :</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Prévisualisation :</p>
                   <img
                     src={formData.image_url}
                     alt="Prévisualisation"
-                    className="w-32 h-32 object-cover rounded-lg border-2 border-gray-200"
+                    className="w-32 h-32 object-cover rounded-lg border-2 border-gray-200 dark:border-gray-600"
                     onError={(e) => {
                       e.target.src = '';
                       e.target.alt = 'Image non disponible';
@@ -167,7 +167,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
 
             {/* Prix HT */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Prix HT (€) *
               </label>
               <input
@@ -178,14 +178,14 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
                 required
                 step="0.01"
                 min="0"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                 placeholder="0.00"
               />
             </div>
 
             {/* TVA */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Taux TVA *
               </label>
               <select
@@ -193,7 +193,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
                 value={formData.vat_rate}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
               >
                 {vatRates.length > 0 ? (
                   vatRates.map((vat) => (
@@ -213,7 +213,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
 
             {/* Catégorie */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Catégorie *
               </label>
               <select
@@ -221,7 +221,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
                 value={formData.category}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
               >
                 {categories.length > 0 ? (
                   categories.map((cat) => (
@@ -243,7 +243,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
 
             {/* Ordre d'affichage */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Ordre d'affichage
               </label>
               <input
@@ -252,13 +252,13 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
                 value={formData.display_order}
                 onChange={handleChange}
                 min="0"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
               />
             </div>
 
             {/* Quantité en stock */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Quantité en stock
               </label>
               <input
@@ -267,7 +267,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
                 value={formData.quantity}
                 onChange={handleChange}
                 min="0"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                 placeholder="0"
               />
               <p className="text-xs text-gray-500 mt-1">
@@ -277,7 +277,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
 
             {/* Seuil d'alerte stock bas */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Seuil d'alerte stock bas
               </label>
               <input
@@ -286,7 +286,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
                 value={formData.low_stock_threshold}
                 onChange={handleChange}
                 min="0"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                 placeholder="10"
               />
               <p className="text-xs text-gray-500 mt-1">

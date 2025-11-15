@@ -52,12 +52,12 @@ const QuickSwitchCashierModal = ({ isOpen, onClose, onSwitch }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full">
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-gray-200">
           <div className="flex items-center gap-2">
             <UserCircle className="text-primary-600" size={24} />
-            <h2 className="text-xl font-bold text-gray-800">Changer de caissier</h2>
+            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Changer de caissier</h2>
           </div>
           <button
             onClick={handleClose}
@@ -82,7 +82,7 @@ const QuickSwitchCashierModal = ({ isOpen, onClose, onSwitch }) => {
 
           {/* Username */}
           <div className="mb-4">
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
               Nom d'utilisateur
             </label>
             <input
@@ -90,7 +90,7 @@ const QuickSwitchCashierModal = ({ isOpen, onClose, onSwitch }) => {
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               placeholder="Votre nom d'utilisateur"
               autoFocus
               disabled={loading}
@@ -99,7 +99,7 @@ const QuickSwitchCashierModal = ({ isOpen, onClose, onSwitch }) => {
 
           {/* PIN */}
           <div className="mb-6">
-            <label htmlFor="pin" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="pin" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
               Code PIN (4 chiffres)
             </label>
             <div className="relative">
@@ -113,7 +113,7 @@ const QuickSwitchCashierModal = ({ isOpen, onClose, onSwitch }) => {
                     setPin(value);
                   }
                 }}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="••••"
                 maxLength={4}
                 disabled={loading}

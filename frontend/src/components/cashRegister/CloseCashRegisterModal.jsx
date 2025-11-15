@@ -55,8 +55,8 @@ const CloseCashRegisterModal = ({ isOpen, onClose, cashRegister }) => {
   if (!isOpen || !cashRegister) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="bg-red-600 text-white px-6 py-4 rounded-t-lg sticky top-0">
           <h2 className="text-xl font-bold">Clôture de caisse</h2>
@@ -72,16 +72,16 @@ const CloseCashRegisterModal = ({ isOpen, onClose, cashRegister }) => {
           )}
 
           {/* Récapitulatif */}
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+          <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
             <h3 className="font-semibold text-gray-700 mb-3">Récapitulatif</h3>
 
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-600">Fond de caisse:</span>
+                <span className="text-gray-600 dark:text-gray-400">Fond de caisse:</span>
                 <span className="font-medium">{parseFloat(cashRegister.opening_balance).toFixed(2)} €</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Espèces encaissées:</span>
+                <span className="text-gray-600 dark:text-gray-400">Espèces encaissées:</span>
                 <span className="font-medium">{parseFloat(cashRegister.total_cash_collected || 0).toFixed(2)} €</span>
               </div>
               <div className="flex justify-between pt-2 border-t border-gray-200">
@@ -89,7 +89,7 @@ const CloseCashRegisterModal = ({ isOpen, onClose, cashRegister }) => {
                 <span className="font-bold text-lg">{expectedBalance.toFixed(2)} €</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Nombre de ventes:</span>
+                <span className="text-gray-600 dark:text-gray-400">Nombre de ventes:</span>
                 <span className="font-medium">{cashRegister.ticket_count || 0}</span>
               </div>
             </div>
@@ -106,7 +106,7 @@ const CloseCashRegisterModal = ({ isOpen, onClose, cashRegister }) => {
               min="0"
               value={countedCash}
               onChange={(e) => setCountedCash(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-lg font-semibold"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-lg font-semibold"
               required
               placeholder="0.00"
             />
@@ -151,7 +151,7 @@ const CloseCashRegisterModal = ({ isOpen, onClose, cashRegister }) => {
               min="0"
               value={closingBalance}
               onChange={(e) => setClosingBalance(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-lg"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-lg"
               required
               placeholder="0.00"
             />
@@ -165,7 +165,7 @@ const CloseCashRegisterModal = ({ isOpen, onClose, cashRegister }) => {
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
               rows="3"
               placeholder="Remarques sur la clôture..."
             />

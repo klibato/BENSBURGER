@@ -67,12 +67,12 @@ const ProductCard = React.memo(({ product, onClick }) => {
       </div>
 
       {/* Nom du produit */}
-      <h3 className="font-semibold text-gray-800 text-center mb-2 line-clamp-2 min-h-[3rem]">
+      <h3 className="font-semibold text-gray-800 dark:text-gray-100 text-center mb-2 line-clamp-2 min-h-[3rem]">
         {name}
       </h3>
 
       {/* Prix */}
-      <p className="text-2xl font-bold text-primary-600 text-center">
+      <p className="text-2xl font-bold text-primary-600 dark:text-primary-400 text-center">
         {formatPrice(price_ttc)}
       </p>
     </div>

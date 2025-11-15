@@ -11,7 +11,7 @@ const ProductGrid = ({ products, onProductClick, loading }) => {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Chargement des produits...</p>
+          <p className="text-gray-600 dark:text-gray-400">Chargement des produits...</p>
         </div>
       </div>
     );
@@ -22,7 +22,7 @@ const ProductGrid = ({ products, onProductClick, loading }) => {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <span className="text-6xl mb-4 block">🍔</span>
-          <p className="text-gray-600 text-lg">Aucun produit disponible</p>
+          <p className="text-gray-600 dark:text-gray-400 text-lg">Aucun produit disponible</p>
         </div>
       </div>
     );

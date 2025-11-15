@@ -318,9 +318,9 @@ const SettingsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
       {/* Header */}
-      <header className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
+      <header className="bg-white dark:bg-gray-800 shadow-sm px-6 py-4 flex justify-between items-center">
         <div className="flex items-center gap-4">
           <Button
             variant="secondary"
@@ -332,11 +332,11 @@ const SettingsPage = () => {
             Retour
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
               <Store size={28} />
               Paramètres du Commerce
             </h1>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Configuration complète de votre commerce
             </p>
           </div>
@@ -347,26 +347,26 @@ const SettingsPage = () => {
       <div className="max-w-6xl mx-auto p-6">
         {/* Messages */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+          <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-200 px-4 py-3 rounded-lg mb-4">
             {error}
           </div>
         )}
 
         {successMessage && (
-          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4">
+          <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-200 px-4 py-3 rounded-lg mb-4">
             {successMessage}
           </div>
         )}
 
         {loading ? (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-12 text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-500 mx-auto mb-4"></div>
-            <p className="text-gray-600">Chargement des paramètres...</p>
+            <p className="text-gray-600 dark:text-gray-400">Chargement des paramètres...</p>
           </div>
         ) : (
           <>
             {/* Tabs */}
-            <div className="bg-white rounded-lg shadow-md mb-6 p-2">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md mb-6 p-2">
               <div className="flex gap-2 overflow-x-auto">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
@@ -377,7 +377,7 @@ const SettingsPage = () => {
                       className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
                         activeTab === tab.id
                           ? 'bg-primary-500 text-white'
-                          : 'text-gray-600 hover:bg-gray-100'
+                          : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                       }`}
                     >
                       <Icon size={18} />
@@ -392,13 +392,13 @@ const SettingsPage = () => {
               {/* Tab: Informations générales */}
               {activeTab === 'general' && (
                 <>
-                  <div className="bg-white rounded-lg shadow-md p-6">
-                    <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
                       Informations du commerce
                     </h2>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Nom du commerce *
                         </label>
                         <input
@@ -407,12 +407,12 @@ const SettingsPage = () => {
                           value={settings.store_name}
                           onChange={handleChange}
                           required
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         />
                       </div>
 
                       <div className="col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Description
                         </label>
                         <input
@@ -420,12 +420,12 @@ const SettingsPage = () => {
                           name="store_description"
                           value={settings.store_description}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         />
                       </div>
 
                       <div className="col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Adresse ligne 1
                         </label>
                         <input
@@ -433,12 +433,12 @@ const SettingsPage = () => {
                           name="address_line1"
                           value={settings.address_line1}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         />
                       </div>
 
                       <div className="col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Adresse ligne 2
                         </label>
                         <input
@@ -446,12 +446,12 @@ const SettingsPage = () => {
                           name="address_line2"
                           value={settings.address_line2 || ''}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Code postal
                         </label>
                         <input
@@ -459,12 +459,12 @@ const SettingsPage = () => {
                           name="postal_code"
                           value={settings.postal_code}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Ville
                         </label>
                         <input
@@ -472,12 +472,12 @@ const SettingsPage = () => {
                           name="city"
                           value={settings.city}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Pays
                         </label>
                         <input
@@ -485,12 +485,12 @@ const SettingsPage = () => {
                           name="country"
                           value={settings.country}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Téléphone
                         </label>
                         <input
@@ -498,12 +498,12 @@ const SettingsPage = () => {
                           name="phone"
                           value={settings.phone}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Email
                         </label>
                         <input
@@ -511,12 +511,12 @@ const SettingsPage = () => {
                           name="email"
                           value={settings.email || ''}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         />
                       </div>
 
                       <div className="col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Site web
                         </label>
                         <input
@@ -524,26 +524,26 @@ const SettingsPage = () => {
                           name="website"
                           value={settings.website || ''}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         />
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-white rounded-lg shadow-md p-6">
-                    <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
                       Informations légales
                     </h2>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Forme juridique
                         </label>
                         <select
                           name="legal_form"
                           value={settings.legal_form}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         >
                           <option value="SARL">SARL</option>
                           <option value="SAS">SAS</option>
@@ -555,7 +555,7 @@ const SettingsPage = () => {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Capital social (€)
                         </label>
                         <input
@@ -564,12 +564,12 @@ const SettingsPage = () => {
                           name="capital_amount"
                           value={settings.capital_amount}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           SIRET (14 chiffres)
                         </label>
                         <input
@@ -578,12 +578,12 @@ const SettingsPage = () => {
                           value={settings.siret}
                           onChange={handleChange}
                           maxLength="14"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Numéro TVA
                         </label>
                         <input
@@ -591,12 +591,12 @@ const SettingsPage = () => {
                           name="vat_number"
                           value={settings.vat_number}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         />
                       </div>
 
                       <div className="col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           RCS (Registre du Commerce et des Sociétés)
                         </label>
                         <input
@@ -604,7 +604,7 @@ const SettingsPage = () => {
                           name="rcs"
                           value={settings.rcs}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         />
                       </div>
                     </div>
@@ -614,13 +614,13 @@ const SettingsPage = () => {
 
               {/* Tab: Catégories */}
               {activeTab === 'categories' && (
-                <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                   <div className="flex justify-between items-center mb-4">
                     <div>
-                      <h2 className="text-xl font-semibold text-gray-800">
+                      <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
                         Catégories de produits
                       </h2>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                         Gérez les catégories affichées dans votre caisse
                       </p>
                     </div>
@@ -638,33 +638,33 @@ const SettingsPage = () => {
 
                   <div className="space-y-3">
                     {settings.categories?.map((category, index) => (
-                      <div key={index} className="flex gap-3 items-center p-3 bg-gray-50 rounded-lg">
+                      <div key={index} className="flex gap-3 items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                         <input
                           type="text"
                           value={category.icon}
                           onChange={(e) => updateCategory(index, 'icon', e.target.value)}
                           placeholder="Emoji"
-                          className="w-16 text-center px-2 py-2 border border-gray-300 rounded-lg"
+                          className="w-16 text-center px-2 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg"
                         />
                         <input
                           type="text"
                           value={category.name}
                           onChange={(e) => updateCategory(index, 'name', e.target.value)}
                           placeholder="Nom de la catégorie"
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                          className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg"
                         />
                         <input
                           type="text"
                           value={category.id}
                           onChange={(e) => updateCategory(index, 'id', e.target.value)}
                           placeholder="ID (unique)"
-                          className="w-40 px-3 py-2 border border-gray-300 rounded-lg font-mono text-sm"
+                          className="w-40 px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg font-mono text-sm"
                         />
                         <input
                           type="color"
                           value={category.color}
                           onChange={(e) => updateCategory(index, 'color', e.target.value)}
-                          className="w-16 h-10 border border-gray-300 rounded-lg cursor-pointer"
+                          className="w-16 h-10 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer"
                         />
                         <button
                           type="button"
@@ -687,13 +687,13 @@ const SettingsPage = () => {
 
               {/* Tab: Taux de TVA */}
               {activeTab === 'vat' && (
-                <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                   <div className="flex justify-between items-center mb-4">
                     <div>
-                      <h2 className="text-xl font-semibold text-gray-800">
+                      <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
                         Taux de TVA
                       </h2>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                         Configurez les différents taux de TVA applicables
                       </p>
                     </div>
@@ -711,28 +711,28 @@ const SettingsPage = () => {
 
                   <div className="space-y-3">
                     {settings.vat_rates?.map((vat, index) => (
-                      <div key={index} className="flex gap-3 items-center p-3 bg-gray-50 rounded-lg">
+                      <div key={index} className="flex gap-3 items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                         <input
                           type="number"
                           step="0.01"
                           value={vat.rate}
                           onChange={(e) => updateVatRate(index, 'rate', e.target.value)}
                           placeholder="Taux (%)"
-                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg"
+                          className="w-24 px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg"
                         />
                         <input
                           type="text"
                           value={vat.name}
                           onChange={(e) => updateVatRate(index, 'name', e.target.value)}
                           placeholder="Nom (ex: TVA réduite)"
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                          className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg"
                         />
                         <input
                           type="text"
                           value={vat.description}
                           onChange={(e) => updateVatRate(index, 'description', e.target.value)}
                           placeholder="Description"
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                          className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg"
                         />
                         <button
                           type="button"
@@ -755,8 +755,8 @@ const SettingsPage = () => {
 
               {/* Tab: Moyens de paiement */}
               {activeTab === 'payment' && (
-                <div className="bg-white rounded-lg shadow-md p-6">
-                  <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                  <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
                     Moyens de paiement
                   </h2>
                   <p className="text-sm text-gray-600 mb-6">
@@ -796,7 +796,7 @@ const SettingsPage = () => {
                             value={currentName}
                             onChange={(e) => updatePaymentMethodName(method, e.target.value)}
                             placeholder={methodNames[method]}
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg"
                           />
 
                           <span className={`text-sm font-medium ${isEnabled ? 'text-green-600' : 'text-gray-400'}`}>
@@ -811,13 +811,13 @@ const SettingsPage = () => {
 
               {/* Tab: SumUp */}
               {activeTab === 'sumup' && (
-                <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                   <div className="flex justify-between items-center mb-4">
                     <div>
-                      <h2 className="text-xl font-semibold text-gray-800">
+                      <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
                         Configuration SumUp
                       </h2>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                         Configurez votre intégration avec SumUp pour les paiements par carte
                       </p>
                     </div>
@@ -838,7 +838,7 @@ const SettingsPage = () => {
 
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         API Key *
                       </label>
                       <input
@@ -846,15 +846,15 @@ const SettingsPage = () => {
                         value={settings.sumup_config?.api_key || ''}
                         onChange={(e) => updateSumUpConfig('api_key', e.target.value)}
                         placeholder="Votre clé API SumUp"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                       />
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         Disponible dans votre espace développeur SumUp
                       </p>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         Merchant Code
                       </label>
                       <input
@@ -862,12 +862,12 @@ const SettingsPage = () => {
                         value={settings.sumup_config?.merchant_code || ''}
                         onChange={(e) => updateSumUpConfig('merchant_code', e.target.value)}
                         placeholder="Code marchand SumUp"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         Affiliate Key (optionnel)
                       </label>
                       <input
@@ -875,7 +875,7 @@ const SettingsPage = () => {
                         value={settings.sumup_config?.affiliate_key || ''}
                         onChange={(e) => updateSumUpConfig('affiliate_key', e.target.value)}
                         placeholder="Clé affilié SumUp"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                       />
                     </div>
 
@@ -894,13 +894,13 @@ const SettingsPage = () => {
 
               {/* Tab: Imprimante */}
               {activeTab === 'printer' && (
-                <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                   <div className="flex justify-between items-center mb-4">
                     <div>
-                      <h2 className="text-xl font-semibold text-gray-800">
+                      <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
                         Configuration Imprimante
                       </h2>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                         Configurez votre imprimante thermique ESC/POS
                       </p>
                     </div>
@@ -922,13 +922,13 @@ const SettingsPage = () => {
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Type d'imprimante
                         </label>
                         <select
                           value={settings.printer_config?.type || 'epson'}
                           onChange={(e) => updatePrinterConfig('type', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                         >
                           <option value="epson">EPSON</option>
                           <option value="star">Star</option>
@@ -937,13 +937,13 @@ const SettingsPage = () => {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Interface
                         </label>
                         <select
                           value={settings.printer_config?.interface || 'tcp'}
                           onChange={(e) => updatePrinterConfig('interface', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                         >
                           <option value="tcp">Réseau (TCP/IP)</option>
                           <option value="usb">USB</option>
@@ -955,7 +955,7 @@ const SettingsPage = () => {
                     {settings.printer_config?.interface === 'tcp' && (
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                             Adresse IP *
                           </label>
                           <input
@@ -963,12 +963,12 @@ const SettingsPage = () => {
                             value={settings.printer_config?.ip || ''}
                             onChange={(e) => updatePrinterConfig('ip', e.target.value)}
                             placeholder="192.168.1.100"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                             Port
                           </label>
                           <input
@@ -976,7 +976,7 @@ const SettingsPage = () => {
                             value={settings.printer_config?.port || 9100}
                             onChange={(e) => updatePrinterConfig('port', parseInt(e.target.value))}
                             placeholder="9100"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                           />
                         </div>
                       </div>
@@ -984,7 +984,7 @@ const SettingsPage = () => {
 
                     {(settings.printer_config?.interface === 'usb' || settings.printer_config?.interface === 'printer') && (
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Chemin / Nom de l'imprimante *
                         </label>
                         <input
@@ -992,7 +992,7 @@ const SettingsPage = () => {
                           value={settings.printer_config?.path || ''}
                           onChange={(e) => updatePrinterConfig('path', e.target.value)}
                           placeholder="/dev/usb/lp0 ou nom de l'imprimante"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                         />
                       </div>
                     )}
@@ -1005,7 +1005,7 @@ const SettingsPage = () => {
                         onChange={(e) => updatePrinterConfig('auto_print', e.target.checked)}
                         className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                       />
-                      <label htmlFor="auto_print" className="text-sm font-medium text-gray-700">
+                      <label htmlFor="auto_print" className="text-sm font-medium text-gray-700 dark:text-gray-200">
                         Impression automatique après paiement
                       </label>
                     </div>
@@ -1028,13 +1028,13 @@ const SettingsPage = () => {
 
               {/* Tab: Email / SMTP */}
               {activeTab === 'email' && (
-                <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                   <div className="flex justify-between items-center mb-4">
                     <div>
-                      <h2 className="text-xl font-semibold text-gray-800">
+                      <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
                         Configuration Email / SMTP
                       </h2>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                         Configurez l'envoi d'emails (tickets, notifications)
                       </p>
                     </div>
@@ -1056,7 +1056,7 @@ const SettingsPage = () => {
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Serveur SMTP *
                         </label>
                         <input
@@ -1064,12 +1064,12 @@ const SettingsPage = () => {
                           value={settings.email_config?.smtp_host || ''}
                           onChange={(e) => updateEmailConfig('smtp_host', e.target.value)}
                           placeholder="smtp.gmail.com"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Port *
                         </label>
                         <input
@@ -1077,7 +1077,7 @@ const SettingsPage = () => {
                           value={settings.email_config?.smtp_port || 587}
                           onChange={(e) => updateEmailConfig('smtp_port', parseInt(e.target.value))}
                           placeholder="587"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                         />
                       </div>
                     </div>
@@ -1090,14 +1090,14 @@ const SettingsPage = () => {
                         onChange={(e) => updateEmailConfig('smtp_secure', e.target.checked)}
                         className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                       />
-                      <label htmlFor="smtp_secure" className="text-sm font-medium text-gray-700">
+                      <label htmlFor="smtp_secure" className="text-sm font-medium text-gray-700 dark:text-gray-200">
                         Connexion sécurisée SSL/TLS (port 465)
                       </label>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Utilisateur SMTP *
                         </label>
                         <input
@@ -1105,12 +1105,12 @@ const SettingsPage = () => {
                           value={settings.email_config?.smtp_user || ''}
                           onChange={(e) => updateEmailConfig('smtp_user', e.target.value)}
                           placeholder="votre@email.com"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Mot de passe SMTP *
                         </label>
                         <input
@@ -1118,14 +1118,14 @@ const SettingsPage = () => {
                           value={settings.email_config?.smtp_password || ''}
                           onChange={(e) => updateEmailConfig('smtp_password', e.target.value)}
                           placeholder="Mot de passe"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Email expéditeur *
                         </label>
                         <input
@@ -1133,12 +1133,12 @@ const SettingsPage = () => {
                           value={settings.email_config?.from_email || ''}
                           onChange={(e) => updateEmailConfig('from_email', e.target.value)}
                           placeholder="noreply@votrecommerce.com"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Nom expéditeur
                         </label>
                         <input
@@ -1146,7 +1146,7 @@ const SettingsPage = () => {
                           value={settings.email_config?.from_name || ''}
                           onChange={(e) => updateEmailConfig('from_name', e.target.value)}
                           placeholder="BensBurger"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                         />
                       </div>
                     </div>
@@ -1177,14 +1177,14 @@ const SettingsPage = () => {
 
               {/* Tab: Apparence */}
               {activeTab === 'appearance' && (
-                <div className="bg-white rounded-lg shadow-md p-6">
-                  <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                  <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
                     Apparence et branding
                   </h2>
 
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         Couleur du thème
                       </label>
                       <div className="flex gap-3 items-center">
@@ -1204,13 +1204,13 @@ const SettingsPage = () => {
                           className="flex-1 px-3 py-2 border border-gray-300 rounded-lg font-mono"
                         />
                       </div>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         Cette couleur sera utilisée pour les boutons et les éléments actifs
                       </p>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         URL du logo
                       </label>
                       <input
@@ -1219,23 +1219,23 @@ const SettingsPage = () => {
                         value={settings.logo_url || ''}
                         onChange={handleChange}
                         placeholder="https://exemple.com/logo.png"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg"
                       />
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         Lien vers votre logo (affiché sur les tickets et l'interface)
                       </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Devise
                         </label>
                         <select
                           name="currency"
                           value={settings.currency}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg"
                         >
                           <option value="EUR">EUR - Euro</option>
                           <option value="USD">USD - Dollar US</option>
@@ -1245,7 +1245,7 @@ const SettingsPage = () => {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Symbole
                         </label>
                         <input
@@ -1253,27 +1253,27 @@ const SettingsPage = () => {
                           name="currency_symbol"
                           value={settings.currency_symbol}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         Fuseau horaire
                       </label>
                       <select
                         name="timezone"
                         value={settings.timezone}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg"
                       >
                         <option value="Europe/Paris">Europe/Paris</option>
                         <option value="Europe/London">Europe/London</option>
                         <option value="America/New_York">America/New_York</option>
                         <option value="America/Los_Angeles">America/Los_Angeles</option>
                       </select>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         Note: La langue et le thème se configurent depuis le menu burger
                       </p>
                     </div>

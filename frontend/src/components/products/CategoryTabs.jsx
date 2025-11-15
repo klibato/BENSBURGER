@@ -35,7 +35,7 @@ const CategoryTabs = ({ selectedCategory, onCategoryChange }) => {
               ${
                 isSelected
                   ? 'text-white shadow-lg'
-                  : 'bg-white text-gray-700 hover:bg-gray-100 border-2 border-gray-200'
+                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 border-2 border-gray-200 dark:border-gray-600'
               }
             `}
           >

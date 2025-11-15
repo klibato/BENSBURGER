@@ -42,8 +42,8 @@ const OpenCashRegisterModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4">
         {/* Header */}
         <div className="bg-green-600 text-white px-6 py-4 rounded-t-lg">
           <h2 className="text-xl font-bold">Ouvrir une caisse</h2>
@@ -66,7 +66,7 @@ const OpenCashRegisterModal = ({ isOpen, onClose }) => {
               type="text"
               value={registerName}
               onChange={(e) => setRegisterName(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg"
               required
               placeholder="Ex: Caisse Principale"
             />
@@ -83,7 +83,7 @@ const OpenCashRegisterModal = ({ isOpen, onClose }) => {
               min="0"
               value={openingBalance}
               onChange={(e) => setOpeningBalance(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg"
               required
               placeholder="100.00"
             />
@@ -100,7 +100,7 @@ const OpenCashRegisterModal = ({ isOpen, onClose }) => {
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
               rows="3"
               placeholder="Remarques..."
             />

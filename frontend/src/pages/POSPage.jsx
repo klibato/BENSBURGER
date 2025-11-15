@@ -181,12 +181,12 @@ const POSPage = () => {
       {/* Header */}
       <header className="bg-white dark:bg-gray-800 shadow-sm px-6 py-4 flex justify-between items-center flex-shrink-0">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">🍔 BensBurger POS</h1>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">🍔 {t('pos.title')}</h1>
           <p className="text-sm text-gray-600 dark:text-gray-300">
-            Caissier : {user.first_name} {user.last_name}
+            {t('pos.cashier')} : {user.first_name} {user.last_name}
             {user.role === 'admin' && (
               <span className="ml-2 text-xs bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 px-2 py-1 rounded">
-                Admin
+                {t('auth.admin')}
               </span>
             )}
           </p>
@@ -194,7 +194,7 @@ const POSPage = () => {
           {hasActiveCashRegister() && activeCashRegister && (
             <p className="text-xs text-green-600 dark:text-green-400 mt-1 flex items-center gap-1">
               <DollarSign size={14} />
-              Caisse: {activeCashRegister.register_name} - Fond: {formatPrice(activeCashRegister.opening_balance)}
+              {t('pos.cashRegister')}: {activeCashRegister.register_name} - Fond: {formatPrice(activeCashRegister.opening_balance)}
             </p>
           )}
         </div>
@@ -291,7 +291,7 @@ const POSPage = () => {
                     className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
                   >
                     <BarChart3 className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                    <span className="font-medium text-gray-800 dark:text-gray-200">Dashboard</span>
+                    <span className="font-medium text-gray-800 dark:text-gray-200">{t('dashboard.title')}</span>
                   </button>
 
                   {/* Journal des ventes */}
@@ -300,7 +300,7 @@ const POSPage = () => {
                     className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
                   >
                     <Receipt className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                    <span className="font-medium text-gray-800 dark:text-gray-200">Journal des ventes</span>
+                    <span className="font-medium text-gray-800 dark:text-gray-200">{t('sales.title')}</span>
                   </button>
 
                   {/* Actualiser */}
@@ -309,7 +309,7 @@ const POSPage = () => {
                     className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
                   >
                     <RefreshCw className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                    <span className="font-medium text-gray-800 dark:text-gray-200">Actualiser</span>
+                    <span className="font-medium text-gray-800 dark:text-gray-200">{t('common.refresh')}</span>
                   </button>
 
                   {/* Admin uniquement */}
@@ -326,7 +326,7 @@ const POSPage = () => {
                         className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
                       >
                         <Package className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                        <span className="font-medium text-gray-800 dark:text-gray-200">Produits</span>
+                        <span className="font-medium text-gray-800 dark:text-gray-200">{t('products.title')}</span>
                       </button>
 
                       <button
@@ -334,7 +334,7 @@ const POSPage = () => {
                         className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
                       >
                         <Users className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                        <span className="font-medium text-gray-800 dark:text-gray-200">Utilisateurs</span>
+                        <span className="font-medium text-gray-800 dark:text-gray-200">{t('users.title')}</span>
                       </button>
 
                       <button
@@ -342,7 +342,7 @@ const POSPage = () => {
                         className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
                       >
                         <Settings className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                        <span className="font-medium text-gray-800 dark:text-gray-200">Paramètres</span>
+                        <span className="font-medium text-gray-800 dark:text-gray-200">{t('settings.title')}</span>
                       </button>
 
                       <button
@@ -350,7 +350,7 @@ const POSPage = () => {
                         className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
                       >
                         <FileText className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                        <span className="font-medium text-gray-800 dark:text-gray-200">Logs & Audit</span>
+                        <span className="font-medium text-gray-800 dark:text-gray-200">{t('logs.title')}</span>
                       </button>
                     </>
                   )}
@@ -369,7 +369,7 @@ const POSPage = () => {
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <Globe className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Langue</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{t('settings.language')}</span>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
@@ -378,7 +378,7 @@ const POSPage = () => {
                     className={`px-3 py-2 text-sm rounded-lg transition-colors ${
                       language === 'fr'
                         ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
                     Français
@@ -388,7 +388,7 @@ const POSPage = () => {
                     className={`px-3 py-2 text-sm rounded-lg transition-colors ${
                       language === 'en'
                         ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
                     English
@@ -401,7 +401,7 @@ const POSPage = () => {
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     {isDark ? <Moon className="w-4 h-4 text-gray-600 dark:text-gray-300" /> : <Sun className="w-4 h-4 text-gray-600 dark:text-gray-300" />}
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Thème</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{t('settings.theme')}</span>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
@@ -410,22 +410,22 @@ const POSPage = () => {
                     className={`px-3 py-2 text-sm rounded-lg transition-colors flex items-center justify-center gap-2 ${
                       theme === 'light'
                         ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
                     <Sun className="w-4 h-4" />
-                    Clair
+                    {t('settings.lightMode')}
                   </button>
                   <button
                     onClick={() => setTheme('dark')}
                     className={`px-3 py-2 text-sm rounded-lg transition-colors flex items-center justify-center gap-2 ${
                       theme === 'dark'
                         ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
                     <Moon className="w-4 h-4" />
-                    Sombre
+                    {t('settings.darkMode')}
                   </button>
                 </div>
               </div>
@@ -438,7 +438,7 @@ const POSPage = () => {
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
               >
                 <LogOut className="w-5 h-5" />
-                <span>Déconnexion</span>
+                <span>{t('auth.logout')}</span>
               </button>
             </div>
           </div>
@@ -514,16 +514,16 @@ const POSPage = () => {
 
         {/* Zone panier */}
         <div className="w-96 bg-white dark:bg-gray-800 shadow-lg p-6 flex flex-col overflow-hidden border-l dark:border-gray-700">
-          <h2 className="text-xl font-semibold mb-4 flex-shrink-0 text-gray-800 dark:text-gray-100">Panier</h2>
+          <h2 className="text-xl font-semibold mb-4 flex-shrink-0 text-gray-800 dark:text-gray-100">{t('pos.cart')}</h2>
 
           {/* Liste des items */}
           <div className="flex-1 overflow-y-auto mb-4">
             {cart.length === 0 ? (
               <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                 <span className="text-6xl mb-4 block">🛒</span>
-                <p>Panier vide</p>
+                <p>{t('pos.emptyCart')}</p>
                 <p className="text-sm mt-2">
-                  Cliquez sur un produit pour l'ajouter
+                  {t('pos.clickToAdd')}
                 </p>
               </div>
             ) : (
@@ -539,7 +539,7 @@ const POSPage = () => {
                           {item.name}
                           {item.is_menu && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
-                              📦 Menu
+                              📦 {t('products.menu')}
                             </span>
                           )}
                         </h3>
@@ -607,7 +607,7 @@ const POSPage = () => {
                 className="w-full mb-3 py-2 px-3 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 text-yellow-700 dark:text-yellow-300 rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-900/50 transition-colors flex items-center justify-center gap-2"
               >
                 <Tag size={18} />
-                <span className="text-sm font-medium">Appliquer une remise</span>
+                <span className="text-sm font-medium">{t('pos.applyDiscount')}</span>
               </button>
             )}
 
@@ -637,7 +637,7 @@ const POSPage = () => {
                     onClick={handleApplyDiscount}
                     className="flex-1 py-1 px-2 bg-yellow-600 dark:bg-yellow-700 text-white rounded text-sm font-medium hover:bg-yellow-700 dark:hover:bg-yellow-600"
                   >
-                    Valider
+                    {t('common.confirm')}
                   </button>
                   <button
                     onClick={() => {
@@ -646,7 +646,7 @@ const POSPage = () => {
                     }}
                     className="px-2 py-1 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded text-sm hover:bg-gray-300 dark:hover:bg-gray-500"
                   >
-                    Annuler
+                    {t('common.cancel')}
                   </button>
                 </div>
               </div>
@@ -658,13 +658,13 @@ const POSPage = () => {
                 <div className="flex items-center gap-2">
                   <Tag size={16} className="text-yellow-600 dark:text-yellow-400" />
                   <span className="text-sm text-yellow-700 dark:text-yellow-300 font-medium">
-                    Remise: {discount.type === 'percentage' ? `${discount.value}%` : `${discount.value}€`}
+                    {t('pos.discount')}: {discount.type === 'percentage' ? `${discount.value}%` : `${discount.value}€`}
                   </span>
                 </div>
                 <button
                   onClick={handleRemoveDiscount}
                   className="p-1 hover:bg-yellow-100 dark:hover:bg-yellow-800/50 rounded transition-colors"
-                  title="Retirer la remise"
+                  title={t('pos.removeDiscount')}
                 >
                   <X size={16} className="text-yellow-600 dark:text-yellow-400" />
                 </button>
@@ -680,13 +680,13 @@ const POSPage = () => {
                     <span>{formatPrice(subtotal)}</span>
                   </div>
                   <div className="flex justify-between items-center text-sm text-yellow-600 dark:text-yellow-400">
-                    <span>Remise:</span>
+                    <span>{t('pos.discount')}:</span>
                     <span>- {formatPrice(discountAmount)}</span>
                   </div>
                 </>
               )}
               <div className="flex justify-between items-center pt-2 border-t dark:border-gray-700">
-                <span className="text-lg font-medium text-gray-800 dark:text-gray-100">Total TTC :</span>
+                <span className="text-lg font-medium text-gray-800 dark:text-gray-100">{t('pos.total')} :</span>
                 <span className="text-3xl font-bold text-primary-500 dark:text-primary-400">
                   {formatPrice(cartTotal)}
                 </span>
@@ -700,7 +700,7 @@ const POSPage = () => {
               className="w-full"
               onClick={handleOpenPayment}
             >
-              Payer ({itemCount} {itemCount > 1 ? 'articles' : 'article'})
+              {t('pos.pay')} ({itemCount} {itemCount > 1 ? t('pos.items') : t('pos.item')})
             </Button>
           </div>
         </div>

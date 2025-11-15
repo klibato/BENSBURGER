@@ -427,7 +427,7 @@ const MixedPayment = ({ totalTTC, onConfirm, onCancel, loading }) => {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-gray-700">Déjà payé:</span>
-          <span className="text-xl font-semibold text-gray-800">
+          <span className="text-xl font-semibold text-gray-800 dark:text-gray-100">
             {totalPaid.toFixed(2)} €
           </span>
         </div>
@@ -449,7 +449,7 @@ const MixedPayment = ({ totalTTC, onConfirm, onCancel, loading }) => {
             <select
               value={payment.method}
               onChange={(e) => updatePayment(index, 'method', e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-purple-500"
             >
               <option value="cash">Espèces</option>
               <option value="card">Carte</option>
@@ -462,7 +462,7 @@ const MixedPayment = ({ totalTTC, onConfirm, onCancel, loading }) => {
               value={payment.amount}
               onChange={(e) => updatePayment(index, 'amount', e.target.value)}
               placeholder="Montant"
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-purple-500"
             />
             {payments.length > 1 && (
               <button

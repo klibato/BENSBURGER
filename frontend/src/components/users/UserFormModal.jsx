@@ -97,8 +97,8 @@ const UserFormModal = ({ isOpen, onClose, onSubmit, user, loading }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
         <div className="bg-primary-600 text-white px-6 py-4 rounded-t-lg sticky top-0">
           <h2 className="text-xl font-bold">
             {user ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur'}
@@ -109,7 +109,7 @@ const UserFormModal = ({ isOpen, onClose, onSubmit, user, loading }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Nom d'utilisateur */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Nom d'utilisateur *
               </label>
               <input
@@ -118,14 +118,14 @@ const UserFormModal = ({ isOpen, onClose, onSubmit, user, loading }) => {
                 value={formData.username}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                 placeholder="Ex: jdupont"
               />
             </div>
 
             {/* Code PIN */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Code PIN (4 chiffres) {user ? '' : '*'}
               </label>
               <div className="relative">
@@ -158,7 +158,7 @@ const UserFormModal = ({ isOpen, onClose, onSubmit, user, loading }) => {
 
             {/* Prénom */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Prénom *
               </label>
               <input
@@ -167,14 +167,14 @@ const UserFormModal = ({ isOpen, onClose, onSubmit, user, loading }) => {
                 value={formData.first_name}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                 placeholder="Jean"
               />
             </div>
 
             {/* Nom */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Nom *
               </label>
               <input
@@ -183,14 +183,14 @@ const UserFormModal = ({ isOpen, onClose, onSubmit, user, loading }) => {
                 value={formData.last_name}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                 placeholder="Dupont"
               />
             </div>
 
             {/* Email */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Email
               </label>
               <input
@@ -198,14 +198,14 @@ const UserFormModal = ({ isOpen, onClose, onSubmit, user, loading }) => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
                 placeholder="jean.dupont@example.com"
               />
             </div>
 
             {/* Rôle */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Rôle *
               </label>
               <select
@@ -213,7 +213,7 @@ const UserFormModal = ({ isOpen, onClose, onSubmit, user, loading }) => {
                 value={formData.role}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
               >
                 {ROLES.map((role) => (
                   <option key={role.value} value={role.value}>

@@ -239,220 +239,220 @@ const LogsPage = () => {
       </header>
 
       <div className="max-w-7xl mx-auto px-6 py-6">
-
-      {/* Filtres */}
-      {showFilters && (
-        <div className="bg-white p-6 rounded-lg shadow-md mb-6 border border-gray-200">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Date début
-              </label>
-              <input
-                type="date"
-                name="start_date"
-                value={filters.start_date}
-                onChange={handleFilterChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Date fin
-              </label>
-              <input
-                type="date"
-                name="end_date"
-                value={filters.end_date}
-                onChange={handleFilterChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Utilisateur
-              </label>
-              <select
-                name="user_id"
-                value={filters.user_id}
-                onChange={handleFilterChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">Tous les utilisateurs</option>
-                {users.map(u => (
-                  <option key={u.id} value={u.id}>
-                    {u.first_name} {u.last_name} ({u.username})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Action
-              </label>
-              <select
-                name="action"
-                value={filters.action}
-                onChange={handleFilterChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">Toutes les actions</option>
-                {actionTypes.map(action => (
-                  <option key={action} value={action}>
-                    {action}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Type d'entité
-              </label>
-              <select
-                name="entity_type"
-                value={filters.entity_type}
-                onChange={handleFilterChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">Tous les types</option>
-                {entityTypes.map(type => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="flex gap-3 mt-4">
-            <button
-              onClick={applyFilters}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-            >
-              Appliquer les filtres
-            </button>
-            <button
-              onClick={clearFilters}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
-            >
-              <X className="w-4 h-4" />
-              Réinitialiser
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Erreur */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
-        </div>
-      )}
-
-      {/* Tableau des logs */}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
-        {loading ? (
-          <div className="text-center py-12">
-            <RefreshCw className="w-12 h-12 animate-spin mx-auto text-gray-400" />
-            <p className="text-gray-600 mt-4">Chargement des logs...</p>
-          </div>
-        ) : logs.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-600">Aucun log trouvé</p>
-          </div>
-        ) : (
-          <>
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Utilisateur
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Action
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Entité
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    IP
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {logs.map((log) => (
-                  <tr key={log.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatDate(log.created_at)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      {log.user ? (
-                        <div>
-                          <div className="font-medium text-gray-900">
-                            {log.user.first_name} {log.user.last_name}
-                          </div>
-                          <div className="text-gray-500 text-xs">
-                            @{log.user.username} · {log.user.role}
-                          </div>
-                        </div>
-                      ) : (
-                        <span className="text-gray-500">Système</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 text-xs font-semibold rounded-full ${getActionBadgeColor(log.action)}`}
-                      >
-                        {log.action}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {log.entity_type || '-'}
-                      {log.entity_id && (
-                        <span className="text-gray-500 ml-1">#{log.entity_id}</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {log.ip_address || '-'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            {/* Pagination */}
-            <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
-              <div className="text-sm text-gray-700">
-                Affichage de {pagination.offset + 1} à{' '}
-                {Math.min(pagination.offset + pagination.limit, pagination.total)} sur{' '}
-                {pagination.total} logs
+        {/* Filtres */}
+        {showFilters && (
+          <div className="bg-white p-6 rounded-lg shadow-md mb-6 border border-gray-200">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Date début
+                </label>
+                <input
+                  type="date"
+                  name="start_date"
+                  value={filters.start_date}
+                  onChange={handleFilterChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
               </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={handlePreviousPage}
-                  disabled={pagination.offset === 0}
-                  className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Date fin
+                </label>
+                <input
+                  type="date"
+                  name="end_date"
+                  value={filters.end_date}
+                  onChange={handleFilterChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Utilisateur
+                </label>
+                <select
+                  name="user_id"
+                  value={filters.user_id}
+                  onChange={handleFilterChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  Précédent
-                </button>
-                <button
-                  onClick={handleNextPage}
-                  disabled={!pagination.has_more}
-                  className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  <option value="">Tous les utilisateurs</option>
+                  {users.map(u => (
+                    <option key={u.id} value={u.id}>
+                      {u.first_name} {u.last_name} ({u.username})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Action
+                </label>
+                <select
+                  name="action"
+                  value={filters.action}
+                  onChange={handleFilterChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  Suivant
-                </button>
+                  <option value="">Toutes les actions</option>
+                  {actionTypes.map(action => (
+                    <option key={action} value={action}>
+                      {action}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Type d'entité
+                </label>
+                <select
+                  name="entity_type"
+                  value={filters.entity_type}
+                  onChange={handleFilterChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Tous les types</option>
+                  {entityTypes.map(type => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
-          </>
+
+            <div className="flex gap-3 mt-4">
+              <button
+                onClick={applyFilters}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              >
+                Appliquer les filtres
+              </button>
+              <button
+                onClick={clearFilters}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
+              >
+                <X className="w-4 h-4" />
+                Réinitialiser
+              </button>
+            </div>
+          </div>
         )}
+
+        {/* Erreur */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+            {error}
+          </div>
+        )}
+
+        {/* Tableau des logs */}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+          {loading ? (
+            <div className="text-center py-12">
+              <RefreshCw className="w-12 h-12 animate-spin mx-auto text-gray-400" />
+              <p className="text-gray-600 mt-4">Chargement des logs...</p>
+            </div>
+          ) : logs.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600">Aucun log trouvé</p>
+            </div>
+          ) : (
+            <>
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Utilisateur
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Action
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Entité
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      IP
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {logs.map((log) => (
+                    <tr key={log.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatDate(log.created_at)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        {log.user ? (
+                          <div>
+                            <div className="font-medium text-gray-900">
+                              {log.user.first_name} {log.user.last_name}
+                            </div>
+                            <div className="text-gray-500 text-xs">
+                              @{log.user.username} · {log.user.role}
+                            </div>
+                          </div>
+                        ) : (
+                          <span className="text-gray-500">Système</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`px-2 py-1 text-xs font-semibold rounded-full ${getActionBadgeColor(log.action)}`}
+                        >
+                          {log.action}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {log.entity_type || '-'}
+                        {log.entity_id && (
+                          <span className="text-gray-500 ml-1">#{log.entity_id}</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {log.ip_address || '-'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {/* Pagination */}
+              <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
+                <div className="text-sm text-gray-700">
+                  Affichage de {pagination.offset + 1} à{' '}
+                  {Math.min(pagination.offset + pagination.limit, pagination.total)} sur{' '}
+                  {pagination.total} logs
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handlePreviousPage}
+                    disabled={pagination.offset === 0}
+                    className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Précédent
+                  </button>
+                  <button
+                    onClick={handleNextPage}
+                    disabled={!pagination.has_more}
+                    className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Suivant
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

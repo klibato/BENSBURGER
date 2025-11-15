@@ -51,7 +51,7 @@ const SalesHistoryPage = () => {
       setSales(response.data.sales);
       setPagination(response.data.pagination);
     } catch (err) {
-      setError(err.response?.data?.error?.message || 'Erreur lors du chargement des ventes');
+      setError(err.response?.data?.error?.message || t('sales.loadError'));
     } finally {
       setLoading(false);
     }
@@ -109,7 +109,7 @@ const SalesHistoryPage = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Erreur lors du téléchargement du PDF');
+        throw new Error(t('sales.downloadPDFError'));
       }
 
       const blob = await response.blob();
@@ -123,7 +123,7 @@ const SalesHistoryPage = () => {
       document.body.removeChild(a);
     } catch (error) {
       console.error('Erreur téléchargement PDF:', error);
-      alert('Erreur lors du téléchargement du PDF');
+      alert(t('sales.downloadPDFError'));
     }
   };
 
@@ -144,7 +144,7 @@ const SalesHistoryPage = () => {
         throw new Error(data.error?.message || 'Erreur lors de l\'impression');
       }
 
-      alert(`Ticket ${ticketNumber} envoyé à l'imprimante`);
+      alert(`t('sales.printSuccess').replace('{ticketNumber}', ticketNumber)`);
     } catch (error) {
       console.error('Erreur impression:', error);
       alert(error.message || 'Erreur lors de l\'impression. Vérifiez que l\'imprimante est connectée.');
@@ -205,12 +205,12 @@ const SalesHistoryPage = () => {
             className="flex items-center gap-2"
           >
             <ArrowLeft size={20} />
-            Retour
+            {t('common.back')}
           </Button>
           <div>
             <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">  {t('sales.title')}</h1>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              {pagination.total} vente{pagination.total > 1 ? 's' : ''}
+              {pagination.total} {pagination.total > 1 ? t('dashboard.sales').toLowerCase() : t('sales.sale').toLowerCase()}
             </p>
           </div>
         </div>
@@ -222,7 +222,7 @@ const SalesHistoryPage = () => {
             className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
           >
             <Download size={20} />
-            Exporter CSV
+            {t('common.export')} CSV
           </Button>
           <Button
             variant="secondary"
@@ -231,7 +231,7 @@ const SalesHistoryPage = () => {
             className="flex items-center gap-2"
           >
             <Filter size={20} />
-            {showFilters ? 'Masquer filtres' : 'Filtres'}
+            {showFilters ? t('logs.filters') : t('common.filter')}
           </Button>
         </div>
       </header>
@@ -240,11 +240,11 @@ const SalesHistoryPage = () => {
         {/* Filtres */}
         {showFilters && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
-            <h3 className="font-semibold text-gray-800 dark:text-gray-100 mb-4">Filtres</h3>
+            <h3 className="font-semibold text-gray-800 dark:text-gray-100 mb-4">{t('logs.filters')}</h3>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  Date début
+                  {t('sales.startDate')}
                 </label>
                 <input
                   type="date"
@@ -255,7 +255,7 @@ const SalesHistoryPage = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  Date fin
+                  {t('sales.endDate')}
                 </label>
                 <input
                   type="date"
@@ -377,14 +377,14 @@ const SalesHistoryPage = () => {
                             <button
                               onClick={() => handlePrintTicket(sale.id, sale.ticket_number)}
                               className="text-blue-600 hover:text-blue-800"
-                              title="Réimprimer ticket"
+                              title="{t("sales.reprint")}"
                             >
                               <Printer size={20} />
                             </button>
                             <button
                               onClick={() => handleDownloadPDF(sale.id, sale.ticket_number)}
                               className="text-green-600 hover:text-green-800"
-                              title="Télécharger PDF"
+                              title="{t("sales.downloadPDF")}"
                             >
                               <Download size={20} />
                             </button>

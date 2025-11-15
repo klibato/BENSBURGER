@@ -80,7 +80,7 @@ const DashboardPage = () => {
       );
 
       if (!response.ok) {
-        throw new Error('Erreur lors de l\'export CSV');
+        throw new Error(t('dashboard.exportError'));
       }
 
       const blob = await response.blob();
@@ -94,7 +94,7 @@ const DashboardPage = () => {
       document.body.removeChild(a);
     } catch (error) {
       console.error('Erreur export CSV clôtures:', error);
-      alert('Erreur lors de l\'export CSV des clôtures de caisse');
+      alert(t('dashboard.exportClosuresError'));
     }
   };
 

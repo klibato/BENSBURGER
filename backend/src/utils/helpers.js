@@ -2,6 +2,8 @@
  * Utilitaires et helpers
  */
 
+const crypto = require('crypto');
+
 /**
  * Formater un montant en euros avec 2 décimales
  * @param {number|string} amount - Montant à formater
@@ -69,7 +71,6 @@ const isValidPin = (pin) => {
  * @returns {string} - Hash en hexadécimal
  */
 const hashSHA256 = (data) => {
-  const crypto = require('crypto');
   return crypto.createHash('sha256').update(data).digest('hex');
 };
 

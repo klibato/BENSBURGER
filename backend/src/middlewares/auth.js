@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config/env');
-const { User } = require('../models');
+const { User, Organization } = require('../models');
 const logger = require('../utils/logger');
 const { hasPermission, hasAnyPermission } = require('../config/permissions');
 
@@ -41,6 +41,20 @@ const authenticateToken = async (req, res, next) => {
 
     // MULTI-TENANT: Injecter organizationId depuis le user
     req.organizationId = user.organization_id;
+
+    // MULTI-TENANT: Charger l'organisation complète
+    const organization = await Organization.findByPk(user.organization_id);
+    if (!organization) {
+      logger.error(`Organization not found for user ${user.id} (org_id: ${user.organization_id})`);
+      return res.status(500).json({
+        success: false,
+        error: {
+          code: 'ORGANIZATION_NOT_FOUND',
+          message: 'Organisation introuvable',
+        },
+      });
+    }
+    req.organization = organization;
 
     next();
   } catch (error) {
@@ -101,6 +115,18 @@ const optionalAuthenticate = async (req, res, next) => {
   if (!req.organizationId) {
     req.organizationId = 1; // BensBurger par défaut
     logger.warn('No authentication - using default organization (id=1)');
+  }
+
+  // MULTI-TENANT: Charger l'organisation complète
+  try {
+    const organization = await Organization.findByPk(req.organizationId);
+    if (organization) {
+      req.organization = organization;
+    } else {
+      logger.warn(`Organization not found: ${req.organizationId}`);
+    }
+  } catch (error) {
+    logger.error('Erreur lors du chargement de l\'organisation:', error);
   }
 
   next();

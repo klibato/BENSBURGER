@@ -10,7 +10,9 @@ const getAllCashRegisters = async (req, res, next) => {
   try {
     const { status, limit = 50, offset = 0 } = req.query;
 
-    const where = {};
+    const where = {
+      organization_id: req.organizationId, // MULTI-TENANT: Filtrer par organisation
+    };
     if (status) {
       where.status = status;
     }
@@ -58,6 +60,7 @@ const getActiveCashRegister = async (req, res, next) => {
   try {
     const cashRegister = await CashRegister.findOne({
       where: {
+        organization_id: req.organizationId, // MULTI-TENANT: Filtrer par organisation
         opened_by: req.user.id,
         status: 'open',
       },
@@ -124,6 +127,7 @@ const openCashRegister = async (req, res, next) => {
     // Vérifier qu'il n'y a pas déjà une caisse ouverte pour cet utilisateur
     const existingOpen = await CashRegister.findOne({
       where: {
+        organization_id: req.organizationId, // MULTI-TENANT: Vérifier dans l'organisation
         opened_by: req.user.id,
         status: 'open',
       },
@@ -148,6 +152,7 @@ const openCashRegister = async (req, res, next) => {
     // Créer la nouvelle caisse
     const cashRegister = await CashRegister.create(
       {
+        organization_id: req.organizationId, // MULTI-TENANT: Associer à l'organisation
         register_name,
         opened_by: req.user.id,
         opened_at: new Date(),
@@ -161,7 +166,11 @@ const openCashRegister = async (req, res, next) => {
     await transaction.commit();
 
     // Recharger avec les associations
-    const completeCashRegister = await CashRegister.findByPk(cashRegister.id, {
+    const completeCashRegister = await CashRegister.findOne({
+      where: {
+        id: cashRegister.id,
+        organization_id: req.organizationId, // MULTI-TENANT: Vérifier l'organisation
+      },
       include: [
         {
           model: User,
@@ -229,7 +238,13 @@ const closeCashRegister = async (req, res, next) => {
     }
 
     // Récupérer la caisse
-    const cashRegister = await CashRegister.findByPk(id, { transaction });
+    const cashRegister = await CashRegister.findOne({
+      where: {
+        id,
+        organization_id: req.organizationId, // MULTI-TENANT: Vérifier l'organisation
+      },
+      transaction,
+    });
 
     if (!cashRegister) {
       await transaction.rollback();
@@ -269,6 +284,7 @@ const closeCashRegister = async (req, res, next) => {
     // Calculer les ventes de la caisse
     const sales = await Sale.findAll({
       where: {
+        organization_id: req.organizationId, // MULTI-TENANT: Filtrer par organisation
         cash_register_id: id,
         status: 'completed',
       },
@@ -316,7 +332,11 @@ const closeCashRegister = async (req, res, next) => {
     await transaction.commit();
 
     // Recharger avec les associations
-    const completeCashRegister = await CashRegister.findByPk(id, {
+    const completeCashRegister = await CashRegister.findOne({
+      where: {
+        id,
+        organization_id: req.organizationId, // MULTI-TENANT: Vérifier l'organisation
+      },
       include: [
         {
           model: User,
@@ -363,7 +383,11 @@ const getCashRegisterById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const cashRegister = await CashRegister.findByPk(id, {
+    const cashRegister = await CashRegister.findOne({
+      where: {
+        id,
+        organization_id: req.organizationId, // MULTI-TENANT: Vérifier l'organisation
+      },
       include: [
         {
           model: User,
@@ -418,7 +442,9 @@ const exportCashRegistersCSV = async (req, res, next) => {
   try {
     const { status, start_date, end_date } = req.query;
 
-    const where = {};
+    const where = {
+      organization_id: req.organizationId, // MULTI-TENANT: Filtrer par organisation
+    };
 
     // Filtrer par statut (par défaut, uniquement les caisses fermées)
     if (status) {

@@ -85,6 +85,7 @@ app.get('/health', (req, res) => {
 
 // Routes API
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/organizations', require('./routes/organizations')); // MULTI-TENANT: Gestion des organisations
 app.use('/api/products', apiLimiter, require('./routes/products'));
 app.use('/api/sales', apiLimiter, require('./routes/sales'));
 app.use('/api/cash-registers', apiLimiter, require('./routes/cashRegisters'));

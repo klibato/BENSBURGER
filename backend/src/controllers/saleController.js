@@ -17,6 +17,7 @@ const createSale = async (req, res, next) => {
     // Vérifier qu'une caisse est ouverte
     const activeCashRegister = await CashRegister.findOne({
       where: {
+        organization_id: req.organizationId, // MULTI-TENANT: Vérifier dans l'organisation
         opened_by: req.user.id,
         status: 'open',
       },
@@ -180,6 +181,7 @@ const createSale = async (req, res, next) => {
     // Créer la vente (le trigger générera automatiquement le ticket_number)
     const sale = await Sale.create(
       {
+        organization_id: req.organizationId, // MULTI-TENANT: Associer à l'organisation
         user_id: req.user.id,
         cash_register_id: activeCashRegister.id,
         total_ht: totalHT,
@@ -199,6 +201,7 @@ const createSale = async (req, res, next) => {
 
     // Créer les lignes de vente
     const saleItemsData = items.map((item) => ({
+      organization_id: req.organizationId, // MULTI-TENANT: Associer à l'organisation
       sale_id: sale.id,
       product_id: item.product_id,
       product_name: item.product_name,
@@ -216,7 +219,13 @@ const createSale = async (req, res, next) => {
     // Décrémenter les stocks des produits vendus
     for (const item of items) {
       try {
-        const product = await Product.findByPk(item.product_id, { transaction });
+        const product = await Product.findOne({
+          where: {
+            id: item.product_id,
+            organization_id: req.organizationId, // MULTI-TENANT: Vérifier l'organisation
+          },
+          transaction,
+        });
 
         if (!product) {
           logger.warn(`Produit non trouvé pour décrémentation stock: ID ${item.product_id}`);
@@ -257,7 +266,11 @@ const createSale = async (req, res, next) => {
     await transaction.commit();
 
     // Recharger la vente avec les items et le user
-    const completeSale = await Sale.findByPk(sale.id, {
+    const completeSale = await Sale.findOne({
+      where: {
+        id: sale.id,
+        organization_id: req.organizationId, // MULTI-TENANT: Vérifier l'organisation
+      },
       include: [
         {
           model: SaleItem,
@@ -288,8 +301,8 @@ const createSale = async (req, res, next) => {
     // Impression automatique du ticket (en arrière-plan, ne pas bloquer la réponse)
     setImmediate(async () => {
       try {
-        const settings = await StoreSettings.findOne();
-        const settingsData = settings ? settings.toJSON() : {};
+        // MULTI-TENANT: Utiliser req.organization.settings au lieu de StoreSettings
+        const settingsData = req.organization.settings || {};
 
         // Ajouter unit_price_ttc aux items
         const saleData = completeSale.toJSON();
@@ -338,7 +351,9 @@ const getAllSales = async (req, res, next) => {
       offset = 0,
     } = req.query;
 
-    const where = {};
+    const where = {
+      organization_id: req.organizationId, // MULTI-TENANT: Filtrer par organisation
+    };
 
     // Filtres
     if (start_date) {
@@ -408,7 +423,11 @@ const getSaleById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const sale = await Sale.findByPk(id, {
+    const sale = await Sale.findOne({
+      where: {
+        id,
+        organization_id: req.organizationId, // MULTI-TENANT: Vérifier l'organisation
+      },
       include: [
         {
           model: SaleItem,
@@ -455,7 +474,11 @@ const generateTicketPDFEndpoint = async (req, res, next) => {
     const { id } = req.params;
 
     // Récupérer la vente avec tous les détails
-    const sale = await Sale.findByPk(id, {
+    const sale = await Sale.findOne({
+      where: {
+        id,
+        organization_id: req.organizationId, // MULTI-TENANT: Vérifier l'organisation
+      },
       include: [
         {
           model: SaleItem,
@@ -494,13 +517,9 @@ const generateTicketPDFEndpoint = async (req, res, next) => {
       });
     }
 
-    // Récupérer les paramètres du commerce
-    let settings = await StoreSettings.findByPk(1);
-
-    // Si pas de settings, créer les paramètres par défaut
-    if (!settings) {
-      settings = await StoreSettings.create({ id: 1 });
-    }
+    // Récupérer les paramètres du commerce depuis l'organisation
+    // MULTI-TENANT: Utiliser req.organization.settings au lieu de StoreSettings
+    const settings = req.organization.settings || {};
 
     // Générer le PDF
     const doc = generateTicketPDF(sale, sale.cash_register, sale.user, settings);
@@ -536,7 +555,9 @@ const exportSalesCSV = async (req, res, next) => {
       status,
     } = req.query;
 
-    const where = {};
+    const where = {
+      organization_id: req.organizationId, // MULTI-TENANT: Filtrer par organisation
+    };
 
     // Filtres (mêmes que getAllSales)
     if (start_date) {

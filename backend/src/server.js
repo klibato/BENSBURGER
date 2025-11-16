@@ -119,7 +119,11 @@ const startServer = async () => {
       process.exit(1);
     }
 
-    // Exécuter les migrations
+    // Exécuter toutes les migrations SQL automatiquement
+    const migrateAllSQL = require('./scripts/migrateAllSQL');
+    await migrateAllSQL();
+
+    // Migrations JS spécifiques (si nécessaires)
     const migrateStoreSettings = require('./scripts/migrateStoreSettings');
     await migrateStoreSettings();
 

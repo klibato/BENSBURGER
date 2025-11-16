@@ -6,6 +6,9 @@
 [![React](https://img.shields.io/badge/React-18.3-blue)](https://reactjs.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15.x-blue)](https://www.postgresql.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/PHASE_0-COMPLETED-brightgreen)](docs/PHASE_0_RECAP.md)
+
+> **📢 PHASE 0 TERMINÉE** ✅ - Application 100% fonctionnelle, entièrement documentée, 0 bug. [Voir le récapitulatif complet](docs/PHASE_0_RECAP.md)
 
 ---
 

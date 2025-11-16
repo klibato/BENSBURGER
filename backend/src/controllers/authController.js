@@ -60,9 +60,14 @@ const login = async (req, res, next) => {
       });
     }
 
-    // Générer le token JWT
+    // Générer le token JWT (MULTI-TENANT: inclure organization_id)
     const token = jwt.sign(
-      { userId: user.id, username: user.username, role: user.role },
+      {
+        userId: user.id,
+        username: user.username,
+        role: user.role,
+        organization_id: user.organization_id, // MULTI-TENANT: Important pour tenantIsolation
+      },
       config.jwt.secret,
       { expiresIn: config.jwt.expiration }
     );

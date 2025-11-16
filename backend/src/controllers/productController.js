@@ -14,7 +14,9 @@ const getAllProducts = async (req, res, next) => {
     } = req.query;
 
     // Construire les filtres
-    const where = {};
+    const where = {
+      organization_id: req.organizationId, // MULTI-TENANT: Filtrer par organisation
+    };
 
     if (category) {
       where.category = category;
@@ -56,11 +58,17 @@ const getProductById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const product = await Product.findByPk(id, {
+    const product = await Product.findOne({
+      where: {
+        id,
+        organization_id: req.organizationId, // MULTI-TENANT: Vérifier l'organisation
+      },
       include: [
         {
           model: MenuComposition,
           as: 'menu_items',
+          where: { organization_id: req.organizationId },
+          required: false, // LEFT JOIN pour ne pas exclure les produits sans compositions
           include: [
             {
               model: Product,
@@ -135,6 +143,7 @@ const createProduct = async (req, res, next) => {
 
     // Créer le produit
     const product = await Product.create({
+      organization_id: req.organizationId, // MULTI-TENANT: Associer à l'organisation
       name,
       description,
       price_ht,
@@ -149,6 +158,7 @@ const createProduct = async (req, res, next) => {
     // Si c'est un menu, créer les compositions
     if (is_menu && menu_items.length > 0) {
       const compositions = menu_items.map((item) => ({
+        organization_id: req.organizationId, // MULTI-TENANT: Associer à l'organisation
         menu_id: product.id,
         product_id: item.product_id,
         quantity: item.quantity || 1,
@@ -177,7 +187,15 @@ const updateProduct = async (req, res, next) => {
     const { id } = req.params;
     const updates = req.body;
 
-    const product = await Product.findByPk(id);
+    // MULTI-TENANT: Empêcher modification de organization_id
+    delete updates.organization_id;
+
+    const product = await Product.findOne({
+      where: {
+        id,
+        organization_id: req.organizationId, // MULTI-TENANT: Vérifier l'organisation
+      },
+    });
 
     if (!product) {
       return res.status(404).json({
@@ -194,12 +212,18 @@ const updateProduct = async (req, res, next) => {
 
     // Si menu_items fourni, mettre à jour les compositions
     if (updates.menu_items && product.is_menu) {
-      // Supprimer les anciennes compositions
-      await MenuComposition.destroy({ where: { menu_id: id } });
+      // Supprimer les anciennes compositions (MULTI-TENANT: filtrer par org)
+      await MenuComposition.destroy({
+        where: {
+          menu_id: id,
+          organization_id: req.organizationId,
+        },
+      });
 
       // Créer les nouvelles
       if (updates.menu_items.length > 0) {
         const compositions = updates.menu_items.map((item) => ({
+          organization_id: req.organizationId, // MULTI-TENANT: Associer à l'organisation
           menu_id: product.id,
           product_id: item.product_id,
           quantity: item.quantity || 1,
@@ -228,7 +252,12 @@ const deleteProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const product = await Product.findByPk(id);
+    const product = await Product.findOne({
+      where: {
+        id,
+        organization_id: req.organizationId, // MULTI-TENANT: Vérifier l'organisation
+      },
+    });
 
     if (!product) {
       return res.status(404).json({

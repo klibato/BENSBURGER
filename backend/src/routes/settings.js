@@ -1,15 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const settingsController = require('../controllers/settingsController');
-const { authenticateToken, requirePermission } = require('../middlewares/auth');
+const { authenticateToken, optionalAuthenticate, requirePermission } = require('../middlewares/auth');
 const { PERMISSIONS } = require('../config/permissions');
 
 /**
  * @route   GET /api/settings/config
  * @desc    Récupérer la configuration publique du commerce (catégories, TVA, paiements, thème)
  * @access  Public (pas d'authentification requise)
+ * @note    MULTI-TENANT: Utilise optionalAuthenticate pour charger req.organization
  */
-router.get('/config', settingsController.getPublicConfig);
+router.get('/config', optionalAuthenticate, settingsController.getPublicConfig);
 
 /**
  * @route   GET /api/settings

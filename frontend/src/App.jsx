@@ -3,7 +3,7 @@ import { AuthProvider } from './context/AuthContext';
 import { PermissionsProvider } from './context/PermissionsContext';
 import { CartProvider } from './context/CartContext';
 import { CashRegisterProvider } from './context/CashRegisterContext';
-import { StoreConfigProvider } from './context/StoreConfigProvider';
+import { StoreConfigProvider } from './context/StoreConfigContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { ThemeProvider } from './context/ThemeContext';
 import PrivateRoute from './components/auth/PrivateRoute';

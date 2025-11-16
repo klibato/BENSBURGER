@@ -1,6 +1,5 @@
 const { Organization, User } = require('../models');
 const logger = require('../utils/logger');
-const bcrypt = require('bcryptjs');
 const { generateSlug } = require('../utils/helpers');
 
 /**
@@ -88,11 +87,11 @@ const registerOrganization = async (req, res, next) => {
     });
 
     // Créer l'utilisateur administrateur
-    const hashedPin = await bcrypt.hash(admin_pin_code, 10);
+    // Note: Le PIN sera automatiquement haché par le hook beforeCreate du modèle User
     const adminUser = await User.create({
       organization_id: organization.id,
       username: admin_username,
-      pin_code: hashedPin,
+      pin_code: admin_pin_code, // Envoyer le PIN en clair, le hook le hashera
       first_name: admin_first_name || 'Admin',
       last_name: admin_last_name || '',
       role: 'admin',

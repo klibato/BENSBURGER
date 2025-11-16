@@ -38,7 +38,11 @@ const reprintSale = async (req, res, next) => {
     const { id } = req.params;
 
     // Récupérer la vente avec tous les détails
-    const sale = await Sale.findByPk(id, {
+    const sale = await Sale.findOne({
+      where: {
+        id,
+        organization_id: req.organizationId, // MULTI-TENANT: Vérifier l'organisation
+      },
       include: [
         {
           model: SaleItem,
@@ -70,8 +74,8 @@ const reprintSale = async (req, res, next) => {
     }
 
     // Récupérer les paramètres du commerce
-    const settings = await StoreSettings.findOne();
-    const settingsData = settings ? settings.toJSON() : {};
+    // MULTI-TENANT: Utiliser req.organization.settings au lieu de StoreSettings
+    const settingsData = req.organization.settings || {};
 
     // Ajouter unit_price_ttc aux items (calculé à partir de unit_price_ht + vat_rate)
     const saleData = sale.toJSON();
@@ -118,13 +122,14 @@ const printXReport = async (req, res, next) => {
     // Récupérer la caisse ouverte de l'utilisateur
     const cashRegister = await CashRegister.findOne({
       where: {
-        user_id: req.user.id,
+        organization_id: req.organizationId, // MULTI-TENANT: Vérifier l'organisation
+        opened_by: req.user.id,
         status: 'open',
       },
       include: [
         {
           model: User,
-          as: 'user',
+          as: 'openedByUser',
           attributes: ['id', 'username', 'first_name', 'last_name'],
         },
       ],
@@ -143,6 +148,7 @@ const printXReport = async (req, res, next) => {
     // Calculer les totaux depuis l'ouverture
     const sales = await Sale.findAll({
       where: {
+        organization_id: req.organizationId, // MULTI-TENANT: Filtrer par organisation
         user_id: req.user.id,
         created_at: {
           [require('sequelize').Op.gte]: cashRegister.opened_at,
@@ -173,7 +179,7 @@ const printXReport = async (req, res, next) => {
     });
 
     const report = {
-      cashier_name: `${cashRegister.user.first_name} ${cashRegister.user.last_name}`,
+      cashier_name: `${cashRegister.openedByUser.first_name} ${cashRegister.openedByUser.last_name}`,
       ticket_count: sales.length,
       total_sales: totalSales.toFixed(2),
       total_cash: totalCash.toFixed(2),
@@ -182,8 +188,8 @@ const printXReport = async (req, res, next) => {
     };
 
     // Récupérer les paramètres du commerce
-    const settings = await StoreSettings.findOne();
-    const settingsData = settings ? settings.toJSON() : {};
+    // MULTI-TENANT: Utiliser req.organization.settings au lieu de StoreSettings
+    const settingsData = req.organization.settings || {};
 
     // Imprimer le ticket X
     const result = await printerService.printXReport(report, settingsData);
@@ -218,11 +224,15 @@ const printZReport = async (req, res, next) => {
     const { registerId } = req.params;
 
     // Récupérer la caisse clôturée
-    const cashRegister = await CashRegister.findByPk(registerId, {
+    const cashRegister = await CashRegister.findOne({
+      where: {
+        id: registerId,
+        organization_id: req.organizationId, // MULTI-TENANT: Vérifier l'organisation
+      },
       include: [
         {
           model: User,
-          as: 'user',
+          as: 'openedByUser',
           attributes: ['id', 'username', 'first_name', 'last_name'],
         },
       ],
@@ -249,7 +259,7 @@ const printZReport = async (req, res, next) => {
     }
 
     // Vérifier que c'est la caisse de l'utilisateur ou admin
-    if (cashRegister.user_id !== req.user.id && req.user.role !== 'admin') {
+    if (cashRegister.opened_by !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({
         success: false,
         error: {
@@ -260,8 +270,8 @@ const printZReport = async (req, res, next) => {
     }
 
     // Récupérer les paramètres du commerce
-    const settings = await StoreSettings.findOne();
-    const settingsData = settings ? settings.toJSON() : {};
+    // MULTI-TENANT: Utiliser req.organization.settings au lieu de StoreSettings
+    const settingsData = req.organization.settings || {};
 
     // Imprimer le ticket Z
     const result = await printerService.printZReport(cashRegister, settingsData);

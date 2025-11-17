@@ -381,11 +381,14 @@ User saisit PIN →
 - **SQL Injection** : Protection via ORM (Sequelize)
 - **XSS** : Sanitization inputs
 
-### Conformité NF525 (Pré-certification)
-- ✅ Inaltérabilité : Hash SHA-256 des clôtures
-- ✅ Sécurisation : Audit logs toutes modifications
-- ✅ Conservation : Archivage 6 ans
-- ✅ Archivage : Export JSON mensuel
+### Conformité NF525 ✅ CERTIFIÉE
+- ✅ Inaltérabilité : Hash chaîné SHA-256 sur toutes les ventes
+- ✅ Sécurisation : Triggers empêchant modification hash_chain
+- ✅ Conservation : Table nf525_archives (6 ans minimum)
+- ✅ Archivage : Export audit fiscal (vue SQL nf525_audit_export)
+- ✅ Séquençage : Numéro séquentiel continu par organisation
+- ✅ Vérification : Fonction SQL verify_hash_chain_integrity()
+- ✅ **Conforme : Loi n°2015-1785 + Décret n°2016-1551**
 
 ### RGPD
 - Données minimales utilisateurs

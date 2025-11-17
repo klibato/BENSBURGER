@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { getActiveCashRegister } from '../services/cashRegisterService';
+import { useAuth } from './AuthContext';
 
 const CashRegisterContext = createContext();
 
@@ -12,15 +13,15 @@ export const useCashRegister = () => {
 };
 
 export const CashRegisterProvider = ({ children }) => {
+  const { user, isAuthenticated } = useAuth();
   const [activeCashRegister, setActiveCashRegister] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Charger la caisse active au montage
+  // Charger la caisse active au montage ou quand l'utilisateur change
   const fetchActiveCashRegister = async () => {
-    // Vérifier qu'un token existe avant de faire la requête
-    const token = localStorage.getItem('token');
-    if (!token) {
+    // Vérifier qu'un utilisateur est authentifié
+    if (!isAuthenticated || !user) {
       setActiveCashRegister(null);
       setLoading(false);
       return;
@@ -46,9 +47,11 @@ export const CashRegisterProvider = ({ children }) => {
     }
   };
 
+  // Re-fetch quand l'utilisateur change (login, logout, switch organization)
+  // Utilise user?.id et user?.organization_id pour détecter les changements
   useEffect(() => {
     fetchActiveCashRegister();
-  }, []);
+  }, [user?.id, user?.organization_id, isAuthenticated]);
 
   // Ouvrir une caisse (met à jour le state local)
   const openRegister = (cashRegister) => {

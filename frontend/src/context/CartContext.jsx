@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 
 const CartContext = createContext();
 
@@ -11,6 +12,7 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }) => {
+  const { user, isAuthenticated } = useAuth();
   const [cart, setCart] = useState([]);
   const [discount, setDiscount] = useState(null); // { type: 'percentage' | 'amount', value: number }
 
@@ -25,6 +27,17 @@ export const CartProvider = ({ children }) => {
       }
     }
   }, []);
+
+  // Vider le panier quand l'utilisateur change ou se déconnecte
+  // CRITIQUE pour multi-tenant: Le panier d'une org ne doit pas contaminer une autre org
+  useEffect(() => {
+    if (!isAuthenticated || !user) {
+      // Déconnexion: vider le panier
+      setCart([]);
+      setDiscount(null);
+      localStorage.removeItem('pos_cart');
+    }
+  }, [user?.organization_id, isAuthenticated]);
 
   // Sauvegarder le panier dans localStorage à chaque modification
   useEffect(() => {

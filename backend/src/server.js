@@ -100,6 +100,11 @@ app.use('/api/printer', apiLimiter, require('./routes/printer'));
 app.use('/api/sumup', apiLimiter, require('./routes/sumup'));
 app.use('/api/logs', apiLimiter, require('./routes/logs'));
 
+// Routes de debug (dev uniquement)
+if (config.NODE_ENV === 'development') {
+  app.use('/api/debug', require('./routes/debug'));
+}
+
 // ============================================
 // GESTION DES ERREURS
 // ============================================

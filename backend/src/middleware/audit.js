@@ -25,6 +25,7 @@ const auditMiddleware = (action, entityType) => {
         setImmediate(async () => {
           try {
             await AuditLog.log({
+              organizationId: req.organizationId || req.user.organization_id || 1, // MULTI-TENANT: REQUIS
               userId: req.user.id,
               action,
               entityType,
@@ -53,6 +54,7 @@ const auditMiddleware = (action, entityType) => {
 const logAction = async (req, action, entityType, entityId, details = null) => {
   try {
     await AuditLog.log({
+      organizationId: req.organizationId || req.user?.organization_id || 1, // MULTI-TENANT: REQUIS
       userId: req.user?.id || null,
       action,
       entityType,

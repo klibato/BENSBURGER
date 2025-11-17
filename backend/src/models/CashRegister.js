@@ -98,6 +98,15 @@ const CashRegister = sequelize.define('cash_registers', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  organization_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'organizations',
+      key: 'id',
+    },
+    comment: 'Organisation à laquelle appartient la caisse',
+  },
 }, {
   tableName: 'cash_registers',
   timestamps: false,

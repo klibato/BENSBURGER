@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config/env');
-const { User } = require('../models');
+const { User, Organization } = require('../models');
 const logger = require('../utils/logger');
 const { hasPermission, hasAnyPermission } = require('../config/permissions');
 
@@ -38,6 +38,24 @@ const authenticateToken = async (req, res, next) => {
 
     // Attacher l'utilisateur à la requête
     req.user = user;
+
+    // MULTI-TENANT: Injecter organizationId depuis le user
+    req.organizationId = user.organization_id;
+
+    // MULTI-TENANT: Charger l'organisation complète
+    const organization = await Organization.findByPk(user.organization_id);
+    if (!organization) {
+      logger.error(`Organization not found for user ${user.id} (org_id: ${user.organization_id})`);
+      return res.status(500).json({
+        success: false,
+        error: {
+          code: 'ORGANIZATION_NOT_FOUND',
+          message: 'Organisation introuvable',
+        },
+      });
+    }
+    req.organization = organization;
+
     next();
   } catch (error) {
     logger.error('Erreur d\'authentification:', error);
@@ -84,6 +102,8 @@ const optionalAuthenticate = async (req, res, next) => {
 
       if (user && user.is_active) {
         req.user = user;
+        // MULTI-TENANT: Injecter organizationId depuis le user
+        req.organizationId = user.organization_id;
       }
     }
   } catch (error) {
@@ -91,11 +111,39 @@ const optionalAuthenticate = async (req, res, next) => {
     logger.debug('Erreur d\'authentification optionnelle:', error.message);
   }
 
+  // MULTI-TENANT: Si pas d'auth, utiliser organisation par défaut (dev mode)
+  if (!req.organizationId) {
+    req.organizationId = 1; // BensBurger par défaut
+    logger.warn('No authentication - using default organization (id=1)');
+  }
+
+  // MULTI-TENANT: Charger l'organisation complète
+  try {
+    const organization = await Organization.findByPk(req.organizationId);
+    if (organization) {
+      req.organization = organization;
+    } else {
+      logger.warn(`Organization not found: ${req.organizationId}`);
+    }
+  } catch (error) {
+    logger.error('Erreur lors du chargement de l\'organisation:', error);
+  }
+
   next();
 };
 
 // Middleware pour vérifier le rôle (admin only)
 const requireAdmin = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({
+      success: false,
+      error: {
+        code: 'UNAUTHORIZED',
+        message: 'Authentification requise',
+      },
+    });
+  }
+
   if (req.user.role !== 'admin') {
     return res.status(403).json({
       success: false,

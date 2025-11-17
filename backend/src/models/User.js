@@ -50,6 +50,15 @@ const User = sequelize.define('users', {
     type: DataTypes.BOOLEAN,
     defaultValue: true,
   },
+  organization_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'organizations',
+      key: 'id',
+    },
+    comment: 'Organisation à laquelle appartient l\'utilisateur',
+  },
   created_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,

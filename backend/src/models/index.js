@@ -1,4 +1,5 @@
 const { sequelize } = require('../config/database');
+const Organization = require('./Organization');
 const User = require('./User');
 const Product = require('./Product');
 const MenuComposition = require('./MenuComposition');
@@ -11,6 +12,34 @@ const StoreSettings = require('./StoreSettings');
 // ============================================
 // RELATIONS
 // ============================================
+
+// Organization <-> Users (Une organisation a plusieurs utilisateurs)
+Organization.hasMany(User, { foreignKey: 'organization_id', as: 'users' });
+User.belongsTo(Organization, { foreignKey: 'organization_id', as: 'organization' });
+
+// Organization <-> Products (Une organisation a plusieurs produits)
+Organization.hasMany(Product, { foreignKey: 'organization_id', as: 'products' });
+Product.belongsTo(Organization, { foreignKey: 'organization_id', as: 'organization' });
+
+// Organization <-> MenuCompositions
+Organization.hasMany(MenuComposition, { foreignKey: 'organization_id', as: 'menu_compositions' });
+MenuComposition.belongsTo(Organization, { foreignKey: 'organization_id', as: 'organization' });
+
+// Organization <-> CashRegisters
+Organization.hasMany(CashRegister, { foreignKey: 'organization_id', as: 'cash_registers' });
+CashRegister.belongsTo(Organization, { foreignKey: 'organization_id', as: 'organization' });
+
+// Organization <-> Sales
+Organization.hasMany(Sale, { foreignKey: 'organization_id', as: 'sales' });
+Sale.belongsTo(Organization, { foreignKey: 'organization_id', as: 'organization' });
+
+// Organization <-> SaleItems
+Organization.hasMany(SaleItem, { foreignKey: 'organization_id', as: 'sale_items' });
+SaleItem.belongsTo(Organization, { foreignKey: 'organization_id', as: 'organization' });
+
+// Organization <-> AuditLogs
+Organization.hasMany(AuditLog, { foreignKey: 'organization_id', as: 'audit_logs' });
+AuditLog.belongsTo(Organization, { foreignKey: 'organization_id', as: 'organization' });
 
 // User <-> Sales (Un utilisateur a plusieurs ventes)
 User.hasMany(Sale, { foreignKey: 'user_id', as: 'sales' });
@@ -55,6 +84,7 @@ Sale.belongsTo(User, { foreignKey: 'cancelled_by', as: 'canceller' });
 
 module.exports = {
   sequelize,
+  Organization,
   User,
   Product,
   MenuComposition,

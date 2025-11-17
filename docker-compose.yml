@@ -11,7 +11,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01_init.sql
+      - ./database/seeds.sql:/docker-entrypoint-initdb.d/02_seeds.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -40,6 +41,7 @@ services:
       - "3000:3000"
     volumes:
       - ./backend:/app
+      - ./database:/database
       - /app/node_modules
     depends_on:
       postgres:

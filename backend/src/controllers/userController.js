@@ -1,5 +1,4 @@
 const { User } = require('../models');
-const bcrypt = require('bcryptjs');
 const logger = require('../utils/logger');
 const { Op } = require('sequelize');
 
@@ -10,7 +9,9 @@ const getAllUsers = async (req, res, next) => {
   try {
     const { include_inactive = 'false' } = req.query;
 
-    const where = {};
+    const where = {
+      organization_id: req.organizationId, // MULTI-TENANT: Filtrer par organisation
+    };
 
     // Par défaut, ne montrer que les utilisateurs actifs
     // Seulement un admin peut voir les utilisateurs inactifs
@@ -45,7 +46,11 @@ const getUserById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const user = await User.findByPk(id, {
+    const user = await User.findOne({
+      where: {
+        id,
+        organization_id: req.organizationId, // MULTI-TENANT: Vérifier l'organisation
+      },
       attributes: { exclude: ['pin_code'] },
     });
 
@@ -106,25 +111,29 @@ const createUser = async (req, res, next) => {
       });
     }
 
-    // Vérifier si le username existe déjà
-    const existingUser = await User.findOne({ where: { username } });
+    // Vérifier si le username existe déjà DANS L'ORGANISATION
+    const existingUser = await User.findOne({
+      where: {
+        username,
+        organization_id: req.organizationId, // MULTI-TENANT: Vérifier dans l'organisation
+      },
+    });
     if (existingUser) {
       return res.status(409).json({
         success: false,
         error: {
           code: 'DUPLICATE_USERNAME',
-          message: 'Ce nom d\'utilisateur existe déjà',
+          message: 'Ce nom d\'utilisateur existe déjà dans votre organisation',
         },
       });
     }
 
-    // Hasher le PIN
-    const hashedPin = await bcrypt.hash(pin_code, 10);
-
     // Créer l'utilisateur
+    // Note: Le PIN sera hashé automatiquement par le hook beforeCreate du modèle User
     const user = await User.create({
+      organization_id: req.organizationId, // MULTI-TENANT: Associer à l'organisation
       username,
-      pin_code: hashedPin,
+      pin_code,
       first_name,
       last_name,
       email: email || null,
@@ -163,7 +172,12 @@ const updateUser = async (req, res, next) => {
       is_active,
     } = req.body;
 
-    const user = await User.findByPk(id);
+    const user = await User.findOne({
+      where: {
+        id,
+        organization_id: req.organizationId, // MULTI-TENANT: Vérifier l'organisation
+      },
+    });
 
     if (!user) {
       return res.status(404).json({
@@ -175,11 +189,12 @@ const updateUser = async (req, res, next) => {
       });
     }
 
-    // Vérifier si le username est déjà pris par un autre utilisateur
+    // Vérifier si le username est déjà pris par un autre utilisateur DANS L'ORGANISATION
     if (username && username !== user.username) {
       const existingUser = await User.findOne({
         where: {
           username,
+          organization_id: req.organizationId, // MULTI-TENANT: Dans la même organisation
           id: { [Op.ne]: id },
         },
       });
@@ -189,7 +204,7 @@ const updateUser = async (req, res, next) => {
           success: false,
           error: {
             code: 'DUPLICATE_USERNAME',
-            message: 'Ce nom d\'utilisateur existe déjà',
+            message: 'Ce nom d\'utilisateur existe déjà dans votre organisation',
           },
         });
       }
@@ -205,7 +220,8 @@ const updateUser = async (req, res, next) => {
     if (role !== undefined) updateData.role = role;
     if (is_active !== undefined) updateData.is_active = is_active;
 
-    // Si un nouveau PIN est fourni, le hasher
+    // Si un nouveau PIN est fourni, l'ajouter aux données
+    // Note: Le PIN sera hashé automatiquement par le hook beforeUpdate du modèle User
     if (pin_code) {
       if (!/^\d{4}$/.test(pin_code)) {
         return res.status(400).json({
@@ -216,7 +232,7 @@ const updateUser = async (req, res, next) => {
           },
         });
       }
-      updateData.pin_code = await bcrypt.hash(pin_code, 10);
+      updateData.pin_code = pin_code;
     }
 
     // Mettre à jour l'utilisateur

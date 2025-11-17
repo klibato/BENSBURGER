@@ -58,6 +58,15 @@ const SaleItem = sequelize.define('sale_items', {
     type: DataTypes.DECIMAL(10, 2),
     defaultValue: 0,
   },
+  organization_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'organizations',
+      key: 'id',
+    },
+    comment: 'Organisation à laquelle appartient la ligne de vente',
+  },
   created_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,

@@ -2,6 +2,8 @@
  * Utilitaires et helpers
  */
 
+const crypto = require('crypto');
+
 /**
  * Formater un montant en euros avec 2 décimales
  * @param {number|string} amount - Montant à formater
@@ -69,7 +71,6 @@ const isValidPin = (pin) => {
  * @returns {string} - Hash en hexadécimal
  */
 const hashSHA256 = (data) => {
-  const crypto = require('crypto');
   return crypto.createHash('sha256').update(data).digest('hex');
 };
 
@@ -82,6 +83,23 @@ const roundAmount = (amount) => {
   return Math.round(amount * 100) / 100;
 };
 
+/**
+ * Générer un slug URL-friendly à partir d'un nom
+ * @param {string} name - Nom à convertir en slug
+ * @returns {string} - Slug (ex: "bens-burger-paris")
+ */
+const generateSlug = (name) => {
+  return name
+    .toLowerCase()
+    .trim()
+    .normalize('NFD') // Normaliser les accents
+    .replace(/[\u0300-\u036f]/g, '') // Supprimer les accents
+    .replace(/[^a-z0-9\s-]/g, '') // Supprimer les caractères spéciaux
+    .replace(/\s+/g, '-') // Remplacer espaces par tirets
+    .replace(/-+/g, '-') // Supprimer tirets multiples
+    .replace(/^-|-$/g, ''); // Supprimer tirets début/fin
+};
+
 module.exports = {
   formatPrice,
   formatDate,
@@ -89,4 +107,5 @@ module.exports = {
   isValidPin,
   hashSHA256,
   roundAmount,
+  generateSlug,
 };

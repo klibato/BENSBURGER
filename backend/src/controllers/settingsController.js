@@ -7,12 +7,8 @@ const settingsCache = require('../utils/settingsCache');
  */
 const getSettings = async (req, res, next) => {
   try {
-    let settings = await StoreSettings.findByPk(1);
-
-    // Si pas de settings, créer les paramètres par défaut
-    if (!settings) {
-      settings = await StoreSettings.create({ id: 1 });
-    }
+    // MULTI-TENANT: Utiliser req.organization.settings au lieu de StoreSettings
+    const settings = req.organization.settings || {};
 
     res.json({
       success: true,
@@ -61,8 +57,7 @@ const updateSettings = async (req, res, next) => {
       email_config,
     } = req.body;
 
-    let settings = await StoreSettings.findByPk(1);
-
+    // MULTI-TENANT: Utiliser req.organization au lieu de StoreSettings
     const updateData = {
       store_name,
       store_description,
@@ -101,15 +96,18 @@ const updateSettings = async (req, res, next) => {
       }
     });
 
-    // Si pas de settings, créer les paramètres
-    if (!settings) {
-      settings = await StoreSettings.create({ id: 1, ...updateData });
-    } else {
-      // Mettre à jour
-      await settings.update(updateData);
-    }
+    // Mettre à jour les settings de l'organisation
+    const currentSettings = req.organization.settings || {};
+    const newSettings = { ...currentSettings, ...updateData };
 
-    logger.info(`Paramètres du commerce mis à jour par ${req.user.username}`);
+    await req.organization.update({
+      settings: newSettings,
+    });
+
+    // IMPORTANT: Recharger l'organisation pour avoir les données fraîches
+    await req.organization.reload();
+
+    logger.info(`Paramètres du commerce mis à jour par ${req.user.username} (org_id=${req.organizationId})`);
 
     // Invalider le cache pour que les services rechargent la config
     settingsCache.invalidate();
@@ -117,7 +115,7 @@ const updateSettings = async (req, res, next) => {
 
     res.json({
       success: true,
-      data: settings,
+      data: req.organization.settings,
       message: 'Paramètres mis à jour avec succès',
     });
   } catch (error) {
@@ -130,27 +128,14 @@ const updateSettings = async (req, res, next) => {
  * Récupérer la configuration publique du commerce
  * (catégories, taux TVA, moyens de paiement, thème)
  * Accessible sans authentification
+ *
+ * MULTI-TENANT: Cette route doit utiliser le middleware tenantIsolation
+ * pour détecter l'organisation depuis le subdomain/domain
  */
 const getPublicConfig = async (req, res, next) => {
   try {
-    const settings = await StoreSettings.findByPk(1);
-
-    if (!settings) {
-      // Retourner la configuration par défaut
-      return res.json({
-        success: true,
-        data: {
-          categories: [],
-          vat_rates: [],
-          payment_methods: {},
-          theme_color: '#FF6B35',
-          currency: 'EUR',
-          currency_symbol: '€',
-          logo_url: null,
-          store_name: 'BensBurger',
-        },
-      });
-    }
+    // MULTI-TENANT: Utiliser req.organization.settings au lieu de StoreSettings
+    const settings = req.organization?.settings || {};
 
     // Retourner uniquement les informations publiques
     res.json({
@@ -162,8 +147,8 @@ const getPublicConfig = async (req, res, next) => {
         theme_color: settings.theme_color || '#FF6B35',
         currency: settings.currency || 'EUR',
         currency_symbol: settings.currency_symbol || '€',
-        logo_url: settings.logo_url,
-        store_name: settings.store_name || 'BensBurger',
+        logo_url: settings.logo_url || null,
+        store_name: req.organization?.name || settings.store_name || 'BensBurger',
         language: settings.language || 'fr-FR',
       },
     });

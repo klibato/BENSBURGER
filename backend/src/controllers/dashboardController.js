@@ -33,6 +33,7 @@ const getDashboardStats = async (req, res, next) => {
     // Statistiques générales
     const [salesStats] = await Sale.findAll({
       where: {
+        organization_id: req.organizationId, // MULTI-TENANT: Filtrer par organisation
         created_at: {
           [Op.gte]: startDate,
         },
@@ -50,6 +51,7 @@ const getDashboardStats = async (req, res, next) => {
     // Ventes par mode de paiement
     const salesByPaymentMethod = await Sale.findAll({
       where: {
+        organization_id: req.organizationId, // MULTI-TENANT: Filtrer par organisation
         created_at: {
           [Op.gte]: startDate,
         },
@@ -77,6 +79,7 @@ const getDashboardStats = async (req, res, next) => {
           model: Sale,
           as: 'sale',
           where: {
+            organization_id: req.organizationId, // MULTI-TENANT: Filtrer par organisation
             created_at: {
               [Op.gte]: startDate,
             },
@@ -94,6 +97,7 @@ const getDashboardStats = async (req, res, next) => {
     // Ventes par jour (pour le graphique)
     const salesByDay = await Sale.findAll({
       where: {
+        organization_id: req.organizationId, // MULTI-TENANT: Filtrer par organisation
         created_at: {
           [Op.gte]: startDate,
         },
@@ -112,6 +116,7 @@ const getDashboardStats = async (req, res, next) => {
     // Nombre de caisses ouvertes
     const openRegistersCount = await CashRegister.count({
       where: {
+        organization_id: req.organizationId, // MULTI-TENANT: Filtrer par organisation
         status: 'open',
       },
     });
@@ -176,6 +181,7 @@ const getSalesByCategory = async (req, res, next) => {
           model: Sale,
           as: 'sale',
           where: {
+            organization_id: req.organizationId, // MULTI-TENANT: Filtrer par organisation
             created_at: {
               [Op.gte]: startDate,
             },

@@ -6,6 +6,7 @@ import { CashRegisterProvider } from './context/CashRegisterContext';
 import { StoreConfigProvider } from './context/StoreConfigContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { ThemeProvider } from './context/ThemeContext';
+import PrivateRoute from './components/auth/PrivateRoute';
 import LoginPage from './pages/LoginPage';
 import POSPage from './pages/POSPage';
 import SalesHistoryPage from './pages/SalesHistoryPage';
@@ -26,14 +27,70 @@ function App() {
                 <CartProvider>
                   <Router>
                     <Routes>
+                      {/* Route publique */}
                       <Route path="/login" element={<LoginPage />} />
-                      <Route path="/" element={<POSPage />} />
-                      <Route path="/sales" element={<SalesHistoryPage />} />
-                      <Route path="/dashboard" element={<DashboardPage />} />
-                      <Route path="/products" element={<ProductsPage />} />
-                      <Route path="/users" element={<UsersPage />} />
-                      <Route path="/settings" element={<SettingsPage />} />
-                      <Route path="/logs" element={<LogsPage />} />
+
+                      {/* Routes protégées - Accessibles par tous les utilisateurs authentifiés */}
+                      <Route
+                        path="/"
+                        element={
+                          <PrivateRoute>
+                            <POSPage />
+                          </PrivateRoute>
+                        }
+                      />
+                      <Route
+                        path="/sales"
+                        element={
+                          <PrivateRoute>
+                            <SalesHistoryPage />
+                          </PrivateRoute>
+                        }
+                      />
+
+                      {/* Routes protégées - Admin et Manager uniquement */}
+                      <Route
+                        path="/dashboard"
+                        element={
+                          <PrivateRoute requiredRole={['admin', 'manager']}>
+                            <DashboardPage />
+                          </PrivateRoute>
+                        }
+                      />
+                      <Route
+                        path="/products"
+                        element={
+                          <PrivateRoute requiredRole={['admin', 'manager']}>
+                            <ProductsPage />
+                          </PrivateRoute>
+                        }
+                      />
+                      <Route
+                        path="/settings"
+                        element={
+                          <PrivateRoute requiredRole={['admin', 'manager']}>
+                            <SettingsPage />
+                          </PrivateRoute>
+                        }
+                      />
+
+                      {/* Routes protégées - Admin uniquement */}
+                      <Route
+                        path="/users"
+                        element={
+                          <PrivateRoute requiredRole="admin">
+                            <UsersPage />
+                          </PrivateRoute>
+                        }
+                      />
+                      <Route
+                        path="/logs"
+                        element={
+                          <PrivateRoute requiredRole="admin">
+                            <LogsPage />
+                          </PrivateRoute>
+                        }
+                      />
                     </Routes>
                   </Router>
                 </CartProvider>

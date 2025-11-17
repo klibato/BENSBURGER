@@ -1,5 +1,5 @@
 const PDFDocument = require('pdfkit');
-const { formatPrice } = require('../utils/constants');
+const { formatPrice } = require('../utils/helpers');
 
 /**
  * Génère un ticket de caisse PDF conforme aux normes françaises

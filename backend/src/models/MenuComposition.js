@@ -31,6 +31,15 @@ const MenuComposition = sequelize.define('menu_compositions', {
       min: 1,
     },
   },
+  organization_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'organizations',
+      key: 'id',
+    },
+    comment: 'Organisation propriétaire de la composition',
+  },
   created_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,

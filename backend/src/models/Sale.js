@@ -107,6 +107,15 @@ const Sale = sequelize.define('sales', {
       key: 'id',
     },
   },
+  organization_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'organizations',
+      key: 'id',
+    },
+    comment: 'Organisation à laquelle appartient la vente',
+  },
 }, {
   tableName: 'sales',
   timestamps: true,

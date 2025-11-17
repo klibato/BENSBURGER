@@ -74,6 +74,15 @@ const Product = sequelize.define('products', {
     },
     comment: 'Seuil d\'alerte stock bas',
   },
+  organization_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'organizations',
+      key: 'id',
+    },
+    comment: 'Organisation propriétaire du produit',
+  },
   created_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,

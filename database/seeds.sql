@@ -5,8 +5,14 @@
 -- ATTENTION : Ce script insère des données de test
 -- NE PAS UTILISER EN PRODUCTION
 
--- NOTE : Les utilisateurs sont créés via le script Node.js backend
--- Exécutez : docker compose exec backend npm run db:seed-users
+-- ============================================
+-- USERS - Utilisateurs de Test
+-- ============================================
+-- PINs hashés avec bcrypt (salt rounds=10)
+INSERT INTO users (username, pin_code, role, first_name, last_name, email, is_active, created_at, updated_at) VALUES
+('admin', '$2a$10$8bN9U2TaV.u.xDEYNqmNseMJrAQo4D.FQmbjFBKTSbudXmgPa98Qe', 'admin', 'Admin', 'Principal', 'admin@bensburger.com', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('john', '$2a$10$yP1xLZQUmsgZ1i/I/j.6IuqQjOPxN3CsRnN5c88/E94kj862vUby6', 'cashier', 'John', 'Doe', 'john@bensburger.com', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('marie', '$2a$10$l71zhZLc3SfefDZVvDqwMOtpjr5Bf.Q1.bSeVf3YtgUU2jpYoVN8y', 'cashier', 'Marie', 'Martin', 'marie@bensburger.com', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- ============================================
 -- PRODUCTS - BURGERS

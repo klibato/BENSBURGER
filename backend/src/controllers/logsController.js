@@ -17,7 +17,9 @@ const getAllLogs = async (req, res, next) => {
       offset = 0,
     } = req.query;
 
-    const where = {};
+    const where = {
+      organization_id: req.organizationId, // MULTI-TENANT: Filtrer par organisation
+    };
 
     // Filtres par date
     if (start_date) {
@@ -89,7 +91,9 @@ const getLogsStats = async (req, res, next) => {
   try {
     const { start_date, end_date } = req.query;
 
-    const where = {};
+    const where = {
+      organization_id: req.organizationId, // MULTI-TENANT: Filtrer par organisation
+    };
 
     if (start_date) {
       where.created_at = {
@@ -176,7 +180,9 @@ const exportLogsCSV = async (req, res, next) => {
       entity_type,
     } = req.query;
 
-    const where = {};
+    const where = {
+      organization_id: req.organizationId, // MULTI-TENANT: Filtrer par organisation
+    };
 
     // Mêmes filtres que getAllLogs
     if (start_date) {

@@ -45,6 +45,15 @@ const AuditLog = sequelize.define('audit_logs', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  organization_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'organizations',
+      key: 'id',
+    },
+    comment: 'Organisation à laquelle appartient le log d\'audit',
+  },
   created_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,
@@ -59,6 +68,7 @@ const AuditLog = sequelize.define('audit_logs', {
 /**
  * Méthode helper pour créer un log facilement
  * @param {Object} data - Données du log
+ * @param {number} data.organizationId - ID de l'organisation (REQUIS)
  * @param {number} data.userId - ID de l'utilisateur
  * @param {string} data.action - Action effectuée
  * @param {string} data.entityType - Type d'entité
@@ -69,7 +79,13 @@ const AuditLog = sequelize.define('audit_logs', {
  */
 AuditLog.log = async function (data) {
   try {
+    if (!data.organizationId) {
+      console.error('AuditLog.log: organization_id est requis');
+      return null;
+    }
+
     return await AuditLog.create({
+      organization_id: data.organizationId,
       user_id: data.userId || null,
       action: data.action,
       entity_type: data.entityType || null,

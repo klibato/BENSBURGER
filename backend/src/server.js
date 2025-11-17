@@ -85,6 +85,7 @@ app.get('/health', (req, res) => {
 
 // Routes API
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/organizations', require('./routes/organizations')); // MULTI-TENANT: Gestion des organisations
 app.use('/api/products', apiLimiter, require('./routes/products'));
 app.use('/api/sales', apiLimiter, require('./routes/sales'));
 app.use('/api/cash-registers', apiLimiter, require('./routes/cashRegisters'));
@@ -119,24 +120,9 @@ const startServer = async () => {
       process.exit(1);
     }
 
-    // Exécuter les migrations
-    const migrateStoreSettings = require('./scripts/migrateStoreSettings');
-    await migrateStoreSettings();
-
-    const migrateProductsDisplayOrder = require('./scripts/migrateProductsDisplayOrder');
-    await migrateProductsDisplayOrder();
-
-    const migrateStoreConfig = require('./scripts/migrateStoreConfig');
-    await migrateStoreConfig();
-
-    const migrateProductCategoryConstraint = require('./scripts/migrateProductCategoryConstraint');
-    await migrateProductCategoryConstraint();
-
-    const migrateDiscountFields = require('./scripts/migrateDiscountFields');
-    await migrateDiscountFields();
-
-    const migrateStoreConfigFields = require('./scripts/migrateStoreConfigFields');
-    await migrateStoreConfigFields();
+    // Exécuter toutes les migrations SQL automatiquement
+    const migrateAllSQL = require('./scripts/migrateAllSQL');
+    await migrateAllSQL();
 
     // Initialiser l'imprimante thermique
     const printerService = require('./services/printerService');

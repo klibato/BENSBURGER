@@ -32,7 +32,7 @@ HashChain.init(
       comment: 'Organisation propriétaire (multi-tenant)',
     },
     sale_id: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       allowNull: false,
       unique: true,
       references: {

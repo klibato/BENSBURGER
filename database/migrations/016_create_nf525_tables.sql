@@ -12,7 +12,7 @@
 CREATE TABLE IF NOT EXISTS hash_chain (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organization_id INTEGER NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-  sale_id UUID NOT NULL UNIQUE REFERENCES sales(id) ON DELETE RESTRICT,
+  sale_id INTEGER NOT NULL UNIQUE REFERENCES sales(id) ON DELETE RESTRICT,
 
   -- Séquence incrémentale par organisation (auto-calculée par trigger)
   sequence_number BIGINT NOT NULL,

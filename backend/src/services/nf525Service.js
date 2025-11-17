@@ -55,7 +55,7 @@ class NF525Service {
       // Log pour debug (raccourci hash)
       if (logger && logger.info) {
         logger.info(
-          `NF525: Hash généré pour vente ${sale.id.substring(0, 8)}... ` +
+          `NF525: Hash généré pour vente #${sale.id} ` +
             `(org: ${sale.organization_id}, seq: TBD) → ${hash.substring(0, 16)}...`
         );
       }
@@ -112,7 +112,7 @@ class NF525Service {
       if (logger && logger.info) {
         logger.info(
           `NF525: Création hash #${nextSequenceNumber} pour org ${sale.organization_id} ` +
-            `(vente ${sale.id.substring(0, 8)}...)`
+            `(vente #${sale.id})`
         );
       }
 

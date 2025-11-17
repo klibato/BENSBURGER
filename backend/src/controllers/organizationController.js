@@ -1,4 +1,4 @@
-const { Organization, User } = require('../models');
+const { Organization, User, sequelize } = require('../models');
 const logger = require('../utils/logger');
 const { generateSlug } = require('../utils/helpers');
 
@@ -59,44 +59,104 @@ const registerOrganization = async (req, res, next) => {
 
     const limits = planLimits[plan] || planLimits.free;
 
-    // Créer l'organisation
-    const organization = await Organization.create({
-      name,
-      slug,
-      email,
-      phone,
-      plan,
-      status: 'active',
-      max_users: limits.max_users,
-      max_products: limits.max_products,
-      settings: {
-        store_name: name,
-        currency: 'EUR',
-        currency_symbol: '€',
-        theme_color: '#FF6B35',
-        language: 'fr-FR',
-        timezone: 'Europe/Paris',
-        categories: [],
-        vat_rates: [],
-        payment_methods: {
-          cash: { enabled: true },
-          card: { enabled: true },
-          meal_voucher: { enabled: false },
-        },
-      },
-    });
+    // ============================================
+    // TRANSACTION ATOMIQUE (org + admin)
+    // ============================================
+    const transaction = await sequelize.transaction();
 
-    // Créer l'utilisateur administrateur
-    // Note: Le PIN sera automatiquement haché par le hook beforeCreate du modèle User
-    const adminUser = await User.create({
-      organization_id: organization.id,
-      username: admin_username,
-      pin_code: admin_pin_code, // Envoyer le PIN en clair, le hook le hashera
-      first_name: admin_first_name || 'Admin',
-      last_name: admin_last_name || '',
-      role: 'admin',
-      is_active: true,
-    });
+    let organization;
+    let adminUser;
+
+    try {
+      // Créer l'organisation
+      organization = await Organization.create(
+        {
+          name,
+          slug,
+          email,
+          phone,
+          plan,
+          status: 'active',
+          max_users: limits.max_users,
+          max_products: limits.max_products,
+          settings: {
+            store_name: name,
+            currency: 'EUR',
+            currency_symbol: '€',
+            theme_color: '#FF6B35',
+            language: 'fr-FR',
+            timezone: 'Europe/Paris',
+            categories: [],
+            vat_rates: [],
+            payment_methods: {
+              cash: { enabled: true },
+              card: { enabled: true },
+              meal_voucher: { enabled: false },
+            },
+          },
+        },
+        { transaction }
+      );
+
+      // Créer l'utilisateur administrateur
+      // Note: Le PIN sera automatiquement haché par le hook beforeCreate du modèle User
+      adminUser = await User.create(
+        {
+          organization_id: organization.id,
+          username: admin_username,
+          pin_code: admin_pin_code, // Envoyer le PIN en clair, le hook le hashera
+          first_name: admin_first_name || 'Admin',
+          last_name: admin_last_name || '',
+          role: 'admin',
+          is_active: true,
+        },
+        { transaction }
+      );
+
+      // Commit si tout OK
+      await transaction.commit();
+    } catch (error) {
+      // Rollback en cas d'erreur
+      await transaction.rollback();
+
+      // Gestion erreurs spécifiques
+      if (error.name === 'SequelizeUniqueConstraintError') {
+        const field = error.errors[0]?.path;
+
+        if (field === 'username') {
+          return res.status(409).json({
+            success: false,
+            error: {
+              code: 'USERNAME_ALREADY_EXISTS',
+              message: `Le nom d'utilisateur "${admin_username}" est déjà utilisé`,
+              field: 'admin_username',
+            },
+          });
+        }
+
+        if (field === 'slug') {
+          return res.status(409).json({
+            success: false,
+            error: {
+              code: 'ORGANIZATION_ALREADY_EXISTS',
+              message: `Une organisation avec ce nom existe déjà`,
+              field: 'name',
+            },
+          });
+        }
+      }
+
+      // Erreur générique
+      logger.error('Erreur lors de la création de l\'organisation:', error);
+      return res.status(500).json({
+        success: false,
+        error: {
+          code: 'ORGANIZATION_CREATION_FAILED',
+          message: 'Erreur lors de la création de l\'organisation',
+          details: error.message,
+        },
+      });
+    }
 
     logger.info(`Nouvelle organisation créée: ${name} (${slug}) avec admin: ${admin_username}`);
 

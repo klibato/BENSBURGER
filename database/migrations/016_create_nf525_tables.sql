@@ -312,8 +312,8 @@ COMMENT ON FUNCTION get_nf525_stats IS 'Résumé statistiques NF525 pour dashboa
 CREATE OR REPLACE VIEW nf525_audit_export AS
 SELECT
   o.name as organization_name,
-  o.siret,
-  o.vat_number,
+  o.settings->>'siret' as siret,
+  o.settings->>'vat_number' as vat_number,
   s.id as sale_id,
   s.ticket_number,
   s.created_at as sale_timestamp,

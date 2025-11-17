@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
+const cookieParser = require('cookie-parser');
 
 const config = require('./config/env');
 const { testConnection } = require('./config/database');
@@ -36,6 +37,9 @@ app.use(compression());
 // Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Cookie parser (NF525: Pour lire les cookies httpOnly sécurisés)
+app.use(cookieParser());
 
 // Rate limiting (plus strict pour l'auth)
 const authLimiter = rateLimit({

@@ -82,10 +82,19 @@ const login = async (req, res, next) => {
       });
     });
 
+    // Sécurité NF525: Stocker le JWT dans un cookie httpOnly (protection XSS)
+    // Au lieu de localStorage (vulnérable aux attaques XSS)
+    res.cookie('token', token, {
+      httpOnly: true, // Inaccessible au JavaScript client (protection XSS)
+      secure: config.env === 'production', // HTTPS uniquement en production
+      sameSite: 'strict', // Protection CSRF
+      maxAge: 8 * 60 * 60 * 1000, // 8 heures (même durée que JWT)
+    });
+
     res.json({
       success: true,
       data: {
-        token,
+        token, // On envoie quand même le token pour rétrocompatibilité (transition)
         user: user.toPublicJSON(),
       },
     });
@@ -106,6 +115,13 @@ const logout = async (req, res, next) => {
       logAction(req, 'LOGOUT', 'user', req.user.id, {
         username: req.user.username,
       });
+    });
+
+    // Sécurité NF525: Supprimer le cookie httpOnly
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: config.env === 'production',
+      sameSite: 'strict',
     });
 
     res.json({
@@ -206,9 +222,14 @@ const switchCashier = async (req, res, next) => {
       });
     }
 
-    // Générer un nouveau token JWT pour le nouveau caissier
+    // Générer un nouveau token JWT pour le nouveau caissier (MULTI-TENANT: inclure organization_id)
     const token = jwt.sign(
-      { userId: newUser.id, username: newUser.username, role: newUser.role },
+      {
+        userId: newUser.id,
+        username: newUser.username,
+        role: newUser.role,
+        organization_id: newUser.organization_id, // MULTI-TENANT: Important pour tenantIsolation
+      },
       config.jwt.secret,
       { expiresIn: config.jwt.expiration }
     );
@@ -223,10 +244,18 @@ const switchCashier = async (req, res, next) => {
       });
     });
 
+    // Sécurité NF525: Mettre à jour le cookie httpOnly avec le nouveau token
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: config.env === 'production',
+      sameSite: 'strict',
+      maxAge: 8 * 60 * 60 * 1000, // 8 heures
+    });
+
     res.json({
       success: true,
       data: {
-        token,
+        token, // Rétrocompatibilité (transition)
         user: newUser.toPublicJSON(),
       },
     });

@@ -9,9 +9,13 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  // Sécurité NF525: Envoyer les cookies httpOnly avec chaque requête
+  withCredentials: true,
 });
 
-// Intercepteur pour ajouter le token JWT
+// Intercepteur pour ajouter le token JWT (RÉTROCOMPATIBILITÉ)
+// Le backend supporte encore Authorization header pendant la transition
+// Mais priorité au cookie httpOnly (plus sécurisé)
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -28,8 +32,10 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token expiré ou invalide
-      localStorage.removeItem('token');
+      // Token expiré ou invalide (cookie httpOnly expiré côté backend)
+      // Le cookie sera automatiquement supprimé par le backend
+      // On nettoie juste localStorage pour les données utilisateur
+      localStorage.removeItem('token'); // Rétrocompatibilité
       localStorage.removeItem('user');
 
       // Rediriger vers login seulement si on n'y est pas déjà

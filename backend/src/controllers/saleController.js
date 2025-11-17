@@ -2,6 +2,7 @@ const { Sale, SaleItem, CashRegister, User, StoreSettings, Product, sequelize } 
 const { calculateSaleTotals, calculateChange } = require('../services/vatService');
 const { generateTicketPDF } = require('../services/pdfService');
 const printerService = require('../services/printerService');
+const NF525Service = require('../services/nf525Service');
 const logger = require('../utils/logger');
 const { logAction } = require('../middleware/audit');
 
@@ -261,6 +262,36 @@ const createSale = async (req, res, next) => {
       },
       { transaction }
     );
+
+    // ============================================
+    // NF525: Créer hash chain pour conformité anti-fraude TVA
+    // ============================================
+    try {
+      // Charger les items dans l'objet sale (requis pour hash)
+      sale.items = saleItemsData;
+
+      // Créer entrée hash chain (DOIT être dans même transaction)
+      const hashEntry = await NF525Service.createHashChainEntry(sale, transaction);
+
+      logger.info(
+        `✅ NF525: Hash #${hashEntry.sequence_number} créé pour vente ${sale.ticket_number} ` +
+          `(hash: ${hashEntry.current_hash.substring(0, 16)}...)`
+      );
+    } catch (nf525Error) {
+      // Si échec NF525, rollback TOUTE la transaction (critère bloquant)
+      await transaction.rollback();
+      logger.error('❌ NF525: Échec création hash chain:', nf525Error);
+      return res.status(500).json({
+        success: false,
+        error: {
+          code: 'NF525_HASH_CREATION_FAILED',
+          message:
+            'Erreur NF525: Impossible de créer le hash de conformité. ' +
+            'La vente a été annulée pour garantir la conformité fiscale.',
+          details: nf525Error.message,
+        },
+      });
+    }
 
     // Commit de la transaction
     await transaction.commit();

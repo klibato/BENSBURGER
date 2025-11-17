@@ -8,6 +8,8 @@ const SaleItem = require('./SaleItem');
 const CashRegister = require('./CashRegister');
 const AuditLog = require('./AuditLog');
 const StoreSettings = require('./StoreSettings');
+const HashChain = require('./HashChain');
+const NF525Archive = require('./NF525Archive');
 
 // ============================================
 // RELATIONS
@@ -79,6 +81,26 @@ User.hasMany(Sale, { foreignKey: 'cancelled_by', as: 'cancelled_sales' });
 Sale.belongsTo(User, { foreignKey: 'cancelled_by', as: 'canceller' });
 
 // ============================================
+// NF525 RELATIONS (Hash chain + Archives)
+// ============================================
+
+// Organization <-> HashChains (Une organisation a plusieurs hash chains)
+Organization.hasMany(HashChain, { foreignKey: 'organization_id', as: 'hashChains' });
+HashChain.belongsTo(Organization, { foreignKey: 'organization_id', as: 'organization' });
+
+// Sale <-> HashChain (Une vente a un hash unique)
+Sale.hasOne(HashChain, { foreignKey: 'sale_id', as: 'hashChain' });
+HashChain.belongsTo(Sale, { foreignKey: 'sale_id', as: 'sale' });
+
+// Organization <-> NF525Archives (Une organisation a plusieurs archives)
+Organization.hasMany(NF525Archive, { foreignKey: 'organization_id', as: 'nf525Archives' });
+NF525Archive.belongsTo(Organization, { foreignKey: 'organization_id', as: 'organization' });
+
+// User <-> NF525Archives (created_by)
+User.hasMany(NF525Archive, { foreignKey: 'created_by', as: 'created_archives' });
+NF525Archive.belongsTo(User, { foreignKey: 'created_by', as: 'creator' });
+
+// ============================================
 // EXPORTS
 // ============================================
 
@@ -93,4 +115,6 @@ module.exports = {
   CashRegister,
   AuditLog,
   StoreSettings,
+  HashChain,
+  NF525Archive,
 };

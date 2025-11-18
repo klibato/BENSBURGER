@@ -14,12 +14,15 @@
 
     # Admin API (désactivé en production)
     admin off
+
+    # DÉSACTIVER HTTPS pour test local (réactiver en production avec vrai DNS)
+    auto_https off
 }
 
 # ==============================================
 # LANDING PAGE - www.flexpos.app
 # ==============================================
-www.flexpos.app, flexpos.app {
+http://www.flexpos.app, http://flexpos.app {
     encode gzip
 
     # Reverse proxy vers frontend-landing
@@ -55,7 +58,7 @@ www.flexpos.app, flexpos.app {
 # ==============================================
 # APPLICATION POS - app.flexpos.app
 # ==============================================
-app.flexpos.app {
+http://app.flexpos.app {
     encode gzip
 
     # Reverse proxy vers frontend (React POS)
@@ -85,7 +88,7 @@ app.flexpos.app {
 # ==============================================
 # DASHBOARD ADMIN - admin.flexpos.app
 # ==============================================
-admin.flexpos.app {
+http://admin.flexpos.app {
     encode gzip
 
     # Reverse proxy vers frontend-admin
@@ -115,7 +118,7 @@ admin.flexpos.app {
 # ==============================================
 # API BACKEND - api.flexpos.app
 # ==============================================
-api.flexpos.app {
+http://api.flexpos.app {
     encode gzip
 
     # Reverse proxy vers backend Node.js

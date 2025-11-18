@@ -670,7 +670,6 @@ const exportSalesCSV = async (req, res, next) => {
         card: 'Carte bancaire',
         meal_voucher: 'Ticket restaurant',
         mixed: 'Mixte',
-        sumup: 'SumUp',
       };
       const paymentMethod = paymentMethodLabels[sale.payment_method] || sale.payment_method;
 

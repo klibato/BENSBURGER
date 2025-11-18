@@ -88,7 +88,6 @@
 - ✅ Configuration du commerce (nom, adresse, SIRET, TVA, RCS)
 - ✅ Gestion des catégories et taux de TVA
 - ✅ Configuration des moyens de paiement
-- ✅ Intégration SumUp (paiements CB)
 - ✅ Configuration imprimante thermique
 - ✅ Personnalisation du thème (couleur, logo)
 - ✅ Support multilingue (FR/EN)
@@ -112,7 +111,6 @@
 - **Logging** : Winston
 - **Génération PDF** : pdfkit
 - **Impression thermique** : node-thermal-printer
-- **Paiements** : Intégration SumUp API
 
 ### Frontend
 - **Framework** : React 18.3

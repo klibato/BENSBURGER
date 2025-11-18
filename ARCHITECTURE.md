@@ -453,7 +453,6 @@ JWT_SECRET=your-secret-key-change-in-prod
 JWT_EXPIRATION=8h
 PRINTER_IP=192.168.1.100
 PRINTER_PORT=9100
-SUMUP_API_KEY=your-sumup-key
 ```
 
 ### Frontend (.env)

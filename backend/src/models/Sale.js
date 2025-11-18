@@ -38,7 +38,7 @@ const Sale = sequelize.define('sales', {
     type: DataTypes.STRING(20),
     allowNull: false,
     validate: {
-      isIn: [['cash', 'card', 'meal_voucher', 'mixed', 'sumup']],
+      isIn: [['cash', 'card', 'meal_voucher', 'mixed']],
     },
   },
   payment_details: {

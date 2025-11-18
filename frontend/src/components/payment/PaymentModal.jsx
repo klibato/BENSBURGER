@@ -4,8 +4,7 @@ import Button from '../ui/Button';
 import CashPayment from './CashPayment';
 import { prepareSaleItems } from '../../utils/saleHelper';
 import { createSale } from '../../services/saleService';
-import { processSumUpPayment } from '../../services/sumupService';
-import { Banknote, CreditCard, Ticket, Shuffle, Smartphone } from 'lucide-react';
+import { Banknote, CreditCard, Ticket, Shuffle } from 'lucide-react';
 import { useStoreConfig } from '../../context/StoreConfigContext';
 import { useLanguage } from '../../context/LanguageContext';
 
@@ -25,7 +24,6 @@ const PaymentModal = ({ isOpen, onClose, cart, discount, onSuccess }) => {
       card: CreditCard,
       meal_voucher: Ticket,
       mixed: Shuffle,
-      sumup: Smartphone,
     };
 
     const colorMap = {
@@ -33,7 +31,6 @@ const PaymentModal = ({ isOpen, onClose, cart, discount, onSuccess }) => {
       card: 'bg-blue-500',
       meal_voucher: 'bg-orange-500',
       mixed: 'bg-purple-500',
-      sumup: 'bg-indigo-500',
     };
 
     // Construire la liste à partir de la config
@@ -133,54 +130,6 @@ const PaymentModal = ({ isOpen, onClose, cart, discount, onSuccess }) => {
     });
   };
 
-  const handleSumUpPayment = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      // Générer une référence unique pour le paiement
-      const reference = `TICKET-${Date.now()}`;
-
-      // Appeler le service SumUp pour traiter le paiement
-      const sumupResponse = await processSumUpPayment({
-        amount: totalTTC,
-        reference,
-      });
-
-      if (sumupResponse.success) {
-        // Le paiement SumUp a réussi, créer la vente
-        const items = prepareSaleItems(cart);
-        const saleData = {
-          items,
-          payment_method: 'sumup',
-          amount_paid: totalTTC,
-          payment_details: {
-            checkout_id: sumupResponse.data.checkout_id,
-            transaction_id: sumupResponse.data.transaction_id,
-            status: sumupResponse.data.status,
-          },
-        };
-
-        const response = await createSale(saleData);
-
-        if (response.success) {
-          onSuccess(response.data);
-          onClose();
-          setSelectedMethod(null);
-        }
-      } else {
-        throw new Error(sumupResponse.error || t('payment.sumupError'));
-      }
-    } catch (err) {
-      setError(
-        err.response?.data?.error?.message || err.message || t('payment.sumupError')
-      );
-      console.error('Erreur paiement SumUp:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const renderPaymentMethod = () => {
     if (selectedMethod === 'cash') {
       return (
@@ -251,52 +200,6 @@ const PaymentModal = ({ isOpen, onClose, cart, discount, onSuccess }) => {
               className="flex-1 bg-orange-600 hover:bg-orange-700"
             >
               {loading ? t('payment.processingPayment') : t('payment.confirmPayment')}
-            </Button>
-          </div>
-        </div>
-      );
-    }
-
-    if (selectedMethod === 'sumup') {
-      return (
-        <div className="space-y-4">
-          <div className="bg-indigo-50 dark:bg-indigo-900/30 border-2 border-indigo-200 dark:border-indigo-700 rounded-lg p-6 text-center">
-            <Smartphone size={64} className="mx-auto mb-4 text-indigo-500 dark:text-indigo-400" />
-            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">{t('payment.sumupPayment')}</h3>
-            <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-4">
-              {totalTTC.toFixed(2)} €
-            </p>
-            <p className="text-gray-600 dark:text-gray-300 mb-2">
-              {t('payment.sumupPresent')}
-            </p>
-            <p className="text-sm text-indigo-600 dark:text-indigo-400">
-              {t('payment.sumupAutomatic')}
-            </p>
-          </div>
-
-          {loading && (
-            <div className="bg-indigo-100 dark:bg-indigo-900/50 border border-indigo-300 dark:border-indigo-700 rounded-lg p-4 text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-indigo-600 dark:border-indigo-400 mx-auto mb-3"></div>
-              <p className="text-indigo-700 dark:text-indigo-300 font-medium">
-                {t('payment.sumupProcessing')}
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                {t('payment.sumupWait')}
-              </p>
-            </div>
-          )}
-
-          <div className="flex gap-3">
-            <Button variant="secondary" onClick={handleBack} disabled={loading} className="flex-1">
-              {t('payment.back')}
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleSumUpPayment}
-              disabled={loading}
-              className="flex-1 bg-indigo-600 hover:bg-indigo-700"
-            >
-              {loading ? t('payment.processingPayment') : t('payment.sumupStart')}
             </Button>
           </div>
         </div>
@@ -456,7 +359,6 @@ const MixedPayment = ({ totalTTC, onConfirm, onCancel, loading }) => {
             >
               <option value="cash">{t('payment.cash')}</option>
               <option value="card">{t('payment.card')}</option>
-              <option value="sumup">{t('payment.sumup')}</option>
               <option value="meal_voucher">{t('payment.mealVoucher')}</option>
             </select>
             <input

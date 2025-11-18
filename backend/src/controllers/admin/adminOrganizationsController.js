@@ -116,7 +116,7 @@ const suspendOrganization = async (req, res, next) => {
     organization.status = 'suspended';
     await organization.save();
 
-    logger.info(\`Organization suspended: \${id} - Reason: \${reason}\`);
+    logger.info(`Organization suspended: ${id} - Reason: ${reason}`);
 
     return res.json({
       success: true,
@@ -145,7 +145,7 @@ const activateOrganization = async (req, res, next) => {
     organization.status = 'active';
     await organization.save();
 
-    logger.info(\`Organization activated: \${id}\`);
+    logger.info(`Organization activated: ${id}`);
 
     return res.json({
       success: true,

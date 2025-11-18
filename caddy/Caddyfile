@@ -14,19 +14,16 @@
 
     # Admin API (désactivé en production)
     admin off
-
-    # DÉSACTIVER HTTPS pour test local (activer en production réelle)
-    auto_https off
 }
 
 # ==============================================
 # LANDING PAGE - www.flexpos.app
 # ==============================================
-http://www.flexpos.app, http://flexpos.app {
+www.flexpos.app, flexpos.app {
     encode gzip
 
     # Reverse proxy vers frontend-landing
-    reverse_proxy frontend-landing:5174 {
+    reverse_proxy frontend-landing:80 {
         header_up X-Real-IP {remote_host}
         header_up X-Forwarded-For {remote_host}
         header_up X-Forwarded-Proto {scheme}
@@ -34,8 +31,8 @@ http://www.flexpos.app, http://flexpos.app {
 
     # Headers de sécurité
     header {
-        # Sécurité (HSTS désactivé pour test local HTTP)
-        # Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        # Sécurité
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
         X-Content-Type-Options "nosniff"
         X-Frame-Options "SAMEORIGIN"
         X-XSS-Protection "1; mode=block"
@@ -58,7 +55,7 @@ http://www.flexpos.app, http://flexpos.app {
 # ==============================================
 # APPLICATION POS - app.flexpos.app
 # ==============================================
-http://app.flexpos.app {
+app.flexpos.app {
     encode gzip
 
     # Reverse proxy vers frontend (React POS)
@@ -70,7 +67,7 @@ http://app.flexpos.app {
 
     # Headers de sécurité (plus strict pour l'app)
     header {
-        # Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
         X-Content-Type-Options "nosniff"
         X-Frame-Options "DENY"
         X-XSS-Protection "1; mode=block"
@@ -88,11 +85,11 @@ http://app.flexpos.app {
 # ==============================================
 # DASHBOARD ADMIN - admin.flexpos.app
 # ==============================================
-http://admin.flexpos.app {
+admin.flexpos.app {
     encode gzip
 
     # Reverse proxy vers frontend-admin
-    reverse_proxy frontend-admin:5175 {
+    reverse_proxy frontend-admin:80 {
         header_up X-Real-IP {remote_host}
         header_up X-Forwarded-For {remote_host}
         header_up X-Forwarded-Proto {scheme}
@@ -100,7 +97,7 @@ http://admin.flexpos.app {
 
     # Headers de sécurité maximale
     header {
-        # Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
         X-Content-Type-Options "nosniff"
         X-Frame-Options "DENY"
         X-XSS-Protection "1; mode=block"
@@ -118,7 +115,7 @@ http://admin.flexpos.app {
 # ==============================================
 # API BACKEND - api.flexpos.app
 # ==============================================
-http://api.flexpos.app {
+api.flexpos.app {
     encode gzip
 
     # Reverse proxy vers backend Node.js
@@ -138,7 +135,7 @@ http://api.flexpos.app {
 
     # Headers de sécurité
     header {
-        # Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
         X-Content-Type-Options "nosniff"
         -Server
     }

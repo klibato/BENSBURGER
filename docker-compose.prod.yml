@@ -108,15 +108,20 @@ services:
   frontend-landing:
     build:
       context: ./frontend-landing
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
       args:
-        VITE_API_URL: https://api.flexpos.app
+        VITE_API_URL: ${VITE_API_URL:-https://api.flexpos.app}
     container_name: flexpos_landing
     restart: unless-stopped
     networks:
       - flexpos_network
     depends_on:
       - backend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # ==============================================
   # FRONTEND ADMIN - Dashboard super-admin
@@ -124,15 +129,20 @@ services:
   frontend-admin:
     build:
       context: ./frontend-admin
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
       args:
-        VITE_API_URL: https://api.flexpos.app
+        VITE_API_URL: ${VITE_API_URL:-https://api.flexpos.app}
     container_name: flexpos_admin
     restart: unless-stopped
     networks:
       - flexpos_network
     depends_on:
       - backend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 # ==============================================
 # VOLUMES

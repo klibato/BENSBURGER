@@ -87,6 +87,9 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Routes API (Public - Inscription sans authentification)
+app.use('/api/public', apiLimiter, require('./routes/public'));
+
 // Routes API (POS)
 app.use('/api/auth', authLimiter, require('./routes/auth'));
 app.use('/api/organizations', require('./routes/organizations')); // MULTI-TENANT: Gestion des organisations

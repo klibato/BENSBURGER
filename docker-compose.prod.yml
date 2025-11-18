@@ -1,0 +1,153 @@
+version: '3.8'
+
+services:
+  # ==============================================
+  # CADDY - Reverse Proxy + SSL automatique
+  # ==============================================
+  caddy:
+    image: caddy:2-alpine
+    container_name: flexpos_caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp" # HTTP/3
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - flexpos_network
+    depends_on:
+      - backend
+      - frontend
+      - frontend-landing
+      - frontend-admin
+
+  # ==============================================
+  # POSTGRESQL - Base de données
+  # ==============================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: flexpos_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-pos_burger}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    ports:
+      - "5432:5432"
+    networks:
+      - flexpos_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==============================================
+  # BACKEND - API Node.js/Express
+  # ==============================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: flexpos_backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-pos_burger}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: 8h
+      BREVO_API_KEY: ${BREVO_API_KEY}
+      FROM_EMAIL: ${FROM_EMAIL:-noreply@flexpos.app}
+      FROM_NAME: ${FROM_NAME:-FlexPOS}
+      SENTRY_DSN: ${SENTRY_DSN}
+    volumes:
+      - ./backend/logs:/app/logs
+      - ./database:/database
+    networks:
+      - flexpos_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==============================================
+  # FRONTEND POS - Application React
+  # ==============================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+      args:
+        VITE_API_URL: https://api.flexpos.app
+    container_name: flexpos_frontend
+    restart: unless-stopped
+    networks:
+      - flexpos_network
+    depends_on:
+      - backend
+
+  # ==============================================
+  # FRONTEND LANDING - Site vitrine
+  # ==============================================
+  frontend-landing:
+    build:
+      context: ./frontend-landing
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: https://api.flexpos.app
+    container_name: flexpos_landing
+    restart: unless-stopped
+    networks:
+      - flexpos_network
+    depends_on:
+      - backend
+
+  # ==============================================
+  # FRONTEND ADMIN - Dashboard super-admin
+  # ==============================================
+  frontend-admin:
+    build:
+      context: ./frontend-admin
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: https://api.flexpos.app
+    container_name: flexpos_admin
+    restart: unless-stopped
+    networks:
+      - flexpos_network
+    depends_on:
+      - backend
+
+# ==============================================
+# VOLUMES
+# ==============================================
+volumes:
+  postgres_data:
+    driver: local
+  caddy_data:
+    driver: local
+  caddy_config:
+    driver: local
+
+# ==============================================
+# NETWORKS
+# ==============================================
+networks:
+  flexpos_network:
+    driver: bridge

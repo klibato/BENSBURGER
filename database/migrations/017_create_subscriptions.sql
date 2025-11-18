@@ -105,4 +105,4 @@ COMMENT ON COLUMN subscriptions.status IS 'Statut: active, cancelled, past_due (
 COMMENT ON COLUMN subscriptions.price_cents IS 'Prix en centimes (ex: 2900 = 29.00€)';
 COMMENT ON COLUMN subscriptions.current_period_start IS 'Début de la période de facturation actuelle';
 COMMENT ON COLUMN subscriptions.current_period_end IS 'Fin de la période (date de prochaine facturation)';
-COMMENT ON COLUMN subscriptions.stripe_subscription_id IS 'ID Stripe de l\'abonnement (pour webhook sync)';
+COMMENT ON COLUMN subscriptions.stripe_subscription_id IS 'ID Stripe de l''abonnement (pour webhook sync)';

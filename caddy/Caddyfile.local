@@ -1,0 +1,101 @@
+# ==============================================
+# FLEXPOS - Caddyfile LOCAL (test sans DNS)
+# ==============================================
+# Configuration pour test local avec localhost
+# Accès direct via ports HTTP (pas de SSL)
+# ==============================================
+
+{
+    # Désactiver HTTPS auto pour test local
+    auto_https off
+    admin off
+}
+
+# ==============================================
+# LANDING PAGE - localhost:8080
+# ==============================================
+:8080 {
+    encode gzip
+
+    reverse_proxy frontend-landing:80 {
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+    }
+
+    header {
+        -Server
+    }
+
+    log {
+        output stdout
+        format console
+    }
+}
+
+# ==============================================
+# APPLICATION POS - localhost:8081
+# ==============================================
+:8081 {
+    encode gzip
+
+    reverse_proxy frontend:80 {
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+    }
+
+    header {
+        -Server
+    }
+
+    log {
+        output stdout
+        format console
+    }
+}
+
+# ==============================================
+# DASHBOARD ADMIN - localhost:8082
+# ==============================================
+:8082 {
+    encode gzip
+
+    reverse_proxy frontend-admin:80 {
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+    }
+
+    header {
+        -Server
+    }
+
+    log {
+        output stdout
+        format console
+    }
+}
+
+# ==============================================
+# API BACKEND - localhost:8083
+# ==============================================
+:8083 {
+    encode gzip
+
+    reverse_proxy backend:3000 {
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+
+        transport http {
+            read_timeout 30s
+            write_timeout 30s
+        }
+    }
+
+    header {
+        -Server
+    }
+
+    log {
+        output stdout
+        format console
+    }
+}

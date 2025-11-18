@@ -1,0 +1,154 @@
+services:
+  # ==============================================
+  # CADDY - Reverse Proxy LOCAL (sans SSL)
+  # ==============================================
+  caddy:
+    image: caddy:2-alpine
+    container_name: flexpos_caddy_local
+    restart: unless-stopped
+    ports:
+      - "8080:8080"  # Landing
+      - "8081:8081"  # App POS
+      - "8082:8082"  # Admin
+      - "8083:8083"  # API
+    volumes:
+      - ./caddy/Caddyfile.local:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - flexpos_network
+    depends_on:
+      - backend
+      - frontend
+      - frontend-landing
+      - frontend-admin
+
+  # ==============================================
+  # POSTGRESQL - Base de données
+  # ==============================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: flexpos_postgres_local
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-pos_burger}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01_init.sql
+      - ./database:/database
+      - ./backups:/backups
+    ports:
+      - "5432:5432"
+    networks:
+      - flexpos_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==============================================
+  # BACKEND - API Node.js/Express
+  # ==============================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: flexpos_backend_local
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-pos_burger}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-key-change-in-production}
+      JWT_EXPIRATION: 8h
+      BREVO_API_KEY: ${BREVO_API_KEY}
+      FROM_EMAIL: ${FROM_EMAIL:-noreply@flexpos.local}
+      FROM_NAME: ${FROM_NAME:-FlexPOS Local}
+      SENTRY_DSN: ${SENTRY_DSN}
+    volumes:
+      - ./backend/logs:/app/logs
+      - ./database:/database
+    networks:
+      - flexpos_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==============================================
+  # FRONTEND POS - Application React
+  # ==============================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+      args:
+        VITE_API_URL: http://localhost:8083
+    container_name: flexpos_frontend_local
+    restart: unless-stopped
+    networks:
+      - flexpos_network
+    depends_on:
+      - backend
+
+  # ==============================================
+  # FRONTEND LANDING - Site vitrine
+  # ==============================================
+  frontend-landing:
+    build:
+      context: ./frontend-landing
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:8083
+    container_name: flexpos_landing_local
+    restart: unless-stopped
+    networks:
+      - flexpos_network
+    depends_on:
+      - backend
+
+  # ==============================================
+  # FRONTEND ADMIN - Dashboard super-admin
+  # ==============================================
+  frontend-admin:
+    build:
+      context: ./frontend-admin
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:8083
+    container_name: flexpos_admin_local
+    restart: unless-stopped
+    networks:
+      - flexpos_network
+    depends_on:
+      - backend
+
+# ==============================================
+# VOLUMES
+# ==============================================
+volumes:
+  postgres_data:
+    driver: local
+  caddy_data:
+    driver: local
+  caddy_config:
+    driver: local
+
+# ==============================================
+# NETWORKS
+# ==============================================
+networks:
+  flexpos_network:
+    driver: bridge

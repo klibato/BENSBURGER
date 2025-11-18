@@ -4,7 +4,7 @@ const { generateTicketPDF } = require('../services/pdfService');
 const printerService = require('../services/printerService');
 const NF525Service = require('../services/nf525Service');
 const logger = require('../utils/logger');
-const { logAction } = require('../middleware/audit');
+const { logAction } = require('../middlewares/audit');
 
 /**
  * Créer une nouvelle vente

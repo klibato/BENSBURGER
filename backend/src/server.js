@@ -87,8 +87,8 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Routes API
-app.use('/api/auth', require('./routes/auth'));
+// Routes API (POS)
+app.use('/api/auth', authLimiter, require('./routes/auth'));
 app.use('/api/organizations', require('./routes/organizations')); // MULTI-TENANT: Gestion des organisations
 app.use('/api/products', apiLimiter, require('./routes/products'));
 app.use('/api/sales', apiLimiter, require('./routes/sales'));
@@ -98,6 +98,9 @@ app.use('/api/users', apiLimiter, require('./routes/users'));
 app.use('/api/settings', apiLimiter, require('./routes/settings'));
 app.use('/api/printer', apiLimiter, require('./routes/printer'));
 app.use('/api/logs', apiLimiter, require('./routes/logs'));
+
+// Routes API (Admin - Super-Admin Dashboard)
+app.use('/api/admin', apiLimiter, require('./routes/admin'));
 
 // ============================================
 // GESTION DES ERREURS
@@ -130,6 +133,13 @@ const startServer = async () => {
     // Initialiser l'imprimante thermique
     const printerService = require('./services/printerService');
     await printerService.initialize();
+
+    // Démarrer les cron jobs (SaaS: Facturation & Trials)
+    if (config.NODE_ENV === 'production') {
+      const { startCronJobs } = require('./services/cronJobs');
+      startCronJobs();
+      logger.info('✅ Cron jobs SaaS démarrés (facturation, trials)');
+    }
 
     // Démarrer le serveur
     app.listen(config.PORT, () => {

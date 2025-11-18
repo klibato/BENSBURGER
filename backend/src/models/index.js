@@ -11,6 +11,11 @@ const StoreSettings = require('./StoreSettings');
 const HashChain = require('./HashChain');
 const NF525Archive = require('./NF525Archive');
 
+// SaaS Models
+const Subscription = require('./Subscription');
+const Invoice = require('./Invoice');
+const AdminUser = require('./AdminUser');
+
 // ============================================
 // RELATIONS
 // ============================================
@@ -101,6 +106,22 @@ User.hasMany(NF525Archive, { foreignKey: 'created_by', as: 'created_archives' })
 NF525Archive.belongsTo(User, { foreignKey: 'created_by', as: 'creator' });
 
 // ============================================
+// SAAS RELATIONS (Subscriptions & Invoices)
+// ============================================
+
+// Organization <-> Subscriptions (Une organisation a plusieurs abonnements)
+Organization.hasMany(Subscription, { foreignKey: 'organization_id', as: 'subscriptions' });
+Subscription.belongsTo(Organization, { foreignKey: 'organization_id', as: 'organization' });
+
+// Organization <-> Invoices (Une organisation a plusieurs factures)
+Organization.hasMany(Invoice, { foreignKey: 'organization_id', as: 'invoices' });
+Invoice.belongsTo(Organization, { foreignKey: 'organization_id', as: 'organization' });
+
+// Subscription <-> Invoices (Un abonnement a plusieurs factures)
+Subscription.hasMany(Invoice, { foreignKey: 'subscription_id', as: 'invoices' });
+Invoice.belongsTo(Subscription, { foreignKey: 'subscription_id', as: 'subscription' });
+
+// ============================================
 // EXPORTS
 // ============================================
 
@@ -117,4 +138,8 @@ module.exports = {
   StoreSettings,
   HashChain,
   NF525Archive,
+  // SaaS Models
+  Subscription,
+  Invoice,
+  AdminUser,
 };

@@ -3,7 +3,7 @@ const { User } = require('../models');
 const config = require('../config/env');
 const logger = require('../utils/logger');
 const { getRolePermissions } = require('../config/permissions');
-const { logAction } = require('../middleware/audit');
+const { logAction } = require('../middlewares/audit');
 
 /**
  * Login avec username et PIN code

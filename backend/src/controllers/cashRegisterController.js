@@ -1,7 +1,7 @@
 const { CashRegister, Sale, SaleItem, User, sequelize } = require('../models');
 const { Op } = require('sequelize');
 const logger = require('../utils/logger');
-const { logAction } = require('../middleware/audit');
+const { logAction } = require('../middlewares/audit');
 
 /**
  * Récupérer toutes les caisses

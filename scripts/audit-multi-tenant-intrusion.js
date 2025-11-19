@@ -63,10 +63,11 @@ async function auditMultiTenantIntrusion() {
     try {
       // Organisation 1
       const org1Response = await axios.post(`${API_URL}/api/public/signup`, {
-        restaurantName: `Test Org 1 ${timestamp}`,
+        organization_name: `Test Org 1 ${timestamp}`,
         email: org1Email,
         password: 'TestPassword123!',
-        plan: 'free'
+        first_name: 'Test',
+        last_name: 'Admin1'
       });
 
       org1Data = org1Response.data.data;
@@ -77,10 +78,11 @@ async function auditMultiTenantIntrusion() {
       await sleep(100); // Petit délai pour éviter conflits
 
       const org2Response = await axios.post(`${API_URL}/api/public/signup`, {
-        restaurantName: `Test Org 2 ${timestamp}`,
+        organization_name: `Test Org 2 ${timestamp}`,
         email: org2Email,
         password: 'TestPassword123!',
-        plan: 'free'
+        first_name: 'Test',
+        last_name: 'Admin2'
       });
 
       org2Data = org2Response.data.data;
@@ -118,10 +120,10 @@ async function auditMultiTenantIntrusion() {
     logs.push('Récupération tokens JWT');
 
     try {
-      // Login Org1
+      // Login Org1 - utilise username et PIN (1234 par défaut)
       const login1 = await axios.post(`${API_URL}/api/auth/login`, {
-        email: org1Email,
-        password: 'TestPassword123!'
+        username: org1Data.user.username,
+        pin_code: '1234'
       });
       token1 = login1.data.data.token;
       console.log(`✅ Token Org1 obtenu: ${token1.substring(0, 20)}...`);
@@ -129,8 +131,8 @@ async function auditMultiTenantIntrusion() {
 
       // Login Org2
       const login2 = await axios.post(`${API_URL}/api/auth/login`, {
-        email: org2Email,
-        password: 'TestPassword123!'
+        username: org2Data.user.username,
+        pin_code: '1234'
       });
       token2 = login2.data.data.token;
       console.log(`✅ Token Org2 obtenu: ${token2.substring(0, 20)}...\n`);

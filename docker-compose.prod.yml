@@ -94,7 +94,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.prod
       args:
-        VITE_API_URL: https://api.flexpos.app
+        VITE_API_URL: https://api.flexpos.app/api
     container_name: flexpos_frontend
     restart: unless-stopped
     networks:
@@ -110,7 +110,7 @@ services:
       context: ./frontend-landing
       dockerfile: Dockerfile.prod
       args:
-        VITE_API_URL: ${VITE_API_URL:-https://api.flexpos.app}
+        VITE_API_URL: ${VITE_API_URL:-https://api.flexpos.app/api}
     container_name: flexpos_landing
     restart: unless-stopped
     networks:
@@ -131,7 +131,7 @@ services:
       context: ./frontend-admin
       dockerfile: Dockerfile.prod
       args:
-        VITE_API_URL: ${VITE_API_URL:-https://api.flexpos.app}
+        VITE_API_URL: ${VITE_API_URL:-https://api.flexpos.app/api}
     container_name: flexpos_admin
     restart: unless-stopped
     networks:

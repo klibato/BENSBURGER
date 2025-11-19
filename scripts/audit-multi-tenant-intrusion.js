@@ -67,8 +67,8 @@ async function auditMultiTenantIntrusion() {
         organization_name: `Test Org 1 ${timestamp}`,
         email: org1Email,
         password: 'TestPassword123!',
-        first_name: 'Test',
-        last_name: 'Admin1'
+        first_name: `Admin${timestamp}`,
+        last_name: 'Org1'
       });
 
       org1Data = org1Response.data.data;
@@ -77,13 +77,14 @@ async function auditMultiTenantIntrusion() {
 
       // Organisation 2
       await sleep(100); // Petit délai pour éviter conflits
+      const timestamp2 = Date.now(); // Nouveau timestamp pour éviter collisions username
 
       const org2Response = await axios.post(`${API_URL}/api/public/signup`, {
-        organization_name: `Test Org 2 ${timestamp}`,
+        organization_name: `Test Org 2 ${timestamp2}`,
         email: org2Email,
         password: 'TestPassword123!',
-        first_name: 'Test',
-        last_name: 'Admin2'
+        first_name: `Admin${timestamp2}`,
+        last_name: 'Org2'
       });
 
       org2Data = org2Response.data.data;

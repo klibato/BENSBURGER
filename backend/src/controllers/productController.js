@@ -292,6 +292,7 @@ const getProductsByCategory = async (req, res, next) => {
 
     const products = await Product.findAll({
       where: {
+        organization_id: req.organizationId, // MULTI-TENANT: Filtrer par organisation
         category,
         is_active: true,
       },
@@ -332,7 +333,12 @@ const updateProductsOrder = async (req, res, next) => {
     const updatePromises = products.map((item) =>
       Product.update(
         { display_order: item.display_order },
-        { where: { id: item.id } }
+        {
+          where: {
+            id: item.id,
+            organization_id: req.organizationId // MULTI-TENANT: Sécurité cross-org
+          }
+        }
       )
     );
 
@@ -358,7 +364,9 @@ const exportProductsCSV = async (req, res, next) => {
     const { category, is_menu, include_inactive = 'true' } = req.query;
 
     // Construire les filtres
-    const where = {};
+    const where = {
+      organization_id: req.organizationId, // MULTI-TENANT: Filtrer par organisation
+    };
 
     if (category) {
       where.category = category;

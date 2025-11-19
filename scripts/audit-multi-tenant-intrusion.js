@@ -173,7 +173,7 @@ async function auditMultiTenantIntrusion() {
           name: `SECRET PRODUCT ORG1 ${timestamp}`,
           price_ht: 99.99,
           vat_rate: 20,
-          category: 'Test'
+          category: 'burgers'
         },
         { headers: { Authorization: `Bearer ${token1}` } }
       );

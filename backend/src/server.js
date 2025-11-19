@@ -16,6 +16,10 @@ require('./models');
 // Créer l'application Express
 const app = express();
 
+// Trust proxy (PRODUCTION: Caddy reverse proxy envoie X-Forwarded-For)
+// Requis pour express-rate-limit et CORS en production
+app.set('trust proxy', true);
+
 // ============================================
 // MIDDLEWARES GLOBAUX
 // ============================================

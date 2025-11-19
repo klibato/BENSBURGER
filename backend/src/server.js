@@ -61,6 +61,7 @@ const authLimiter = rateLimit({
       message: 'Trop de tentatives de connexion, réessayez dans 15 minutes',
     },
   },
+  validate: { trustProxy: false }, // Désactiver validation trust proxy (reverse proxy Caddy)
 });
 
 const apiLimiter = rateLimit({
@@ -73,6 +74,7 @@ const apiLimiter = rateLimit({
       message: 'Trop de requêtes, ralentissez',
     },
   },
+  validate: { trustProxy: false }, // Désactiver validation trust proxy (reverse proxy Caddy)
 });
 
 // Logger des requêtes en dev

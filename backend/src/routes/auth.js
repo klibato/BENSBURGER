@@ -15,6 +15,7 @@ const loginLimiter = rateLimit({
       message: 'Trop de tentatives de connexion, réessayez dans 15 minutes',
     },
   },
+  validate: { trustProxy: false }, // Désactiver validation trust proxy (reverse proxy Caddy)
 });
 
 // POST /api/auth/login - Connexion (avec rate limiting strict)

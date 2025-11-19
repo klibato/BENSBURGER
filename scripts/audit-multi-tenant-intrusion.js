@@ -45,8 +45,9 @@ async function auditMultiTenantIntrusion() {
   let testsFailed = 0;
 
   try {
-    // Configurer axios avec timeout
+    // Configurer axios avec timeout et limiter redirections
     axios.defaults.timeout = TIMEOUT;
+    axios.defaults.maxRedirects = 5;
 
     // ============================================
     // 1. CRÉER 2 ORGANISATIONS DE TEST

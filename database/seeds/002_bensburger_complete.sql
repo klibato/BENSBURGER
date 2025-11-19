@@ -91,7 +91,7 @@ INSERT INTO users (
 ) VALUES (
   2,
   'patrick',
-  '$2a$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', -- PIN "1234"
+  '$2a$10$swVA/USYzs5w.71J217k9.13wYbbNmOzFP/5kpj1zPhujakokR1zG', -- PIN "1234" (hash bcrypt corrigé)
   'Patrick',
   'Martin',
   'admin',

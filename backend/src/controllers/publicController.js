@@ -96,14 +96,12 @@ const signup = async (req, res, next) => {
       usernameSuffix++;
     }
 
-    // Générer PIN par défaut (1234)
-    const defaultPin = await bcrypt.hash('1234', 10);
-
+    // PIN par défaut (sera hashé automatiquement par le hook beforeCreate du modèle User)
     const adminUser = await User.create({
       organization_id: organization.id,
       username,
       password_hash: hashedPassword,
-      pin_code: defaultPin, // PIN par défaut : 1234
+      pin_code: '1234', // PIN par défaut : 1234 (sera hashé par le hook)
       first_name: first_name || 'Admin',
       last_name: last_name || '',
       role: 'admin',

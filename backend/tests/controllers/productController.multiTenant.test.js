@@ -118,6 +118,12 @@ describe('ProductController - Isolation Multi-Tenant', () => {
       tenantIsolation.mockImplementation((req, res, next) => {
         req.organizationId = org1.id;
         req.organization = org1;
+        req.user = {
+          id: user1.id,
+          username: user1.username,
+          organization_id: org1.id,
+          role: 'admin'
+        };
         next();
       });
     });
@@ -142,6 +148,12 @@ describe('ProductController - Isolation Multi-Tenant', () => {
       tenantIsolation.mockImplementation((req, res, next) => {
         req.organizationId = org2.id;
         req.organization = org2;
+        req.user = {
+          id: user2.id,
+          username: user2.username,
+          organization_id: org2.id,
+          role: 'admin'
+        };
         next();
       });
 
@@ -175,6 +187,12 @@ describe('ProductController - Isolation Multi-Tenant', () => {
       tenantIsolation.mockImplementation((req, res, next) => {
         req.organizationId = org1.id;
         req.organization = org1;
+        req.user = {
+          id: user1.id,
+          username: user1.username,
+          organization_id: org1.id,
+          role: 'admin'
+        };
         next();
       });
     });
@@ -238,6 +256,12 @@ describe('ProductController - Isolation Multi-Tenant', () => {
       tenantIsolation.mockImplementation((req, res, next) => {
         req.organizationId = org1.id;
         req.organization = org1;
+        req.user = {
+          id: user1.id,
+          username: user1.username,
+          organization_id: org1.id,
+          role: 'admin'
+        };
         next();
       });
     });
@@ -281,6 +305,12 @@ describe('ProductController - Isolation Multi-Tenant', () => {
       tenantIsolation.mockImplementation((req, res, next) => {
         req.organizationId = org2.id;
         req.organization = org2;
+        req.user = {
+          id: user2.id,
+          username: user2.username,
+          organization_id: org2.id,
+          role: 'admin'
+        };
         next();
       });
 

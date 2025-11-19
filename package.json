@@ -1,0 +1,21 @@
+{
+  "name": "flexpos-audit-scripts",
+  "version": "1.0.0",
+  "description": "Scripts d'audit et monitoring pour FlexPOS",
+  "private": true,
+  "scripts": {
+    "audit:schema": "node scripts/audit-multi-tenant-schema.js",
+    "audit:controllers": "node scripts/audit-multi-tenant-controllers.js",
+    "audit:intrusion": "node scripts/audit-multi-tenant-intrusion.js",
+    "dashboard": "node scripts/generate-progress-dashboard.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1",
+    "pg": "^8.11.3",
+    "sequelize": "^6.35.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

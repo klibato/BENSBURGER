@@ -27,6 +27,9 @@ describe('ProductController - Isolation Multi-Tenant', () => {
     app = express();
     app.use(express.json());
 
+    // IMPORTANT: Ajouter le middleware tenantIsolation mocké AVANT les routes
+    app.use(tenantIsolation);
+
     // Configurer les routes
     app.get('/api/products/category/:category', productController.getProductsByCategory);
     app.put('/api/products/order', productController.updateProductsOrder);

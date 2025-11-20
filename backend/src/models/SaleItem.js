@@ -76,6 +76,14 @@ const SaleItem = sequelize.define('sale_items', {
   timestamps: false,
   createdAt: 'created_at',
   updatedAt: false,
+  hooks: {
+    beforeUpdate: () => {
+      // NF525 Compliance: Les lignes de vente sont immuables après création
+      throw new Error(
+        'NF525 Compliance: Sale items are immutable. UPDATE operations are not allowed.'
+      );
+    },
+  },
 });
 
 module.exports = SaleItem;

@@ -111,6 +111,14 @@ const Invoice = sequelize.define('invoices', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  signature_hash: {
+    type: DataTypes.STRING(64),
+    allowNull: true,
+    validate: {
+      len: [64, 64],
+    },
+    comment: 'Hash SHA-256 NF525 pour garantir l\'intégrité de la facture',
+  },
   metadata: {
     type: DataTypes.JSONB,
     allowNull: false,
@@ -130,6 +138,50 @@ const Invoice = sequelize.define('invoices', {
   createdAt: 'created_at',
   updatedAt: 'updated_at',
   paranoid: false,
+  hooks: {
+    beforeCreate: async (invoice) => {
+      // NF525 Compliance: Calculer le hash SHA-256 de la facture
+      const crypto = require('crypto');
+      const dataToHash = [
+        String(invoice.invoice_number || ''),
+        String(invoice.organization_id),
+        String(invoice.total_cents),
+        new Date(invoice.period_start).toISOString(),
+        new Date(invoice.period_end).toISOString(),
+      ].join('|');
+
+      invoice.signature_hash = crypto.createHash('sha256').update(dataToHash, 'utf8').digest('hex');
+    },
+    beforeUpdate: (invoice) => {
+      // NF525 Compliance: Protéger les données fiscales immuables
+      // Seuls les champs de suivi peuvent être modifiés (status, paid_at, payment_method, pdf_url)
+      const changed = invoice.changed() || [];
+      const immutableFields = [
+        'invoice_number',
+        'organization_id',
+        'subscription_id',
+        'subtotal_cents',
+        'tax_cents',
+        'total_cents',
+        'currency',
+        'tax_rate',
+        'period_start',
+        'period_end',
+        'due_date',
+        'signature_hash',
+      ];
+
+      const forbiddenChanges = changed.filter(field => immutableFields.includes(field));
+
+      if (forbiddenChanges.length > 0) {
+        throw new Error(
+          `NF525 Compliance: Cannot modify fiscal data. ` +
+          `Immutable fields: ${forbiddenChanges.join(', ')}. ` +
+          `Only status, paid_at, payment_method, pdf_url can be updated.`
+        );
+      }
+    },
+  },
 });
 
 // ============================================

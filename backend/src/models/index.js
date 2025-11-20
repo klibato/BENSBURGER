@@ -10,6 +10,7 @@ const AuditLog = require('./AuditLog');
 const StoreSettings = require('./StoreSettings');
 const HashChain = require('./HashChain');
 const NF525Archive = require('./NF525Archive');
+const DailyReport = require('./DailyReport');
 
 // SaaS Models
 const Subscription = require('./Subscription');
@@ -105,6 +106,14 @@ NF525Archive.belongsTo(Organization, { foreignKey: 'organization_id', as: 'organ
 User.hasMany(NF525Archive, { foreignKey: 'created_by', as: 'created_archives' });
 NF525Archive.belongsTo(User, { foreignKey: 'created_by', as: 'creator' });
 
+// Organization <-> DailyReports (Une organisation a plusieurs rapports quotidiens)
+Organization.hasMany(DailyReport, { foreignKey: 'organization_id', as: 'dailyReports' });
+DailyReport.belongsTo(Organization, { foreignKey: 'organization_id', as: 'organization' });
+
+// User <-> DailyReports (created_by)
+User.hasMany(DailyReport, { foreignKey: 'created_by', as: 'created_daily_reports' });
+DailyReport.belongsTo(User, { foreignKey: 'created_by', as: 'creator' });
+
 // ============================================
 // SAAS RELATIONS (Subscriptions & Invoices)
 // ============================================
@@ -138,6 +147,7 @@ module.exports = {
   StoreSettings,
   HashChain,
   NF525Archive,
+  DailyReport,
   // SaaS Models
   Subscription,
   Invoice,

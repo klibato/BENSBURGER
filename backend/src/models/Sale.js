@@ -131,6 +131,14 @@ const Sale = sequelize.define('sales', {
         sale.ticket_number = result[0].ticket_number;
       }
     },
+    beforeUpdate: (sale) => {
+      // NF525 Compliance: Les ventes sont immuables après création
+      // Conforme au décret n°2016-1551 (article 286 du CGI)
+      throw new Error(
+        'NF525 Compliance: Sales are immutable. UPDATE operations are not allowed. ' +
+        'Fiscal data cannot be modified after creation (Décret n°2016-1551).'
+      );
+    },
   },
 });
 

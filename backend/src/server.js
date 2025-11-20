@@ -115,6 +115,7 @@ app.use('/api/settings', apiLimiter, require('./routes/settings'));
 app.use('/api/printer', apiLimiter, require('./routes/printer'));
 app.use('/api/logs', apiLimiter, require('./routes/logs'));
 app.use('/api/nf525', apiLimiter, require('./routes/nf525')); // NF525: Conformité fiscale française
+app.use('/api/daily-reports', apiLimiter, require('./routes/dailyReports')); // NF525: Rapports Z (clôture journalière)
 
 // Routes API (Admin - Super-Admin Dashboard)
 app.use('/api/admin', apiLimiter, require('./routes/admin'));

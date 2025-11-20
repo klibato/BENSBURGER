@@ -2,6 +2,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const logger = require('../utils/logger');
 
 // Créer le dossier uploads/products s'il n'existe pas
 const uploadsDir = path.join(__dirname, '../../uploads/products');
@@ -67,7 +68,7 @@ const deleteImage = (imagePath) => {
     }
     return false;
   } catch (error) {
-    console.error('Erreur lors de la suppression de l\'image:', error);
+    logger.error('Erreur lors de la suppression de l\'image:', error);
     return false;
   }
 };

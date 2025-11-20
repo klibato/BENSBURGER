@@ -54,7 +54,7 @@ async function testNF525Endpoints() {
     console.log('\n1️⃣  Login avec admin/1234...');
     const loginRes = await httpRequest('/api/auth/login', 'POST', null, {
       username: 'admin',
-      pin: '1234'
+      pin_code: '1234'
     });
 
     if (loginRes.status !== 200 || !loginRes.body.token) {

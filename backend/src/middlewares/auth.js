@@ -65,11 +65,15 @@ const authenticateToken = async (req, res, next) => {
     // Vérifier si l'organisation est suspendue ou annulée
     if (organization.status === 'suspended') {
       logger.warn(`Access denied: Organization ${organization.id} is suspended`);
+      const suspensionMessage = organization.suspension_reason
+        ? `Votre organisation a été suspendue. Raison: ${organization.suspension_reason}`
+        : 'Votre organisation a été suspendue. Contactez le support.';
+
       return res.status(403).json({
         success: false,
         error: {
           code: 'ORGANIZATION_SUSPENDED',
-          message: 'Votre organisation a été suspendue. Contactez le support.',
+          message: suspensionMessage,
         },
       });
     }

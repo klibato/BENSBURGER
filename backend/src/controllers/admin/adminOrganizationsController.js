@@ -114,6 +114,7 @@ const suspendOrganization = async (req, res, next) => {
     }
 
     organization.status = 'suspended';
+    organization.suspension_reason = reason || 'Aucune raison fournie';
     await organization.save();
 
     logger.info(`Organization suspended: ${id} - Reason: ${reason}`);
@@ -143,6 +144,7 @@ const activateOrganization = async (req, res, next) => {
     }
 
     organization.status = 'active';
+    organization.suspension_reason = null; // Effacer la raison de suspension
     await organization.save();
 
     logger.info(`Organization activated: ${id}`);

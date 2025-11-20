@@ -68,6 +68,11 @@ const Organization = sequelize.define('organizations', {
       isIn: [['active', 'suspended', 'cancelled']],
     },
   },
+  suspension_reason: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    comment: 'Raison de la suspension (si applicable)',
+  },
   trial_ends_at: {
     type: DataTypes.DATE,
     allowNull: true,

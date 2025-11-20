@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { PermissionsProvider } from './context/PermissionsContext';
 import { CartProvider } from './context/CartContext';
@@ -7,7 +7,6 @@ import { StoreConfigProvider } from './context/StoreConfigContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { ThemeProvider } from './context/ThemeContext';
 import PrivateRoute from './components/auth/PrivateRoute';
-import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import POSPage from './pages/POSPage';
 import SalesHistoryPage from './pages/SalesHistoryPage';
@@ -29,7 +28,7 @@ function App() {
                   <Router>
                     <Routes>
                       {/* Routes publiques */}
-                      <Route path="/" element={<LandingPage />} />
+                      <Route path="/" element={<Navigate to="/login" replace />} />
                       <Route path="/login" element={<LoginPage />} />
 
                       {/* Routes protégées - Accessibles par tous les utilisateurs authentifiés */}

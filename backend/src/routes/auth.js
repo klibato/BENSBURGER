@@ -18,6 +18,23 @@ const loginLimiter = rateLimit({
   validate: { trustProxy: false }, // Désactiver validation trust proxy (reverse proxy Caddy)
 });
 
+// Rate limiting pour le signup (anti-spam)
+const signupLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 heure
+  max: 3, // 3 inscriptions par IP par heure
+  message: {
+    success: false,
+    error: {
+      code: 'TOO_MANY_REQUESTS',
+      message: 'Trop de tentatives d\'inscription, réessayez plus tard',
+    },
+  },
+  validate: { trustProxy: false },
+});
+
+// POST /api/auth/signup - Inscription nouvelle organisation (publique)
+router.post('/signup', signupLimiter, authController.signup);
+
 // POST /api/auth/login - Connexion (avec rate limiting strict)
 router.post('/login', loginLimiter, authController.login);
 

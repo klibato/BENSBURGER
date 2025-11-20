@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import {
   ShoppingCart,
   Shield,
@@ -13,7 +14,9 @@ import {
 } from 'lucide-react';
 
 function LandingPage() {
+  const navigate = useNavigate();
   const goToLogin = () => window.location.href = 'https://app.flexpos.app/login';
+  const goToSignup = () => navigate('/signup');
 
   const features = [
     {
@@ -145,7 +148,7 @@ function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
-                onClick={goToLogin}
+                onClick={goToSignup}
                 className="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-lg hover:shadow-xl text-lg font-semibold flex items-center justify-center gap-2"
               >
                 Démarrer gratuitement
@@ -342,7 +345,7 @@ function LandingPage() {
                   ))}
                 </ul>
                 <button
-                  onClick={goToLogin}
+                  onClick={goToSignup}
                   className={`w-full py-3 rounded-lg font-semibold transition ${
                     plan.highlighted
                       ? 'bg-white text-blue-600 hover:bg-blue-50'
@@ -367,7 +370,7 @@ function LandingPage() {
             Rejoignez des centaines de restaurants qui utilisent déjà FlexPOS
           </p>
           <button
-            onClick={goToLogin}
+            onClick={goToSignup}
             className="px-10 py-4 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition shadow-xl hover:shadow-2xl text-lg font-semibold inline-flex items-center gap-2"
           >
             Commencer maintenant

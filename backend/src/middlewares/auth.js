@@ -61,6 +61,30 @@ const authenticateToken = async (req, res, next) => {
         },
       });
     }
+
+    // Vérifier si l'organisation est suspendue ou annulée
+    if (organization.status === 'suspended') {
+      logger.warn(`Access denied: Organization ${organization.id} is suspended`);
+      return res.status(403).json({
+        success: false,
+        error: {
+          code: 'ORGANIZATION_SUSPENDED',
+          message: 'Votre organisation a été suspendue. Contactez le support.',
+        },
+      });
+    }
+
+    if (organization.status === 'cancelled') {
+      logger.warn(`Access denied: Organization ${organization.id} is cancelled`);
+      return res.status(403).json({
+        success: false,
+        error: {
+          code: 'ORGANIZATION_CANCELLED',
+          message: 'Votre organisation a été annulée. Contactez le support.',
+        },
+      });
+    }
+
     req.organization = organization;
 
     next();

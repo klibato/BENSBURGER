@@ -36,6 +36,9 @@ COPY --chown=nodejs:nodejs . .
 # Créer dossiers logs
 RUN mkdir -p logs && chown -R nodejs:nodejs logs
 
+# Créer dossiers uploads pour images produits
+RUN mkdir -p uploads/products && chown -R nodejs:nodejs uploads
+
 # Utiliser user non-root
 USER nodejs
 

@@ -3,6 +3,8 @@ const http = require('http');
 // Fonction helper pour faire des requêtes HTTP
 function httpRequest(path, method = 'GET', token = null, postData = null) {
   return new Promise((resolve, reject) => {
+    let bodyData = null;
+
     const options = {
       hostname: 'localhost',
       port: 3000,
@@ -18,8 +20,8 @@ function httpRequest(path, method = 'GET', token = null, postData = null) {
     }
 
     if (postData) {
-      const data = JSON.stringify(postData);
-      options.headers['Content-Length'] = Buffer.byteLength(data);
+      bodyData = JSON.stringify(postData);
+      options.headers['Content-Length'] = Buffer.byteLength(bodyData);
     }
 
     const req = http.request(options, (res) => {
@@ -36,8 +38,8 @@ function httpRequest(path, method = 'GET', token = null, postData = null) {
 
     req.on('error', reject);
 
-    if (postData) {
-      req.write(JSON.stringify(postData));
+    if (bodyData) {
+      req.write(bodyData);
     }
     req.end();
   });

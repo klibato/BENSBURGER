@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const { HashChain, Sale, NF525Archive } = require('../models');
+const { HashChain, Sale, SaleItem, NF525Archive } = require('../models');
 const logger = require('../utils/logger');
 
 /**
@@ -192,7 +192,13 @@ class NF525Service {
               'total_ht',
               'created_at',
               'payment_method',
-              'items',
+            ],
+            include: [
+              {
+                model: SaleItem,
+                as: 'items',
+                attributes: ['id', 'product_name', 'quantity', 'unit_price_ht', 'vat_rate', 'total_ht', 'total_ttc'],
+              },
             ],
           },
         ],

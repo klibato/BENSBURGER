@@ -1,4 +1,4 @@
-const { HashChain, Sale } = require('../models');
+const { HashChain, Sale, SaleItem } = require('../models');
 const NF525Service = require('../services/nf525Service');
 const logger = require('../utils/logger');
 const { logAction } = require('../middlewares/audit');
@@ -198,7 +198,13 @@ const exportArchive = async (req, res, next) => {
             'total_ht',
             'payment_method',
             'created_at',
-            'items',
+          ],
+          include: [
+            {
+              model: SaleItem,
+              as: 'items',
+              attributes: ['id', 'product_name', 'quantity', 'unit_price_ht', 'vat_rate', 'total_ht', 'total_ttc'],
+            },
           ],
         },
       ],

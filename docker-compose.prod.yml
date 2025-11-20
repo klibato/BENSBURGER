@@ -131,7 +131,7 @@ services:
       context: ./frontend-admin
       dockerfile: Dockerfile.prod
       args:
-        VITE_API_URL: ${VITE_API_URL:-https://api.flexpos.app/api}
+        VITE_API_URL: ${VITE_ADMIN_API_URL:-https://api.flexpos.app/api/admin}
     container_name: flexpos_admin
     restart: unless-stopped
     networks:

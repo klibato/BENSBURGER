@@ -43,6 +43,12 @@ const Product = sequelize.define('products', {
   image_url: {
     type: DataTypes.STRING(500),
     allowNull: true,
+    comment: 'URL externe de l\'image (optionnel)',
+  },
+  image_path: {
+    type: DataTypes.STRING(500),
+    allowNull: true,
+    comment: 'Chemin local de l\'image uploadée (ex: uploads/products/abc123.jpg)',
   },
   is_active: {
     type: DataTypes.BOOLEAN,

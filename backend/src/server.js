@@ -88,6 +88,12 @@ if (config.NODE_ENV === 'development') {
 }
 
 // ============================================
+// SERVIR LES FICHIERS STATIQUES (Images produits)
+// ============================================
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
+// ============================================
 // ROUTES
 // ============================================
 

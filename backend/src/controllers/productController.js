@@ -454,6 +454,143 @@ const exportProductsCSV = async (req, res, next) => {
   }
 };
 
+/**
+ * Upload d'une image pour un produit
+ * POST /api/products/:id/image
+ */
+const uploadProductImage = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const organizationId = req.organizationId;
+
+    // Vérifier que le fichier a été uploadé
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'NO_FILE_UPLOADED',
+          message: 'Aucune image n\'a été uploadée',
+        },
+      });
+    }
+
+    // Récupérer le produit
+    const product = await Product.findOne({
+      where: {
+        id,
+        organization_id: organizationId,
+      },
+    });
+
+    if (!product) {
+      // Supprimer le fichier uploadé si le produit n'existe pas
+      const { deleteImage } = require('../middlewares/uploadMiddleware');
+      deleteImage(`uploads/products/${req.file.filename}`);
+
+      return res.status(404).json({
+        success: false,
+        error: {
+          code: 'NOT_FOUND',
+          message: 'Produit introuvable',
+        },
+      });
+    }
+
+    // Si le produit avait déjà une image, supprimer l'ancienne
+    if (product.image_path) {
+      const { deleteImage } = require('../middlewares/uploadMiddleware');
+      deleteImage(product.image_path);
+    }
+
+    // Mettre à jour le produit avec le chemin de la nouvelle image
+    const imagePath = `uploads/products/${req.file.filename}`;
+    await product.update({
+      image_path: imagePath,
+    });
+
+    logger.info(
+      `Image uploadée pour produit ${product.name} (ID: ${id}) par ${req.user.username}`
+    );
+
+    res.json({
+      success: true,
+      data: {
+        id: product.id,
+        name: product.name,
+        image_path: imagePath,
+        image_url: `/api/products/${id}/image`,
+      },
+      message: 'Image uploadée avec succès',
+    });
+  } catch (error) {
+    logger.error('Erreur lors de l\'upload de l\'image produit:', error);
+    next(error);
+  }
+};
+
+/**
+ * Supprimer l'image d'un produit
+ * DELETE /api/products/:id/image
+ */
+const deleteProductImage = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const organizationId = req.organizationId;
+
+    // Récupérer le produit
+    const product = await Product.findOne({
+      where: {
+        id,
+        organization_id: organizationId,
+      },
+    });
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          code: 'NOT_FOUND',
+          message: 'Produit introuvable',
+        },
+      });
+    }
+
+    if (!product.image_path) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          code: 'NO_IMAGE',
+          message: 'Ce produit n\'a pas d\'image',
+        },
+      });
+    }
+
+    // Supprimer le fichier image
+    const { deleteImage } = require('../middlewares/uploadMiddleware');
+    const deleted = deleteImage(product.image_path);
+
+    // Mettre à jour le produit
+    await product.update({
+      image_path: null,
+    });
+
+    logger.info(
+      `Image supprimée pour produit ${product.name} (ID: ${id}) par ${req.user.username}`
+    );
+
+    res.json({
+      success: true,
+      message: 'Image supprimée avec succès',
+      data: {
+        file_deleted: deleted,
+      },
+    });
+  } catch (error) {
+    logger.error('Erreur lors de la suppression de l\'image produit:', error);
+    next(error);
+  }
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
@@ -463,4 +600,6 @@ module.exports = {
   updateProductsOrder,
   getProductsByCategory,
   exportProductsCSV,
+  uploadProductImage,
+  deleteProductImage,
 };

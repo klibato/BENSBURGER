@@ -3,6 +3,7 @@ const router = express.Router();
 const productController = require('../controllers/productController');
 const { authenticateToken, optionalAuthenticate, requirePermission } = require('../middlewares/auth');
 const { PERMISSIONS } = require('../config/permissions');
+const { uploadSingleImage } = require('../middlewares/uploadMiddleware');
 
 // GET /api/products - Récupérer tous les produits (avec auth optionnelle pour admins)
 router.get('/', optionalAuthenticate, productController.getAllProducts);
@@ -24,6 +25,23 @@ router.put('/reorder', authenticateToken, requirePermission(PERMISSIONS.PRODUCTS
 
 // PUT /api/products/:id - Modifier un produit
 router.put('/:id', authenticateToken, requirePermission(PERMISSIONS.PRODUCTS_UPDATE), productController.updateProduct);
+
+// POST /api/products/:id/image - Upload une image pour un produit
+router.post(
+  '/:id/image',
+  authenticateToken,
+  requirePermission(PERMISSIONS.PRODUCTS_UPDATE),
+  uploadSingleImage,
+  productController.uploadProductImage
+);
+
+// DELETE /api/products/:id/image - Supprimer l'image d'un produit
+router.delete(
+  '/:id/image',
+  authenticateToken,
+  requirePermission(PERMISSIONS.PRODUCTS_DELETE),
+  productController.deleteProductImage
+);
 
 // DELETE /api/products/:id - Supprimer un produit
 router.delete('/:id', authenticateToken, requirePermission(PERMISSIONS.PRODUCTS_DELETE), productController.deleteProduct);

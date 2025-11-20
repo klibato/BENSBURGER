@@ -373,18 +373,16 @@ DailyReport.getReports = async function (organizationId, options = {}) {
     organization_id: organizationId,
   };
 
-  if (options.startDate) {
-    where.report_date = {
-      ...where.report_date,
-      [sequelize.Op.gte]: options.startDate,
-    };
-  }
+  if (options.startDate || options.endDate) {
+    where.report_date = {};
 
-  if (options.endDate) {
-    where.report_date = {
-      ...where.report_date,
-      [sequelize.Op.lte]: options.endDate,
-    };
+    if (options.startDate) {
+      where.report_date[sequelize.Op.gte] = options.startDate;
+    }
+
+    if (options.endDate) {
+      where.report_date[sequelize.Op.lte] = options.endDate;
+    }
   }
 
   return await this.findAll({

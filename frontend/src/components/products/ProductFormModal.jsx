@@ -159,7 +159,9 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
       formDataImage.append('image', imageFile);
 
       const token = localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/products/${productId}/image`, {
+      // VITE_API_URL contient déjà '/api', donc on ajoute directement le path
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+      const response = await fetch(`${apiUrl}/products/${productId}/image`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

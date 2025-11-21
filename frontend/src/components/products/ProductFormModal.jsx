@@ -31,6 +31,11 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
     menu_items: [],
   });
 
+  // État pour la gestion de l'upload d'image
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+
   useEffect(() => {
     if (product) {
       setFormData({
@@ -47,6 +52,9 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
         low_stock_threshold: product.low_stock_threshold || 10,
         menu_items: product.menu_composition || product.menu_items || [],
       });
+      // Afficher l'image existante
+      setImagePreview(product.image_url || null);
+      setImageFile(null);
     } else {
       setFormData({
         name: '',
@@ -62,8 +70,49 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
         low_stock_threshold: 10,
         menu_items: [],
       });
+      setImagePreview(null);
+      setImageFile(null);
     }
   }, [product, isOpen, defaultCategory, defaultVatRate]);
+
+  // Gérer la sélection d'une image
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    // Vérifier le type de fichier
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!validTypes.includes(file.type)) {
+      alert(t('products.invalidImageType') || 'Format invalide. Utilisez JPEG, PNG, WebP ou GIF.');
+      return;
+    }
+
+    // Vérifier la taille (max 5 MB)
+    const maxSize = 5 * 1024 * 1024; // 5 MB
+    if (file.size > maxSize) {
+      alert(t('products.imageTooLarge') || 'L\'image est trop grande (max 5 MB).');
+      return;
+    }
+
+    // Créer une preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+
+    setImageFile(file);
+  };
+
+  // Supprimer l'image sélectionnée
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(product?.image_url || null);
+    // Reset l'input file
+    const fileInput = document.getElementById('product-image-input');
+    if (fileInput) fileInput.value = '';
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -88,9 +137,48 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+
+    // Soumettre le produit d'abord
+    const result = await onSubmit(formData);
+
+    // Si un fichier image est sélectionné et qu'on a un product ID, uploader l'image
+    if (imageFile && result?.id) {
+      await uploadProductImage(result.id);
+    }
+  };
+
+  // Upload de l'image produit
+  const uploadProductImage = async (productId) => {
+    if (!imageFile) return;
+
+    setUploadingImage(true);
+    try {
+      const formDataImage = new FormData();
+      formDataImage.append('image', imageFile);
+
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/products/${productId}/image`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formDataImage,
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de l\'upload de l\'image');
+      }
+
+      const data = await response.json();
+      console.log('Image uploadée avec succès:', data);
+    } catch (error) {
+      console.error('Erreur upload image:', error);
+      alert(t('products.imageUploadError') || 'Erreur lors de l\'upload de l\'image');
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -137,32 +225,64 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
               />
             </div>
 
-            {/* Image URL */}
+            {/* Image produit */}
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                {t('products.imageUrl')}
+                {t('products.image') || 'Image du produit'}
               </label>
-              <input
-                type="url"
-                name="image_url"
-                value={formData.image_url}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500"
-                placeholder={t('products.imageUrlPlaceholder')}
-              />
-              {formData.image_url && (
+
+              {/* Input file */}
+              <div className="flex items-center gap-4">
+                <input
+                  type="file"
+                  id="product-image-input"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  onChange={handleImageChange}
+                  disabled={loading || uploadingImage}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="product-image-input"
+                  className="px-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 text-sm font-medium"
+                >
+                  {t('products.chooseImage') || 'Choisir une image'}
+                </label>
+                {imageFile && (
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    className="px-4 py-2 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-200 dark:hover:bg-red-800 text-sm font-medium"
+                  >
+                    {t('products.removeImage') || 'Supprimer'}
+                  </button>
+                )}
+              </div>
+
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                {t('products.imageFormatHelp') || 'Formats acceptés: JPEG, PNG, WebP, GIF (max 5 MB)'}
+              </p>
+
+              {/* Preview */}
+              {imagePreview && (
                 <div className="mt-3">
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{t('products.preview')}</p>
-                  <img
-                    src={formData.image_url}
-                    alt={t('products.preview')}
-                    className="w-32 h-32 object-cover rounded-lg border-2 border-gray-200 dark:border-gray-600"
-                    onError={(e) => {
-                      e.target.src = '';
-                      e.target.alt = t('products.imageNotAvailable');
-                      e.target.className = 'w-32 h-32 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-200 text-gray-400 text-sm';
-                    }}
-                  />
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    {t('products.preview') || 'Aperçu'}
+                  </p>
+                  <div className="relative inline-block">
+                    <img
+                      src={imagePreview}
+                      alt={t('products.preview') || 'Aperçu'}
+                      className="w-32 h-32 object-cover rounded-lg border-2 border-gray-200 dark:border-gray-600"
+                      onError={(e) => {
+                        e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="128" height="128"%3E%3Crect fill="%23ddd" width="128" height="128"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3EErreur%3C/text%3E%3C/svg%3E';
+                      }}
+                    />
+                    {imageFile && (
+                      <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                        {t('products.newImage') || 'Nouveau'}
+                      </span>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

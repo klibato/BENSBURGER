@@ -69,34 +69,17 @@ async function seedUsers() {
       await User.destroy({ where: {}, force: true });
     }
 
-    // Créer les utilisateurs avec les bons hash
+    // Créer uniquement le compte admin avec un PIN sécurisé
     const users = await User.bulkCreate([
       {
         username: 'admin',
-        pin_code: '1234', // Sera hashé automatiquement par le hook beforeCreate
+        pin_code: '789456', // Sera hashé automatiquement par le hook beforeCreate
         role: 'admin',
         first_name: 'Admin',
-        last_name: 'Principal',
-        email: 'admin@flexpos.com',
+        last_name: 'Organisation',
+        email: 'admin@organization.local',
         is_active: true,
-      },
-      {
-        username: 'john',
-        pin_code: '5678',
-        role: 'cashier',
-        first_name: 'John',
-        last_name: 'Doe',
-        email: 'john@flexpos.com',
-        is_active: true,
-      },
-      {
-        username: 'marie',
-        pin_code: '9999',
-        role: 'cashier',
-        first_name: 'Marie',
-        last_name: 'Martin',
-        email: 'marie@flexpos.com',
-        is_active: true,
+        organization_id: 1,
       },
     ], {
       individualHooks: true, // Important pour que le hook beforeCreate soit appelé
@@ -104,10 +87,12 @@ async function seedUsers() {
 
     logger.info(`✅ ${users.length} utilisateur(s) créé(s) avec succès`);
     logger.info('');
-    logger.info('📝 Comptes disponibles :');
-    logger.info('  - admin / 1234 (Administrateur)');
-    logger.info('  - john / 5678 (Caissier)');
-    logger.info('  - marie / 9999 (Caissière)');
+    logger.info('📝 Compte admin disponible :');
+    logger.info('  - Username: admin');
+    logger.info('  - PIN: 789456');
+    logger.info('  - Rôle: Administrateur');
+    logger.info('');
+    logger.warn('⚠️  IMPORTANT: Changer le PIN en production via l\'interface');
   } catch (error) {
     logger.error('❌ Erreur lors du seeding des utilisateurs:', error);
     throw error;

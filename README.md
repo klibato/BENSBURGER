@@ -234,34 +234,37 @@ Le frontend sera accessible sur `http://localhost:5173`
 ## 📚 Documentation
 
 ### 📖 Guides Utilisateur
+- **[NF525_COMPLIANCE.md](docs/NF525_COMPLIANCE.md)** - Conformité fiscale NF525
 - **[USER_GUIDE.md](docs/USER_GUIDE.md)** - Guide complet utilisateur POS
 - **[ADMIN_GUIDE.md](docs/ADMIN_GUIDE.md)** - Guide dashboard super-admin
-- **[NF525_COMPLIANCE.md](docs/NF525_COMPLIANCE.md)** - Conformité fiscale NF525
+- **[API_GUIDE.md](docs/API_GUIDE.md)** - Guide API REST complète
 
 ### 🚀 Déploiement
-- **[DEPLOYMENT.md](docs/deployment/DEPLOYMENT.md)** - Guide déploiement production (447 lignes)
-- **[GUIDE_TEST_PROD_LOCAL.md](docs/deployment/GUIDE_TEST_PROD_LOCAL.md)** - Tests local/production (285 lignes)
+- **[DEPLOYMENT.md](docs/deployment/DEPLOYMENT.md)** - Guide déploiement production
+- **[GUIDE_TEST_PROD_LOCAL.md](docs/deployment/GUIDE_TEST_PROD_LOCAL.md)** - Tests local/production
 
 ### 📊 Rapports d'Audit (Score 100/100)
-- **[VALIDATION_FINALE.md](docs/audit-reports/VALIDATION_FINALE.md)** - ⭐ Validation finale 100/100 (426 lignes)
-- **[AUDIT_REPORT_COMPLETE.md](docs/audit-reports/AUDIT_REPORT_COMPLETE.md)** - Audit exhaustif 7 parties (994 lignes)
-- **[TESTS_POST_AUDIT.md](docs/audit-reports/TESTS_POST_AUDIT.md)** - Tests isolation + performance (208 lignes)
-- **[FINAL_IMPLEMENTATION_SUMMARY.md](docs/audit-reports/FINAL_IMPLEMENTATION_SUMMARY.md)** - Résumé implémentation (552 lignes)
+- **[VALIDATION_FINALE.md](docs/audit-reports/VALIDATION_FINALE.md)** - ⭐ Validation finale 100/100
+- **[TESTS_POST_AUDIT.md](docs/audit-reports/TESTS_POST_AUDIT.md)** - Tests isolation + performance
+- **[AUDIT_REPORT_COMPLETE.md](docs/audit-reports/AUDIT_REPORT_COMPLETE.md)** - Audit exhaustif 7 parties
+- **[FINAL_IMPLEMENTATION_SUMMARY.md](docs/audit-reports/FINAL_IMPLEMENTATION_SUMMARY.md)** - Résumé implémentation
 
 ### 🔧 Documentation Technique
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Architecture système (531 lignes)
-- **[BACKEND_MODELS.md](docs/technical/BACKEND_MODELS.md)** - 9 modèles Sequelize (900+ lignes)
-- **[BACKEND_CONTROLLERS.md](docs/technical/BACKEND_CONTROLLERS.md)** - 10 controllers (1,100+ lignes)
-- **[BACKEND_ROUTES.md](docs/technical/BACKEND_ROUTES.md)** - 45 endpoints API (700+ lignes)
-- **[API_DOCUMENTATION.md](docs/technical/API_DOCUMENTATION.md)** - Documentation API complète
+- **[ARCHITECTURE.md](docs/technical/ARCHITECTURE.md)** - Architecture système
 - **[DATABASE_SCHEMA.md](docs/technical/DATABASE_SCHEMA.md)** - Schéma base de données
+- **[PROJECT_MAP.md](docs/technical/PROJECT_MAP.md)** - Cartographie du projet
+- **[FRONTEND.md](docs/technical/FRONTEND.md)** - Architecture frontend React
+- **[Backend](docs/technical/backend/)** - Documentation backend détaillée (6 fichiers)
 
 ### 📦 Documentation Modules
-- **[UPLOAD_IMAGES.md](backend/UPLOAD_IMAGES.md)** - Upload images produits (110 lignes)
-- **[database/README.md](database/README.md)** - Migrations SQL (163 lignes)
-- **[backend/tests/README.md](backend/tests/README.md)** - Tests unitaires (145 lignes)
+- **[UPLOAD_IMAGES.md](backend/UPLOAD_IMAGES.md)** - Upload images produits
+- **[database/README.md](database/README.md)** - Migrations SQL
+- **[backend/tests/README.md](backend/tests/README.md)** - Tests unitaires
 
-**Total** : 20+ documents, ~12,000 lignes de documentation
+### 📜 Archive & Historique
+- **[archive/](docs/archive/)** - Rapports d'audit historiques et phase 0
+
+**Structure claire** : Guides → Technique → Déploiement → Audit → Archive
 
 ---
 

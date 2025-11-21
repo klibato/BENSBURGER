@@ -74,6 +74,7 @@ services:
       SENTRY_DSN: ${SENTRY_DSN}
     volumes:
       - ./backend/logs:/app/logs
+      - ./backend/uploads:/app/uploads
       - ./database:/database
     networks:
       - flexpos_network

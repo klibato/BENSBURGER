@@ -533,7 +533,7 @@ const uploadProductImage = async (req, res, next) => {
         id: product.id,
         name: product.name,
         image_path: imagePath,
-        image_url: `/api/products/${id}/image`,
+        image_url: imageUrl,
       },
       message: 'Image uploadée avec succès',
     });

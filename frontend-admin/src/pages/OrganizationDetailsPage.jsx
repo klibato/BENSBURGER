@@ -4,9 +4,7 @@ import {
   getOrganizationById,
   suspendOrganization,
   activateOrganization,
-  getOrganizationSales,
   getOrganizationUsers,
-  getOrganizationInvoices,
   updateOrganizationSubscription,
   changeUserPassword,
 } from '../utils/api';
@@ -21,12 +19,9 @@ import {
   XCircle,
   Ban,
   PlayCircle,
-  ShoppingCart,
-  FileText,
   CreditCard,
   Key,
   Edit,
-  Clock,
 } from 'lucide-react';
 
 function OrganizationDetailsPage() {
@@ -40,10 +35,6 @@ function OrganizationDetailsPage() {
 
   // Data states
   const [users, setUsers] = useState([]);
-  const [sales, setSales] = useState([]);
-  const [invoices, setInvoices] = useState([]);
-  const [salesPagination, setSalesPagination] = useState({ total: 0, limit: 20, offset: 0 });
-  const [invoicesPagination, setInvoicesPagination] = useState({ total: 0, limit: 20, offset: 0 });
 
   // Modal states
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -59,10 +50,6 @@ function OrganizationDetailsPage() {
   useEffect(() => {
     if (activeTab === 'users' && users.length === 0) {
       loadUsers();
-    } else if (activeTab === 'sales' && sales.length === 0) {
-      loadSales();
-    } else if (activeTab === 'invoices' && invoices.length === 0) {
-      loadInvoices();
     }
   }, [activeTab]);
 
@@ -92,36 +79,6 @@ function OrganizationDetailsPage() {
       }
     } catch (err) {
       console.error('Erreur chargement users:', err);
-    }
-  };
-
-  const loadSales = async () => {
-    try {
-      const response = await getOrganizationSales(id, {
-        limit: salesPagination.limit,
-        offset: salesPagination.offset,
-      });
-      if (response.success) {
-        setSales(response.data.sales);
-        setSalesPagination((prev) => ({ ...prev, total: response.data.pagination.total }));
-      }
-    } catch (err) {
-      console.error('Erreur chargement sales:', err);
-    }
-  };
-
-  const loadInvoices = async () => {
-    try {
-      const response = await getOrganizationInvoices(id, {
-        limit: invoicesPagination.limit,
-        offset: invoicesPagination.offset,
-      });
-      if (response.success) {
-        setInvoices(response.data.invoices);
-        setInvoicesPagination((prev) => ({ ...prev, total: response.data.pagination.total }));
-      }
-    } catch (err) {
-      console.error('Erreur chargement invoices:', err);
     }
   };
 
@@ -271,8 +228,6 @@ function OrganizationDetailsPage() {
   const tabs = [
     { id: 'info', label: 'Informations', icon: Building2 },
     { id: 'users', label: 'Utilisateurs', icon: Users },
-    { id: 'sales', label: 'Ventes', icon: ShoppingCart },
-    { id: 'invoices', label: 'Factures', icon: FileText },
     { id: 'subscription', label: 'Abonnement', icon: CreditCard },
   ];
 
@@ -481,114 +436,6 @@ function OrganizationDetailsPage() {
                       ))}
                     </tbody>
                   </table>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Sales Tab */}
-          {activeTab === 'sales' && (
-            <div>
-              {sales.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  <Loader className="w-8 h-8 mx-auto mb-3 animate-spin" />
-                  <p>Chargement des ventes...</p>
-                </div>
-              ) : (
-                <div>
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                            ID
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                            Montant TTC
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                            Paiement
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                            Caissier
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                            Date
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {sales.map((sale) => (
-                          <tr key={sale.id}>
-                            <td className="px-6 py-4 text-sm text-gray-900">#{sale.id}</td>
-                            <td className="px-6 py-4 text-sm font-semibold text-gray-900">
-                              {parseFloat(sale.total_ttc || 0).toFixed(2)} €
-                            </td>
-                            <td className="px-6 py-4 text-sm text-gray-500">{sale.payment_method}</td>
-                            <td className="px-6 py-4 text-sm text-gray-500">
-                              {sale.user?.username || 'N/A'}
-                            </td>
-                            <td className="px-6 py-4 text-sm text-gray-500">
-                              {new Date(sale.created_at).toLocaleDateString('fr-FR')}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Invoices Tab */}
-          {activeTab === 'invoices' && (
-            <div>
-              {invoices.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  <Loader className="w-8 h-8 mx-auto mb-3 animate-spin" />
-                  <p>Chargement des factures...</p>
-                </div>
-              ) : (
-                <div>
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                            Numéro
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                            Montant
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                            Statut
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                            Date
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {invoices.map((invoice) => (
-                          <tr key={invoice.id}>
-                            <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                              {invoice.invoice_number}
-                            </td>
-                            <td className="px-6 py-4 text-sm font-semibold text-gray-900">
-                              {formatAmount(invoice.total_cents)}
-                            </td>
-                            <td className="px-6 py-4">
-                              {getInvoiceStatusBadge(invoice.status)}
-                            </td>
-                            <td className="px-6 py-4 text-sm text-gray-500">
-                              {new Date(invoice.created_at).toLocaleDateString('fr-FR')}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
                 </div>
               )}
             </div>

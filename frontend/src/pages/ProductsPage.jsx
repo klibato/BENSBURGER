@@ -135,12 +135,20 @@ const ProductsPage = () => {
 
       console.log('Données envoyées au backend:', formData);
 
-      await createProduct(formData);
+      const result = await createProduct(formData);
       setSuccessMessage(t('products.created'));
       setIsModalOpen(false);
       setEditingProduct(null);
-      await fetchProducts();
+
+      // Attendre que l'upload de l'image se termine avant de recharger
+      setTimeout(async () => {
+        await fetchProducts();
+      }, 2000);
+
       setTimeout(() => setSuccessMessage(''), 3000);
+
+      // Retourner le produit créé pour que ProductFormModal puisse uploader l'image
+      return result.data;
     } catch (err) {
       console.error('Erreur lors de la création:', err);
       console.error('Détails erreur:', err.response?.data);
@@ -160,12 +168,20 @@ const ProductsPage = () => {
     try {
       setModalLoading(true);
       setError(null);
-      await updateProduct(editingProduct.id, formData);
+      const result = await updateProduct(editingProduct.id, formData);
       setSuccessMessage(t('products.updated'));
       setIsModalOpen(false);
       setEditingProduct(null);
-      await fetchProducts();
+
+      // Attendre que l'upload de l'image se termine avant de recharger
+      setTimeout(async () => {
+        await fetchProducts();
+      }, 2000);
+
       setTimeout(() => setSuccessMessage(''), 3000);
+
+      // Retourner le produit pour l'upload d'image
+      return { id: editingProduct.id, ...result?.data };
     } catch (err) {
       console.error('Erreur lors de la modification:', err);
       setError(err.response?.data?.message || t('messages.updateError'));

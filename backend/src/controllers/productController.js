@@ -47,9 +47,9 @@ const getAllProducts = async (req, res, next) => {
       const productData = product.toJSON();
       // Si image_url est un chemin relatif, le transformer en URL complète
       if (productData.image_url && !productData.image_url.startsWith('http')) {
-        // Construire l'URL de base depuis la requête
-        const protocol = req.protocol;
-        const host = req.get('host');
+        // Construire l'URL de base depuis la requête (gérer reverse proxy)
+        const protocol = req.get('x-forwarded-proto') || req.protocol;
+        const host = req.get('x-forwarded-host') || req.get('host');
         productData.image_url = `${protocol}://${host}${productData.image_url}`;
       }
       return productData;

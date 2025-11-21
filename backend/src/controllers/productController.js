@@ -42,9 +42,22 @@ const getAllProducts = async (req, res, next) => {
       ],
     });
 
+    // Transformer les produits pour inclure les URLs complètes des images
+    const productsWithImageUrls = products.map(product => {
+      const productData = product.toJSON();
+      // Si image_url est un chemin relatif, le transformer en URL complète
+      if (productData.image_url && !productData.image_url.startsWith('http')) {
+        // Construire l'URL de base depuis la requête
+        const protocol = req.protocol;
+        const host = req.get('host');
+        productData.image_url = `${protocol}://${host}${productData.image_url}`;
+      }
+      return productData;
+    });
+
     res.json({
       success: true,
-      data: products,
+      data: productsWithImageUrls,
     });
   } catch (error) {
     next(error);
@@ -504,8 +517,10 @@ const uploadProductImage = async (req, res, next) => {
 
     // Mettre à jour le produit avec le chemin de la nouvelle image
     const imagePath = `uploads/products/${req.file.filename}`;
+    const imageUrl = `/uploads/products/${req.file.filename}`;
     await product.update({
       image_path: imagePath,
+      image_url: imageUrl,
     });
 
     logger.info(
@@ -572,6 +587,7 @@ const deleteProductImage = async (req, res, next) => {
     // Mettre à jour le produit
     await product.update({
       image_path: null,
+      image_url: null,
     });
 
     logger.info(

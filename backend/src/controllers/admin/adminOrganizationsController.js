@@ -1,4 +1,4 @@
-const { Organization, User, Product, Sale, Subscription } = require('../../models');
+const { Organization, User, Product, Sale, Subscription, Invoice } = require('../../models');
 const { Op } = require('sequelize');
 const logger = require('../../utils/logger');
 

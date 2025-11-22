@@ -16,22 +16,38 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Vérifier si un utilisateur est déjà connecté
-    const token = localStorage.getItem('token');
-    const savedUser = localStorage.getItem('user');
+    // Sécurité: Vérifier la session via le cookie httpOnly (pas de token en localStorage)
+    // On appelle /auth/me pour valider que le cookie est encore valide
+    const checkSession = async () => {
+      try {
+        // Si on a un user en cache, on vérifie que la session est toujours valide
+        const savedUser = localStorage.getItem('user');
+        if (savedUser) {
+          // Vérifier la validité du cookie via l'API
+          const response = await api.get('/auth/me');
+          setUser(response.data.data);
+          // Mettre à jour le cache avec les données fraîches
+          localStorage.setItem('user', JSON.stringify(response.data.data));
+        }
+      } catch {
+        // Cookie invalide ou expiré, nettoyer le cache
+        localStorage.removeItem('user');
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    if (token && savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
+    checkSession();
   }, []);
 
   const login = async (username, pin_code) => {
     try {
       const response = await api.post('/auth/login', { username, pin_code });
-      const { token, user: userData } = response.data.data;
+      // Sécurité: Le token est dans le cookie httpOnly (pas dans la réponse JSON)
+      const { user: userData } = response.data.data;
 
-      localStorage.setItem('token', token);
+      // On garde seulement les données utilisateur en localStorage (pour le cache UI)
       localStorage.setItem('user', JSON.stringify(userData));
       setUser(userData);
 
@@ -44,18 +60,25 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setUser(null);
+  const logout = async () => {
+    try {
+      // Appeler le backend pour supprimer le cookie httpOnly
+      await api.post('/auth/logout');
+    } catch {
+      // Ignorer les erreurs de logout (cookie peut-être déjà expiré)
+    } finally {
+      // Nettoyer le cache local
+      localStorage.removeItem('user');
+      setUser(null);
+    }
   };
 
   const switchCashier = async (username, pin_code) => {
     try {
       const response = await api.post('/auth/switch-cashier', { username, pin_code });
-      const { token, user: userData } = response.data.data;
+      // Sécurité: Le nouveau token est dans le cookie httpOnly
+      const { user: userData } = response.data.data;
 
-      localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(userData));
       setUser(userData);
 

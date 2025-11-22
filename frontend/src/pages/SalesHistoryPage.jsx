@@ -99,12 +99,9 @@ const SalesHistoryPage = () => {
 
   const handleDownloadPDF = async (saleId, ticketNumber) => {
     try {
-      const token = localStorage.getItem('token');
       const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/sales/${saleId}/pdf`, {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        credentials: 'include', // Envoie le cookie httpOnly
       });
 
       if (!response.ok) {
@@ -128,11 +125,10 @@ const SalesHistoryPage = () => {
 
   const handlePrintTicket = async (saleId, ticketNumber) => {
     try {
-      const token = localStorage.getItem('token');
       const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/printer/sale/${saleId}`, {
         method: 'POST',
+        credentials: 'include', // Envoie le cookie httpOnly
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
@@ -152,7 +148,6 @@ const SalesHistoryPage = () => {
 
   const handleExportCSV = async () => {
     try {
-      const token = localStorage.getItem('token');
       const params = new URLSearchParams();
 
       // Ajouter les filtres actifs
@@ -165,9 +160,7 @@ const SalesHistoryPage = () => {
         `${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/sales/export/csv?${params.toString()}`,
         {
           method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
+          credentials: 'include', // Envoie le cookie httpOnly
         }
       );
 

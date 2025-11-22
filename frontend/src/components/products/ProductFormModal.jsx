@@ -158,14 +158,11 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, product, loading }) => {
       const formDataImage = new FormData();
       formDataImage.append('image', imageFile);
 
-      const token = localStorage.getItem('token');
       // VITE_API_URL contient déjà '/api', donc on ajoute directement le path
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
       const response = await fetch(`${apiUrl}/products/${productId}/image`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        credentials: 'include', // Envoie le cookie httpOnly (pas de token localStorage)
         body: formDataImage,
       });
 

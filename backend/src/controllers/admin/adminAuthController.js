@@ -83,12 +83,13 @@ const login = async (req, res, next) => {
 
     logger.info(`Admin login successful: ${admin.email} (ID: ${admin.id})`);
 
+    // Sécurité: NE PAS envoyer le token dans la réponse JSON
+    // Le cookie httpOnly est suffisant et plus sécurisé
     return res.status(200).json({
       success: true,
       message: 'Connexion réussie',
       data: {
         admin: admin.toPublicJSON(),
-        token,
       },
     });
   } catch (error) {

@@ -4,28 +4,26 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.flexpos.app/ap
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  withCredentials: true, // Important pour les cookies httpOnly
+  // Sécurité NF525: Envoyer les cookies httpOnly avec chaque requête
+  // Le token JWT est stocké dans un cookie httpOnly (pas en localStorage)
+  // Cela protège contre les attaques XSS car JavaScript ne peut pas accéder au cookie
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Intercepteur pour ajouter le token depuis localStorage (fallback)
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('admin_token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// Sécurité: PAS d'intercepteur pour ajouter Authorization header
+// On utilise uniquement les cookies httpOnly (plus sécurisé)
+// Le backend lit le token depuis req.cookies.admin_token
 
 // Intercepteur pour gérer les erreurs d'auth
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Déconnexion automatique si 401 (sauf si déjà sur /login)
-      localStorage.removeItem('admin_token');
+      // Cookie httpOnly expiré ou invalide
+      // Nettoyer le cache admin local
       localStorage.removeItem('admin_user');
 
       // Ne rediriger que si on n'est pas déjà sur /login

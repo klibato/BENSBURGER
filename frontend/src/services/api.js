@@ -10,32 +10,22 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
   // Sécurité NF525: Envoyer les cookies httpOnly avec chaque requête
+  // Le token JWT est stocké dans un cookie httpOnly (pas en localStorage)
+  // Cela protège contre les attaques XSS car JavaScript ne peut pas accéder au cookie
   withCredentials: true,
 });
 
-// Intercepteur pour ajouter le token JWT (RÉTROCOMPATIBILITÉ)
-// Le backend supporte encore Authorization header pendant la transition
-// Mais priorité au cookie httpOnly (plus sécurisé)
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+// Sécurité: PAS d'intercepteur pour ajouter Authorization header
+// On utilise uniquement les cookies httpOnly (plus sécurisé)
+// Le backend lit le token depuis req.cookies.token
 
 // Intercepteur pour gérer les erreurs globales
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token expiré ou invalide (cookie httpOnly expiré côté backend)
-      // Le cookie sera automatiquement supprimé par le backend
-      // On nettoie juste localStorage pour les données utilisateur
-      localStorage.removeItem('token'); // Rétrocompatibilité
+      // Cookie httpOnly expiré ou invalide
+      // Nettoyer le cache utilisateur local
       localStorage.removeItem('user');
 
       // Rediriger vers login seulement si on n'y est pas déjà
@@ -48,8 +38,7 @@ api.interceptors.response.use(
       // Organisation suspendue ou annulée
       const errorMessage = error.response?.data?.error?.message || 'Accès refusé';
 
-      // Nettoyer les données locales
-      localStorage.removeItem('token');
+      // Nettoyer le cache utilisateur local
       localStorage.removeItem('user');
 
       // Afficher le message d'erreur et rediriger vers login

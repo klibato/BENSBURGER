@@ -92,10 +92,11 @@ const login = async (req, res, next) => {
       maxAge: 8 * 60 * 60 * 1000, // 8 heures (même durée que JWT)
     });
 
+    // Sécurité: NE PAS envoyer le token dans la réponse JSON
+    // Le cookie httpOnly est suffisant et plus sécurisé (pas d'accès JavaScript)
     res.json({
       success: true,
       data: {
-        token, // On envoie quand même le token pour rétrocompatibilité (transition)
         user: user.toPublicJSON(),
       },
     });
@@ -253,10 +254,10 @@ const switchCashier = async (req, res, next) => {
       maxAge: 8 * 60 * 60 * 1000, // 8 heures
     });
 
+    // Sécurité: NE PAS envoyer le token dans la réponse JSON
     res.json({
       success: true,
       data: {
-        token, // Rétrocompatibilité (transition)
         user: newUser.toPublicJSON(),
       },
     });

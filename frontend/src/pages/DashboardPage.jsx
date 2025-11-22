@@ -68,14 +68,11 @@ const DashboardPage = () => {
   // Export cash register closures to CSV
   const handleExportCashRegistersCSV = async () => {
     try {
-      const token = localStorage.getItem('token');
       const response = await fetch(
         `${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/cash-registers/export/csv`,
         {
           method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
+          credentials: 'include', // Envoie le cookie httpOnly
         }
       );
 

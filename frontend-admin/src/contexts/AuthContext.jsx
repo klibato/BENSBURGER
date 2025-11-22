@@ -8,28 +8,29 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Charger l'admin depuis le localStorage au démarrage
-    const storedAdmin = localStorage.getItem('admin_user');
-    if (storedAdmin) {
-      setAdmin(JSON.parse(storedAdmin));
-    }
-
-    // Vérifier la validité du token
+    // Sécurité: Vérifier la session via le cookie httpOnly
+    // On appelle /auth/me pour valider que le cookie est encore valide
     checkAuth();
   }, []);
 
   const checkAuth = async () => {
     try {
-      const response = await getMe();
-      if (response.success) {
-        setAdmin(response.data.admin);
-        localStorage.setItem('admin_user', JSON.stringify(response.data.admin));
+      // Vérifier si on a un admin en cache
+      const storedAdmin = localStorage.getItem('admin_user');
+      if (storedAdmin) {
+        // Vérifier la validité du cookie via l'API
+        const response = await getMe();
+        if (response.success) {
+          setAdmin(response.data.admin);
+          // Mettre à jour le cache avec les données fraîches
+          localStorage.setItem('admin_user', JSON.stringify(response.data.admin));
+        }
       }
     } catch (error) {
       console.error('Auth check failed:', error);
+      // Cookie invalide ou expiré, nettoyer le cache
       setAdmin(null);
       localStorage.removeItem('admin_user');
-      localStorage.removeItem('admin_token');
     } finally {
       setLoading(false);
     }
@@ -40,8 +41,9 @@ export const AuthProvider = ({ children }) => {
       const response = await apiLogin(identifier, password);
       if (response.success) {
         setAdmin(response.data.admin);
+        // On garde seulement les données admin en localStorage (pour le cache UI)
+        // Le token est dans le cookie httpOnly (pas dans la réponse)
         localStorage.setItem('admin_user', JSON.stringify(response.data.admin));
-        localStorage.setItem('admin_token', response.data.token);
         return { success: true };
       }
       return { success: false, error: response.error };
@@ -55,13 +57,14 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
+      // Appeler le backend pour supprimer le cookie httpOnly
       await apiLogout();
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
+      // Nettoyer le cache local
       setAdmin(null);
       localStorage.removeItem('admin_user');
-      localStorage.removeItem('admin_token');
     }
   };
 

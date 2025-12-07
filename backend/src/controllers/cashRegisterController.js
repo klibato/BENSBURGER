@@ -22,7 +22,7 @@ const getAllCashRegisters = async (req, res, next) => {
       where,
       limit: parseInt(limit),
       offset: parseInt(offset),
-      order: [['created_at', 'DESC']],
+      order: [['opened_at', 'DESC']],
       include: [
         {
           model: User,

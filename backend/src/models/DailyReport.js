@@ -350,8 +350,7 @@ DailyReport.generateForDate = async function (organizationId, reportDate, userId
     total_mixed: totalMixed.toFixed(2),
     vat_breakdown: await DailyReport.calculateVATBreakdown(
       organizationId,
-      reportDate,
-      transaction
+      reportDate
     ),
     first_sale_time: sales.length > 0 ? sales[0].created_at : null,
     last_sale_time: sales.length > 0 ? sales[sales.length - 1].created_at : null,

@@ -338,8 +338,8 @@ const signup = async (req, res, next) => {
       counter = Math.floor(Math.random() * 1000);
     }
 
-    // Générer PIN à 4 chiffres aléatoire
-    const pinCode = Math.floor(1000 + Math.random() * 9000).toString();
+    // ✅ P1-1: Générer PIN à 6 chiffres aléatoire (sécurité anti-brute-force)
+    const pinCode = Math.floor(100000 + Math.random() * 900000).toString();
 
     // Créer l'organisation avec essai gratuit de 30 jours
     const trialEndsAt = new Date();

@@ -111,13 +111,13 @@ const createUser = async (req, res, next) => {
       });
     }
 
-    // Validation du PIN (4 chiffres)
-    if (!/^\d{4}$/.test(pin_code)) {
+    // ✅ P1-1: Validation du PIN (6 chiffres minimum - sécurité anti-brute-force)
+    if (!/^\d{6,}$/.test(pin_code)) {
       return res.status(400).json({
         success: false,
         error: {
           code: 'VALIDATION_ERROR',
-          message: 'Le code PIN doit contenir exactement 4 chiffres',
+          message: 'Le code PIN doit contenir au moins 6 chiffres',
         },
       });
     }
@@ -234,12 +234,13 @@ const updateUser = async (req, res, next) => {
     // Si un nouveau PIN est fourni, l'ajouter aux données
     // Note: Le PIN sera hashé automatiquement par le hook beforeUpdate du modèle User
     if (pin_code) {
-      if (!/^\d{4}$/.test(pin_code)) {
+      // ✅ P1-1: Validation du PIN (6 chiffres minimum - sécurité anti-brute-force)
+      if (!/^\d{6,}$/.test(pin_code)) {
         return res.status(400).json({
           success: false,
           error: {
             code: 'VALIDATION_ERROR',
-            message: 'Le code PIN doit contenir exactement 4 chiffres',
+            message: 'Le code PIN doit contenir au moins 6 chiffres',
           },
         });
       }

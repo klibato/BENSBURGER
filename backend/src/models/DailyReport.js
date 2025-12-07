@@ -373,7 +373,7 @@ DailyReport.generateForDate = async function (organizationId, reportDate, userId
  * @param {Transaction} transaction - Transaction Sequelize
  * @returns {Object} Ventilation TVA par taux
  */
-DailyReport.calculateVATBreakdown = async function (organizationId, reportDate, transaction) {
+DailyReport.calculateVATBreakdown = async function (organizationId, reportDate, transaction = null) {
   const { Op } = require('sequelize');
   const Sale = require('./Sale');
 
@@ -381,7 +381,7 @@ DailyReport.calculateVATBreakdown = async function (organizationId, reportDate, 
   const startDate = new Date(reportDate + ' 00:00:00');
   const endDate = new Date(reportDate + ' 23:59:59');
 
-  const sales = await Sale.findAll({
+  const queryOptions = {
     where: {
       organization_id: organizationId,
       created_at: {
@@ -390,8 +390,13 @@ DailyReport.calculateVATBreakdown = async function (organizationId, reportDate, 
       },
     },
     attributes: ['vat_details'],
-    transaction,
-  });
+  };
+
+  if (transaction) {
+    queryOptions.transaction = transaction;
+  }
+
+  const sales = await Sale.findAll(queryOptions);
 
   // Agréger par taux de TVA
   const breakdown = {};

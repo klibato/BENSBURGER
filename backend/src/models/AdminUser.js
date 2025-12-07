@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
 const bcrypt = require('bcryptjs');
+const { encrypt, decrypt } = require('../utils/encryption'); // ✅ P1-4: Chiffrement AES-256
 
 const AdminUser = sequelize.define('admin_users', {
   id: {
@@ -117,20 +118,56 @@ const AdminUser = sequelize.define('admin_users', {
 
 /**
  * Hash le mot de passe avant création
+ * ✅ P1-4: Chiffre le secret 2FA avant sauvegarde
  */
 AdminUser.beforeCreate(async (adminUser) => {
   if (adminUser.password_hash && !adminUser.password_hash.startsWith('$2')) {
     adminUser.password_hash = await bcrypt.hash(adminUser.password_hash, 10);
   }
+
+  // ✅ P1-4: Chiffrer le secret 2FA avec AES-256-GCM
+  if (adminUser.two_factor_secret && !adminUser.two_factor_secret.includes(':')) {
+    // Si le secret ne contient pas ':', c'est qu'il n'est pas encore chiffré
+    adminUser.two_factor_secret = encrypt(adminUser.two_factor_secret);
+  }
 });
 
 /**
  * Hash le mot de passe avant mise à jour (si changé)
+ * ✅ P1-4: Chiffre le secret 2FA avant sauvegarde
  */
 AdminUser.beforeUpdate(async (adminUser) => {
   if (adminUser.changed('password_hash') && !adminUser.password_hash.startsWith('$2')) {
     adminUser.password_hash = await bcrypt.hash(adminUser.password_hash, 10);
   }
+
+  // ✅ P1-4: Chiffrer le secret 2FA si modifié
+  if (adminUser.changed('two_factor_secret') && adminUser.two_factor_secret && !adminUser.two_factor_secret.includes(':')) {
+    adminUser.two_factor_secret = encrypt(adminUser.two_factor_secret);
+  }
+});
+
+/**
+ * ✅ P1-4: Déchiffre le secret 2FA après récupération de la BDD
+ */
+AdminUser.afterFind((result) => {
+  if (!result) return;
+
+  // Gérer tableau de résultats (findAll) ou instance unique (findOne)
+  const instances = Array.isArray(result) ? result : [result];
+
+  instances.forEach((instance) => {
+    if (instance && instance.two_factor_secret && instance.two_factor_secret.includes(':')) {
+      try {
+        // Déchiffrer le secret 2FA pour utilisation dans l'application
+        instance.two_factor_secret = decrypt(instance.two_factor_secret);
+      } catch (error) {
+        // Si déchiffrement échoue, logger mais ne pas crasher
+        console.error('Failed to decrypt 2FA secret:', error.message);
+        instance.two_factor_secret = null;
+      }
+    }
+  });
 });
 
 // ============================================

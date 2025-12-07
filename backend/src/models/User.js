@@ -22,6 +22,16 @@ const User = sequelize.define('users', {
     allowNull: false,
     validate: {
       notEmpty: true,
+      isValidPin(value) {
+        // ✅ P1-1: PIN 6 chiffres minimum (sécurité anti-brute-force)
+        // La validation s'applique AVANT le hashing bcrypt
+        // Si le PIN est déjà hashé (starts with $2), on skip la validation
+        if (value && !value.startsWith('$2')) {
+          if (!/^\d{6,}$/.test(value)) {
+            throw new Error('Le PIN doit contenir au moins 6 chiffres');
+          }
+        }
+      },
     },
   },
   role: {

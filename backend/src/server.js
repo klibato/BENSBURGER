@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
+const { doubleCsrf } = require('csrf-csrf');
 
 const config = require('./config/env');
 const { testConnection } = require('./config/database');
@@ -51,6 +52,36 @@ app.use(express.urlencoded({ extended: true }));
 
 // Cookie parser (NF525: Pour lire les cookies httpOnly sécurisés)
 app.use(cookieParser());
+
+// ✅ P1-2: CSRF Protection (Defense-in-depth avec SameSite=Strict)
+// Note: SameSite=Strict déjà actif protège contre CSRF, ceci ajoute une couche supplémentaire
+const {
+  generateToken, // Utilisé pour générer des tokens
+  doubleCsrfProtection, // Middleware de protection CSRF
+} = doubleCsrf({
+  getSecret: () => config.jwt.secret, // Utiliser le même secret que JWT
+  cookieName: '__Host-psifi.x-csrf-token',
+  cookieOptions: {
+    sameSite: 'strict',
+    path: '/',
+    secure: config.NODE_ENV === 'production',
+    httpOnly: true,
+  },
+  size: 64,
+  ignoredMethods: ['GET', 'HEAD', 'OPTIONS'],
+  getTokenFromRequest: (req) => req.headers['x-csrf-token'],
+});
+
+// Endpoint pour obtenir un token CSRF (appelé par le frontend au chargement)
+app.get('/api/csrf-token', (req, res) => {
+  const csrfToken = generateToken(req, res);
+  res.json({
+    success: true,
+    data: {
+      token: csrfToken,
+    },
+  });
+});
 
 // Rate limiting (plus strict pour l'auth)
 const authLimiter = rateLimit({
@@ -134,6 +165,10 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+// ✅ P1-2: Appliquer protection CSRF sur toutes les routes API (sauf GET/HEAD/OPTIONS)
+// Le middleware vérifie automatiquement le header X-CSRF-Token sur POST/PUT/DELETE/PATCH
+app.use('/api', doubleCsrfProtection);
 
 // Routes API (Public - Inscription sans authentification)
 app.use('/api/public', apiLimiter, require('./routes/public'));

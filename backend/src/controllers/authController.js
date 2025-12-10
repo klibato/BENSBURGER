@@ -74,7 +74,9 @@ const login = async (req, res, next) => {
     );
 
     // ✅ P1-6: Générer refresh token (longue durée: 7 jours)
+    logger.info(`[DEBUG P1-6] Génération refresh token pour user ${user.id}, org ${user.organization_id}`);
     const refreshToken = await RefreshToken.generateToken(user.id, user.organization_id, 7);
+    logger.info(`[DEBUG P1-6] Refresh token généré: ${refreshToken ? refreshToken.token.substring(0, 30) + '...' : 'ÉCHEC'}`);
 
     logger.info(`Utilisateur ${username} connecté`);
 

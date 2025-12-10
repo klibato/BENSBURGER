@@ -38,14 +38,14 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
   replaced_by_token VARCHAR(255) NULL,
 
   -- Timestamps
-  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-
-  -- Index pour performances
-  INDEX idx_refresh_tokens_token (token),
-  INDEX idx_refresh_tokens_user_id (user_id),
-  INDEX idx_refresh_tokens_organization_id (organization_id),
-  INDEX idx_refresh_tokens_expires_at (expires_at)
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
+
+-- Créer les index pour performances
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_token ON refresh_tokens(token);
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id ON refresh_tokens(user_id);
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_organization_id ON refresh_tokens(organization_id);
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_expires_at ON refresh_tokens(expires_at);
 
 -- Commentaires sur la table
 COMMENT ON TABLE refresh_tokens IS '✅ P1-6: Tokens de rafraîchissement JWT pour renouveler les access tokens';

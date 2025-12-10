@@ -16,6 +16,7 @@ const DailyReport = require('./DailyReport');
 const Subscription = require('./Subscription');
 const Invoice = require('./Invoice');
 const AdminUser = require('./AdminUser');
+const RefreshToken = require('./RefreshToken'); // ✅ P1-6: JWT Refresh Tokens
 
 // ============================================
 // RELATIONS
@@ -131,6 +132,18 @@ Subscription.hasMany(Invoice, { foreignKey: 'subscription_id', as: 'invoices' })
 Invoice.belongsTo(Subscription, { foreignKey: 'subscription_id', as: 'subscription' });
 
 // ============================================
+// JWT REFRESH TOKENS RELATIONS (P1-6)
+// ============================================
+
+// User <-> RefreshTokens (Un utilisateur a plusieurs refresh tokens)
+User.hasMany(RefreshToken, { foreignKey: 'user_id', as: 'refresh_tokens' });
+RefreshToken.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
+// Organization <-> RefreshTokens (Une organisation a plusieurs refresh tokens)
+Organization.hasMany(RefreshToken, { foreignKey: 'organization_id', as: 'refresh_tokens' });
+RefreshToken.belongsTo(Organization, { foreignKey: 'organization_id', as: 'organization' });
+
+// ============================================
 // EXPORTS
 // ============================================
 
@@ -152,4 +165,5 @@ module.exports = {
   Subscription,
   Invoice,
   AdminUser,
+  RefreshToken, // ✅ P1-6: JWT Refresh Tokens
 };

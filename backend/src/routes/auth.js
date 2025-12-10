@@ -42,6 +42,9 @@ router.post('/signup', signupLimiter, authController.signup);
 // POST /api/auth/login - Connexion (avec rate limiting strict)
 router.post('/login', loginLimiter, authController.login);
 
+// ✅ P1-6: POST /api/auth/refresh - Renouveler access token avec refresh token
+router.post('/refresh', authController.refreshAccessToken);
+
 // POST /api/auth/logout - Déconnexion
 router.post('/logout', authenticateToken, authController.logout);
 

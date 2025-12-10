@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { User, Organization, Sale, CashRegister, AuditLog, sequelize } = require('../models');
+const { User, Organization, Sale, CashRegister, AuditLog, RefreshToken, sequelize } = require('../models');
 const config = require('../config/env');
 const logger = require('../utils/logger');
 const { getRolePermissions } = require('../config/permissions');
@@ -61,8 +61,8 @@ const login = async (req, res, next) => {
       });
     }
 
-    // Générer le token JWT (MULTI-TENANT: inclure organization_id)
-    const token = jwt.sign(
+    // ✅ P1-6: Générer access token JWT (courte durée: 15 min)
+    const accessToken = jwt.sign(
       {
         userId: user.id,
         username: user.username,
@@ -70,8 +70,11 @@ const login = async (req, res, next) => {
         organization_id: user.organization_id, // MULTI-TENANT: Important pour tenantIsolation
       },
       config.jwt.secret,
-      { expiresIn: config.jwt.expiration },
+      { expiresIn: '15m' }, // ✅ P1-6: 15 minutes (au lieu de 8h)
     );
+
+    // ✅ P1-6: Générer refresh token (longue durée: 7 jours)
+    const refreshToken = await RefreshToken.generateToken(user.id, user.organization_id, 7);
 
     logger.info(`Utilisateur ${username} connecté`);
 
@@ -83,17 +86,25 @@ const login = async (req, res, next) => {
       });
     });
 
-    // Sécurité NF525: Stocker le JWT dans un cookie httpOnly (protection XSS)
-    // Au lieu de localStorage (vulnérable aux attaques XSS)
-    res.cookie('token', token, {
+    // ✅ P1-6: Stocker access token dans cookie httpOnly (courte durée)
+    res.cookie('token', accessToken, {
       httpOnly: true, // Inaccessible au JavaScript client (protection XSS)
       secure: config.env === 'production', // HTTPS uniquement en production
       sameSite: 'strict', // Protection CSRF
-      maxAge: 8 * 60 * 60 * 1000, // 8 heures (même durée que JWT)
+      maxAge: 15 * 60 * 1000, // ✅ P1-6: 15 minutes
     });
 
-    // Sécurité: NE PAS envoyer le token dans la réponse JSON
-    // Le cookie httpOnly est suffisant et plus sécurisé (pas d'accès JavaScript)
+    // ✅ P1-6: Stocker refresh token dans cookie httpOnly séparé (longue durée)
+    res.cookie('refreshToken', refreshToken.token, {
+      httpOnly: true,
+      secure: config.env === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
+      path: '/api/auth/refresh', // Limite le cookie uniquement à l'endpoint refresh
+    });
+
+    // Sécurité: NE PAS envoyer les tokens dans la réponse JSON
+    // Les cookies httpOnly sont suffisants et plus sécurisés (pas d'accès JavaScript)
     res.json({
       success: true,
       data: {
@@ -112,6 +123,12 @@ const logout = async (req, res, next) => {
   try {
     logger.info(`Utilisateur ${req.user.username} déconnecté`);
 
+    // ✅ P1-6: Révoquer le refresh token si présent
+    const refreshTokenValue = req.cookies.refreshToken;
+    if (refreshTokenValue) {
+      await RefreshToken.revoke(refreshTokenValue);
+    }
+
     // Logger l'action dans audit_logs
     setImmediate(() => {
       logAction(req, 'LOGOUT', 'user', req.user.id, {
@@ -119,11 +136,18 @@ const logout = async (req, res, next) => {
       });
     });
 
-    // Sécurité NF525: Supprimer le cookie httpOnly
+    // ✅ P1-6: Supprimer les cookies httpOnly (access token + refresh token)
     res.clearCookie('token', {
       httpOnly: true,
       secure: config.env === 'production',
       sameSite: 'strict',
+    });
+
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: config.env === 'production',
+      sameSite: 'strict',
+      path: '/api/auth/refresh',
     });
 
     res.json({
@@ -224,8 +248,14 @@ const switchCashier = async (req, res, next) => {
       });
     }
 
-    // Générer un nouveau token JWT pour le nouveau caissier (MULTI-TENANT: inclure organization_id)
-    const token = jwt.sign(
+    // ✅ P1-6: Révoquer l'ancien refresh token
+    const oldRefreshToken = req.cookies.refreshToken;
+    if (oldRefreshToken) {
+      await RefreshToken.revoke(oldRefreshToken);
+    }
+
+    // ✅ P1-6: Générer nouveau access token JWT pour le nouveau caissier (courte durée: 15 min)
+    const accessToken = jwt.sign(
       {
         userId: newUser.id,
         username: newUser.username,
@@ -233,8 +263,11 @@ const switchCashier = async (req, res, next) => {
         organization_id: newUser.organization_id, // MULTI-TENANT: Important pour tenantIsolation
       },
       config.jwt.secret,
-      { expiresIn: config.jwt.expiration },
+      { expiresIn: '15m' },
     );
+
+    // ✅ P1-6: Générer nouveau refresh token (longue durée: 7 jours)
+    const newRefreshToken = await RefreshToken.generateToken(newUser.id, newUser.organization_id, 7);
 
     logger.info(`Changement de caissier: ${req.user.username} -> ${newUser.username}`);
 
@@ -246,15 +279,23 @@ const switchCashier = async (req, res, next) => {
       });
     });
 
-    // Sécurité NF525: Mettre à jour le cookie httpOnly avec le nouveau token
-    res.cookie('token', token, {
+    // ✅ P1-6: Mettre à jour les cookies httpOnly avec les nouveaux tokens
+    res.cookie('token', accessToken, {
       httpOnly: true,
       secure: config.env === 'production',
       sameSite: 'strict',
-      maxAge: 8 * 60 * 60 * 1000, // 8 heures
+      maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
-    // Sécurité: NE PAS envoyer le token dans la réponse JSON
+    res.cookie('refreshToken', newRefreshToken.token, {
+      httpOnly: true,
+      secure: config.env === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
+      path: '/api/auth/refresh',
+    });
+
+    // Sécurité: NE PAS envoyer les tokens dans la réponse JSON
     res.json({
       success: true,
       data: {
@@ -693,6 +734,92 @@ const deleteUserData = async (req, res, next) => {
   }
 };
 
+/**
+ * ✅ P1-6: Refresh access token avec refresh token
+ * POST /api/auth/refresh
+ *
+ * Permet de renouveler un access token expiré sans re-authentification
+ * Nécessite un refresh token valide dans le cookie refreshToken
+ */
+const refreshAccessToken = async (req, res, next) => {
+  try {
+    const refreshTokenValue = req.cookies.refreshToken;
+
+    // Vérifier présence du refresh token
+    if (!refreshTokenValue) {
+      return res.status(401).json({
+        success: false,
+        error: {
+          code: 'REFRESH_TOKEN_REQUIRED',
+          message: 'Refresh token requis',
+        },
+      });
+    }
+
+    // Vérifier validité du refresh token
+    const refreshToken = await RefreshToken.isValid(refreshTokenValue);
+    if (!refreshToken) {
+      // Token invalide, expiré ou révoqué
+      res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: config.env === 'production',
+        sameSite: 'strict',
+        path: '/api/auth/refresh',
+      });
+
+      return res.status(401).json({
+        success: false,
+        error: {
+          code: 'INVALID_REFRESH_TOKEN',
+          message: 'Refresh token invalide ou expiré. Veuillez vous reconnecter.',
+        },
+      });
+    }
+
+    // Charger l'utilisateur
+    const user = await User.findByPk(refreshToken.user_id);
+    if (!user || !user.is_active) {
+      await RefreshToken.revoke(refreshTokenValue);
+      return res.status(401).json({
+        success: false,
+        error: {
+          code: 'USER_NOT_FOUND',
+          message: 'Utilisateur introuvable ou inactif',
+        },
+      });
+    }
+
+    // Générer un nouveau access token
+    const accessToken = jwt.sign(
+      {
+        userId: user.id,
+        username: user.username,
+        role: user.role,
+        organization_id: user.organization_id,
+      },
+      config.jwt.secret,
+      { expiresIn: '15m' },
+    );
+
+    // Mettre à jour le cookie access token
+    res.cookie('token', accessToken, {
+      httpOnly: true,
+      secure: config.env === 'production',
+      sameSite: 'strict',
+      maxAge: 15 * 60 * 1000, // 15 minutes
+    });
+
+    logger.debug(`Access token refreshed for user ${user.username}`);
+
+    res.json({
+      success: true,
+      message: 'Access token renouvelé',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   login,
   logout,
@@ -702,4 +829,5 @@ module.exports = {
   signup,
   exportUserData,
   deleteUserData,
+  refreshAccessToken, // ✅ P1-6: Refresh token endpoint
 };

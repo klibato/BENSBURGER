@@ -60,7 +60,10 @@ const {
   doubleCsrfProtection, // Middleware de protection CSRF
 } = doubleCsrf({
   getSecret: () => config.jwt.secret, // Utiliser le même secret que JWT
-  cookieName: '__Host-psifi.x-csrf-token',
+  // __Host- prefix nécessite HTTPS. En dev (HTTP), on utilise un nom simple
+  cookieName: config.NODE_ENV === 'production'
+    ? '__Host-psifi.x-csrf-token'
+    : 'psifi.x-csrf-token',
   cookieOptions: {
     sameSite: 'strict',
     path: '/',

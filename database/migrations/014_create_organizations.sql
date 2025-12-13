@@ -49,64 +49,11 @@ CREATE INDEX IF NOT EXISTS idx_organizations_active ON organizations(status, del
 -- ============================================
 -- MIGRATION DES DONNÉES EXISTANTES
 -- ============================================
--- Créer organisation par défaut "FlexPOS" depuis store_settings
-INSERT INTO organizations (
-  id,
-  name,
-  slug,
-  email,
-  phone,
-  settings,
-  plan,
-  status,
-  max_users,
-  max_products,
-  created_at
-)
-SELECT
-  1 AS id,
-  COALESCE(store_name, 'FlexPOS') AS name,
-  'flexpos' AS slug,
-  email,
-  phone,
-  jsonb_build_object(
-    'store_description', store_description,
-    'address_line1', address_line1,
-    'address_line2', address_line2,
-    'postal_code', postal_code,
-    'city', city,
-    'country', country,
-    'legal_form', legal_form,
-    'capital_amount', capital_amount,
-    'siret', siret,
-    'vat_number', vat_number,
-    'rcs', rcs,
-    'currency', currency,
-    'currency_symbol', currency_symbol,
-    'categories', COALESCE(categories, '[]'::jsonb),
-    'vat_rates', COALESCE(vat_rates, '[]'::jsonb),
-    'payment_methods', COALESCE(payment_methods, '{}'::jsonb),
-    'theme_color', COALESCE(theme_color, '#FF6B35'),
-    'logo_url', logo_url,
-    'language', COALESCE(language, 'fr-FR'),
-    'timezone', COALESCE(timezone, 'Europe/Paris'),
-    'sumup_config', COALESCE(sumup_config, '{}'::jsonb),
-    'printer_config', COALESCE(printer_config, '{}'::jsonb),
-    'email_config', COALESCE(email_config, '{}'::jsonb)
-  ) AS settings,
-  'premium' AS plan,
-  'active' AS status,
-  999 AS max_users,
-  999 AS max_products,
-  COALESCE(created_at, CURRENT_TIMESTAMP) AS created_at
-FROM store_settings
-WHERE id = 1
+-- Créer organisation par défaut "FlexPOS"
+-- Note: Si store_settings existe, les données seront migrées plus tard manuellement si besoin
+INSERT INTO organizations (id, name, slug, plan, status, max_users, max_products, created_at)
+VALUES (1, 'FlexPOS', 'flexpos', 'premium', 'active', 999, 999, CURRENT_TIMESTAMP)
 ON CONFLICT (id) DO NOTHING;
-
--- Si store_settings n'existe pas ou est vide, créer organisation par défaut simple
-INSERT INTO organizations (id, name, slug, plan, status, max_users, max_products)
-SELECT 1, 'FlexPOS', 'flexpos', 'premium', 'active', 999, 999
-WHERE NOT EXISTS (SELECT 1 FROM organizations WHERE id = 1);
 
 -- ============================================
 -- TRIGGER: Mise à jour automatique updated_at
